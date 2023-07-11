@@ -26,5 +26,8 @@
 		"tailwindcss": "^3.3.2",
 		"vite": "^4.3.6"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"iconify-icon": "^1.0.8"
+	}
 }

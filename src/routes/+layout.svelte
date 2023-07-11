@@ -1,5 +1,9 @@
 <script>
 	import '../app.postcss';
+
+	import { Layout } from '$lib/components';
 </script>
 
-<slot />
+<svelte:component this={Layout}>
+	<slot />
+</svelte:component>
