@@ -4,6 +4,7 @@ export { default as Base } from './layouts/base.svelte'
 export { default as Container } from './layouts/container.svelte'
 export { default as Content } from './layouts/content.svelte'
 export { default as Layout } from './layouts/layout.svelte'
+export { default as Notification } from './layouts/notification.svelte'
 
 // FIELD
 export { default as Form } from './fields/form.svelte'

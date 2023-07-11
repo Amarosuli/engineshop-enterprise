@@ -1,5 +1,5 @@
 <script>
-	import { Container, Content, Header, Base } from '$lib/components';
+	import { Container, Content, Header, Base, Notification } from '$lib/components';
 </script>
 
 <Base>
@@ -8,5 +8,6 @@
 		<Content>
 			<slot />
 		</Content>
+		<!-- <Notification /> -->
 	</Container>
 </Base>
