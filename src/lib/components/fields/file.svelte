@@ -1,11 +1,10 @@
 <script>
 	export const id = Math.random().toString();
-	export const name = 'password';
+	export const name = 'text';
 	export const error = '';
-	export const label = 'label.password';
-	export const required = true;
-	export const placeholder = 'type something..';
-	export const autocomplete = 'off';
+	export const label = 'label.file';
+	export const required = false;
+	export const accept = '*';
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -27,7 +26,7 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="password" class={isNotEmpty} on:change={onChange} {id} {name} {required} {placeholder} {autocomplete} />
+	<input type="file" class=" {isNotEmpty}" on:change={onChange} {id} {name} {accept} {required} />
 	{#if error}
 		<span>{error}</span>
 	{/if}
@@ -47,6 +46,6 @@
 		@apply self-start tracking-widest;
 	}
 	input {
-		@apply border-b border-slate-200 px-4 py-2 text-slate-700 transition-colors ease-out hover:border-sky-200 hover:bg-slate-200 focus:border-sky-500 focus:bg-slate-50 focus:outline-none;
+		@apply border-b border-slate-200 bg-slate-50 px-4 py-2  text-slate-700 transition-colors ease-out hover:border-sky-200 hover:bg-slate-200 focus:border-sky-500 focus:bg-slate-50 focus:outline-none;
 	}
 </style>

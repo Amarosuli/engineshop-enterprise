@@ -1,8 +1,11 @@
 <script>
-	export const label = 'label.text';
-	export const placeholder = 'type something..';
 	export const id = Math.random().toString();
-	export const error = 'error.text';
+	export const name = 'text';
+	export const error = '';
+	export const label = 'label.text';
+	export const required = false;
+	export const placeholder = 'type something..';
+	export const autocomplete = 'off';
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -24,13 +27,15 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input class={isNotEmpty} on:change={onChange} {id} type="text" {placeholder} />
-	<span>{error}</span>
+	<input type="text" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} />
+	{#if error}
+		<span>{error}</span>
+	{/if}
 </div>
 
 <style>
 	div {
-		@apply flex flex-col space-y-1;
+		@apply flex w-full flex-col space-y-1;
 	}
 	div > span {
 		@apply self-end text-sm text-red-600;

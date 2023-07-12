@@ -14,6 +14,7 @@ export { default as Text } from './fields/text.svelte'
 export { default as Switch } from './fields/switch.svelte'
 export { default as Select } from './fields/select.svelte'
 export { default as Email } from './fields/email.svelte'
+export { default as File } from './fields/file.svelte'
 
 // COMMON
 export { default as Btn } from './commons/button.svelte'
