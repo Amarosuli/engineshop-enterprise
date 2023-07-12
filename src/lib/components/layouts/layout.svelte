@@ -1,7 +1,8 @@
 <script>
-	import { Container, Content, Header, Base, Notification } from '$lib/components';
+	import { Container, Content, Header, Base, Notification, Window } from '$lib/components';
 </script>
 
+<Window />
 <Base>
 	<Container>
 		<Header />

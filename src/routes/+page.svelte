@@ -1,14 +1,63 @@
 <script>
+	import 'iconify-icon';
 	import { Text, Password, File, Select } from '$lib/components';
+
+	let MainMenu = {
+		apps: [
+			{
+				title: 'Preservation Control',
+				href: '/',
+				icon: 'ri:article-line'
+			}
+		],
+		manages: [
+			{
+				title: 'Engine List',
+				href: '/manage/engine-list',
+				icon: 'ri:article-line'
+			}
+		]
+	};
+
+	let { apps: AppsMenu, manages: ManagesMenu } = MainMenu;
 </script>
 
 <svelte:head>
 	<title>Dashboard</title>
 </svelte:head>
 
-<div class="w-[300px] mx-auto flex flex-col justify-center items-center">
-	<Text />
-	<Password />
-	<File />
-	<Select />
+<div class="p-6 w-full bg-slate-200 mx-auto flex flex-col justify-start items-start space-y-3">
+	<strong>Apps</strong>
+	<div class="menuContainer">
+		{#each AppsMenu as { title, href, icon }, i}
+			<a {href} class="menu">
+				<div><iconify-icon style="font-size: 30px;" {icon} /></div>
+				<span>{title}</span>
+			</a>
+		{/each}
+	</div>
+	<strong>Manages</strong>
+	<div class="menuContainer">
+		{#each ManagesMenu as { title, href, icon }, i}
+			<a {href} class="menu">
+				<div><iconify-icon style="font-size: 30px;" {icon} /></div>
+				<span>{title}</span>
+			</a>
+		{/each}
+	</div>
 </div>
+
+<style lang="scss">
+	.menuContainer {
+		@apply mx-auto grid grid-cols-3 items-center gap-8 pb-3 sm:mx-0 sm:grid-cols-5;
+	}
+	.menu {
+		@apply flex h-24 w-24 flex-col items-center justify-around space-y-1 bg-sky-200 p-2;
+		div {
+			@apply flex h-10 w-full items-center justify-center;
+		}
+		span {
+			@apply text-center text-xs;
+		}
+	}
+</style>
