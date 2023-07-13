@@ -22,3 +22,5 @@ export { default as File } from './fields/file.svelte'
 // COMMON
 export { default as Btn } from './commons/button.svelte'
 export { default as Link } from './commons/link.svelte'
+export { default as Menu } from './commons/menu.svelte'
+export { default as Table } from './commons/table.svelte'
