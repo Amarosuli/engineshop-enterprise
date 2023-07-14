@@ -1,12 +1,22 @@
 /** @type {import('tailwindcss').Config}*/
 const config = {
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+   content: ['./src/**/*.{html,js,svelte,ts}'],
 
-	theme: {
-		extend: {}
-	},
+   theme: {
+      fontSize: {
+         xs: ['12px', '16px'],
+         sm: ['14px', '20px'],
+         base: ['16px', '24px'],
+         lg: ['20px', '28px'],
+         xl: ['24px', '32px'],
+         '2xl': ['28px', '36px'],
+         '3xl': ['48px', '64px'],
+         '4xl': ['82px', '120px'],
+      },
+      extend: {}
+   },
 
-	plugins: []
+   plugins: []
 };
 
 module.exports = config;

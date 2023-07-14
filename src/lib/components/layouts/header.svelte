@@ -1,22 +1,7 @@
 <script>
 	import { Link } from '$lib/components';
-	const HeaderLinks = [
-		{
-			title: 'Login',
-			href: '/auth/login',
-			color: 'base'
-		},
-		{
-			title: 'Logout',
-			href: '/auth/logout',
-			color: 'danger'
-		},
-		{
-			title: 'Register',
-			href: '/auth/register',
-			color: 'info'
-		}
-	];
+	import { CommonSets } from '$lib/utils/CommonSets';
+
 	const User = {
 		// name: 'Lord'
 	};
@@ -24,12 +9,12 @@
 
 <div class="header">
 	<a href="/">
-		<img src="./favicon.png" alt="logo" />
+		<img src="/favicon.png" alt="logo" />
 		<span>Engineshop Enterprise</span>
 	</a>
 
 	<div>
-		{#each HeaderLinks as { title, href, color }}
+		{#each CommonSets.HeaderLinks as { title, href, color }}
 			{#if !User?.name && title !== 'Logout'}
 				<Link {href} {title} {color} />
 			{:else if User?.name && title == 'Logout'}

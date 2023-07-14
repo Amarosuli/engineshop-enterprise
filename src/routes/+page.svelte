@@ -1,25 +1,9 @@
 <script>
 	import 'iconify-icon';
+	import { CommonSets } from '$lib/utils/CommonSets';
 	import { Text, Password, File, Select } from '$lib/components';
 
-	let MainMenu = {
-		apps: [
-			{
-				title: 'Preservation Control',
-				href: '/',
-				icon: 'ri:article-line'
-			}
-		],
-		manages: [
-			{
-				title: 'Engine List',
-				href: '/manage/engine-list',
-				icon: 'ri:article-line'
-			}
-		]
-	};
-
-	let { apps: AppsMenu, manages: ManagesMenu } = MainMenu;
+	let { apps: AppsMenu, manages: ManagesMenu } = CommonSets.MainMenu;
 </script>
 
 <svelte:head>

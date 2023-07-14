@@ -1,5 +1,5 @@
 <script>
-	import { ColorSet, ColorName } from '$lib/utils/theme';
+	import { CommonSets } from '$lib/utils/CommonSets';
 
 	export let href = '/';
 	export let title = 'link';
@@ -7,14 +7,14 @@
 
 	/** checking @color is valid name ref to @ColorName **/
 	if (color) {
-		let isValid = ColorName.find((name) => color == name);
+		let isValid = CommonSets.ColorName.find((name) => color == name);
 		if (!isValid || isValid === null || isValid === undefined || isValid === false) {
 			color = 'base';
 		}
 	}
 </script>
 
-<a class="{ColorSet[color].textColor} {ColorSet[color].bgColor} {ColorSet[color].hoverColor}" {href}>{title}</a>
+<a class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" {href}>{title}</a>
 
 <style>
 	a {

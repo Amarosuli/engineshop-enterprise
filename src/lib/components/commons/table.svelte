@@ -1,51 +1,91 @@
 <script>
 	import { readable } from 'svelte/store';
-	import { Render, Subscribe, createTable } from 'svelte-headless-table';
-	import { addSortBy, addTableFilter } from 'svelte-headless-table/plugins';
+	import { _modalShow, _rowSet } from '$lib/utils/store';
+	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
+	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
+	import SelectCell from './selectCell.svelte';
 
-	export let gado;
-	const data = readable([
-		{ name: 'Iman', age: 21 },
-		{ name: 'Sulif', age: 34 },
-		{ name: 'Joko', age: 23 }
-	]);
+	export let dataTable = [];
+	export let dataCol = [];
 
-	class Toblo {
+	const data = readable(dataTable);
+
+	class SuperTable {
 		cols = [];
+
 		constructor(data, colArray) {
 			this.table = createTable(data, {
 				sort: addSortBy({ disableMultiSort: false }),
-				tableFilter: addTableFilter()
+				tableFilter: addTableFilter(),
+				selected: addSelectedRows(),
+				hidden: addHiddenColumns(),
+				export: addDataExport()
 			});
-			this.createColsArray(colArray);
+			this.plugins = {
+				sort: { invert: true },
+				tableFilter: { exclude: false }
+			};
+			this.createColsArray(colArray, this.plugins);
 			this.init = this.table.createViewModel(this.table.createColumns(this.cols));
 			this.plugin = this.init.pluginStates;
 		}
 
-		createColsArray = (colArray) => {
+		createColsArray = (colArray, plugin) => {
+			const ColSelect = {
+				id: 'selected',
+				header: '',
+				cell: ({ row }, { pluginStates }) => {
+					const { isSelected } = pluginStates.selected.getRowState(row);
+					return createRender(SelectCell, {
+						isSelected
+					});
+				}
+			};
+			const ColOrder = {
+				id: 'order',
+				header: 'No',
+				cell: ({ row }) => {
+					let rowNumber = parseInt(row.id) + 1;
+					return rowNumber;
+				},
+				plugins: plugin
+			};
+
 			colArray.forEach((v, index) => {
-				v = { ...v, plugins: { sort: { invert: true }, tableFilter: { excludde: false } } };
-				// this.cols[index] = this.table.column(v); normal
-				this.cols[index] = this.table.column(v); // with sort
+				v = { ...v, plugin };
+				this.cols[index] = this.table.column(v);
 			});
+			this.cols.unshift(this.table.column(ColOrder));
+			this.cols.unshift(this.table.display(ColSelect));
 		};
 	}
 
-	const tableCol = [
-		{
-			header: 'Name',
-			accessor: 'name'
-		},
-		{
-			header: 'Age',
-			accessor: 'age'
+	const table = new SuperTable(data, dataCol);
+	const { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B } = table.init;
+	const { filterValue } = table.plugin.tableFilter;
+	const { sortKeys } = table.plugin.sort;
+	const { selectedDataIds } = table.plugin.selected;
+
+	const sortFn = (hrc) => {
+		if ($sortKeys[0] == undefined) {
+			return '';
 		}
-	];
+		if ($sortKeys[0].order === 'asc' && $sortKeys[0].id == hrc.id) {
+			return 'sort-asc sort-active';
+		} else if ($sortKeys[0].order === 'desc' && $sortKeys[0].id == hrc.id) {
+			return 'sort-desc sort-active';
+		} else {
+			return '';
+		}
+	};
 
-	const { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B } = new Toblo(data, tableCol).init;
-	const { filterValue } = new Toblo(data, tableCol).plugin.tableFilter;
+	const handleClick = (row) => {
+		_rowSet(row); // set data from clicked row
+		_modalShow('detail'); // show modal detail
 
-	$: gado = $filterValue;
+		// console.log(row);
+		// console.log($selectedDataIds);
+	};
 </script>
 
 <!-- 
@@ -64,13 +104,8 @@
 				<tr {...Ra}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} Cp={col.props()} let:Ca let:Cp>
-							<th {...Ca} on:click={Cp.sort.toggle}>
+							<th {...Ca} on:click={Cp.sort.toggle} class="col-sort {sortFn(col)}">
 								<Render of={col.render()} />
-								{#if Cp.sort.order === 'asc'}
-									⬇️
-								{:else if Cp.sort.order === 'desc'}
-									⬆️
-								{/if}
 							</th>
 						</Subscribe>
 					{/each}
@@ -81,11 +116,13 @@
 	<tbody {...$B}>
 		{#each $Br as row (row.id)}
 			<Subscribe Ra={row.attrs()} let:Ra>
-				<tr {...Ra}>
+				<tr {...Ra} on:click={() => handleClick(row)}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} let:Ca>
 							<td {...Ca}>
-								<Render of={col.render()} />
+								<span>
+									<Render of={col.render()} />
+								</span>
 							</td>
 						</Subscribe>
 					{/each}
@@ -94,3 +131,85 @@
 		{/each}
 	</tbody>
 </table>
+
+<style lang="scss">
+	table {
+		@apply w-full bg-slate-50;
+
+		td,
+		th {
+			@apply relative border-b border-solid px-[5px] py-[10px] text-left align-middle text-[0.65rem] outline-none md:text-xs;
+			&:first-child {
+				@apply w-1 pl-[20px];
+			}
+			&:last-child {
+				@apply pr-[20px];
+			}
+		}
+		th {
+			@apply h-12 select-none bg-slate-200 px-2 text-[0.65rem] font-semibold hover:bg-slate-300 md:text-xs;
+		}
+		td {
+			@apply h-14 break-words;
+		}
+
+		.col-checkbox {
+			@apply w-1 px-[20px];
+		}
+
+		.col-checkbox > input {
+			@apply cursor-pointer accent-amber-200;
+		}
+		.col-number {
+			@apply w-1 p-[20px];
+		}
+		.col-sort {
+			$pos: 10px;
+			$iconSize: 25px;
+			padding-right: $iconSize + $pos - 5;
+			cursor: pointer;
+
+			&:after {
+				content: '\2191';
+				position: absolute;
+				right: 15px;
+				top: 50%;
+				margin-top: -($iconSize * 0.5);
+				line-height: $iconSize;
+				height: $iconSize;
+				font-weight: normal;
+				opacity: 0;
+			}
+			&.sort-desc:after {
+				content: '\2191';
+			}
+			&.sort-asc:after {
+				content: '\2193';
+			}
+			&.sort-active {
+				&:after {
+					opacity: 1;
+				}
+			}
+		}
+
+		thead {
+			// @apply bg-slate-200;
+
+			th {
+				@apply sticky top-0 z-10;
+			}
+			tr {
+				@apply outline-none;
+			}
+		}
+
+		tbody {
+			@apply h-[600px] overflow-y-hidden;
+
+			tr {
+				@apply cursor-pointer select-none hover:bg-slate-100;
+			}
+		}
+	}
+</style>

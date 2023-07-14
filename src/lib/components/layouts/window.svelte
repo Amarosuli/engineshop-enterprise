@@ -1,5 +1,5 @@
 <script>
-	import { _modal } from '$lib/utils/store';
+	import { _modal, _row } from '$lib/utils/store';
 
 	const escHandler = (e) => {
 		if (!e) {
@@ -8,9 +8,12 @@
 
 		if (e.keyCode === 27) {
 			// maybe we can use pop function in store to hide modal one by one according to it's order
-			$_modal = [];
+			$_modal = []; // reset modal store
+			$_row = {}; // reset table row store
 		}
 	};
+
+	$: console.log($_row);
 </script>
 
 <svelte:window on:keydown={escHandler} />
