@@ -29,6 +29,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"iconify-icon": "^1.0.8"
+		"iconify-icon": "^1.0.8",
+		"pocketbase": "^0.15.3"
 	}
 }

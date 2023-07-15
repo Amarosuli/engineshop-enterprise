@@ -1,11 +1,11 @@
 <script>
-	export const id = Math.random().toString();
-	export const name = 'password';
-	export const error = '';
-	export const label = 'label.password';
-	export const required = true;
-	export const placeholder = 'type something..';
-	export const autocomplete = 'off';
+	export let id = Math.random().toString();
+	export let name = 'password';
+	export let error = '';
+	export let label = 'label.password';
+	export let required = true;
+	export let placeholder = 'type something..';
+	export let autocomplete = 'off';
 
 	let isNotEmpty;
 	$: isNotEmpty;

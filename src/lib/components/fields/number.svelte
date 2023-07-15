@@ -1,11 +1,13 @@
 <script>
 	export let id = Math.random().toString();
-	export let name = 'text';
+	export let name = 'number';
 	export let error = '';
-	export let label = 'label.text';
+	export let label = 'label.number';
 	export let required = false;
 	export let placeholder = 'type something..';
 	export let autocomplete = 'off';
+	export let min = 0;
+	export let max = 0;
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -27,7 +29,7 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="text" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} />
+	<input type="number" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} {min} {max} />
 	{#if error}
 		<span>{error}</span>
 	{/if}

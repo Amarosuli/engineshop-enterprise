@@ -7,3 +7,7 @@ export const escHandler = (e) => {
       // _modalHide(id);
    }
 };
+
+export const CPOJOs = (obj) => {
+   return structuredClone(obj)
+}
