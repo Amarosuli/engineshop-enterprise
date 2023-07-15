@@ -1,4 +1,4 @@
-import { pb } from '$lib/utils/pocketbaseClient'
+import { pb } from '$lib/helpers/pocketbaseClient'
 import { CPOJOs } from '$lib/utils/func'
 
 export const handle = async ({ event, resolve }) => {

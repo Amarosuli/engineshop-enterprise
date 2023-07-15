@@ -2,9 +2,7 @@
 	import { Link } from '$lib/components';
 	import { CommonSets } from '$lib/utils/CommonSets';
 
-	const User = {
-		// name: 'Lord'
-	};
+	export let user;
 </script>
 
 <div class="header">
@@ -15,10 +13,10 @@
 
 	<div>
 		{#each CommonSets.HeaderLinks as { title, href, color }}
-			{#if !User?.name && title !== 'Logout'}
+			{#if !user && title !== 'Logout'}
 				<Link {href} {title} {color} />
-			{:else if User?.name && title == 'Logout'}
-				<Link href="/" title="User" />
+			{:else if user && title == 'Logout'}
+				<Link href="/profile" title={user.name} />
 				<Link {href} {title} {color} />
 			{/if}
 		{/each}

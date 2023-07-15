@@ -66,7 +66,17 @@ export class CommonSets {
             title: 'Engine List',
             href: '/manage/engine-list',
             icon: 'ri:article-line'
-         }
+         },
+         {
+            title: 'Engine Model',
+            href: '/manage/engine-model',
+            icon: 'ri:article-line'
+         },
+         {
+            title: 'Engine Type',
+            href: '/manage/engine-type',
+            icon: 'ri:article-line'
+         },
       ]
    };
 

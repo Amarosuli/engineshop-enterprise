@@ -12,8 +12,6 @@
 			$_row = {}; // reset table row store
 		}
 	};
-
-	$: console.log($_row);
 </script>
 
 <svelte:window on:keydown={escHandler} />

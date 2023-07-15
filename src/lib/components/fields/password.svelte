@@ -6,6 +6,7 @@
 	export let required = true;
 	export let placeholder = 'type something..';
 	export let autocomplete = 'off';
+	export let value = '';
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -15,7 +16,7 @@
 			return;
 		}
 
-		if (e.target.value) {
+		if (value) {
 			isNotEmpty = '!border-sky-500';
 		} else {
 			isNotEmpty = '';
@@ -27,7 +28,7 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="password" class={isNotEmpty} on:change={onChange} {id} {name} {required} {placeholder} {autocomplete} />
+	<input type="password" class={isNotEmpty} on:change={onChange} {id} {name} {required} {placeholder} {autocomplete} bind:value />
 	{#if error}
 		<span>{error}</span>
 	{/if}
@@ -38,7 +39,7 @@
 		@apply flex w-full flex-col space-y-1;
 	}
 	div > span {
-		@apply self-end text-sm text-red-600;
+		@apply self-end text-xs italic text-red-600;
 	}
 	label {
 		@apply inline-block text-sm font-semibold text-slate-600;

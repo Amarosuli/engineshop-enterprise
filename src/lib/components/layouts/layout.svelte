@@ -1,11 +1,13 @@
 <script>
 	import { Container, Content, Header, Base, Notification, Window } from '$lib/components';
+
+	export let user;
 </script>
 
 <Window />
 <Base>
 	<Container>
-		<Header />
+		<Header {user} />
 		<Content>
 			<slot />
 		</Content>
