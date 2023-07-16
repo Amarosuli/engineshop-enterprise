@@ -8,6 +8,6 @@ export const escHandler = (e) => {
    }
 };
 
-export const CPOJOs = (obj) => {
-   return structuredClone(obj)
+export const CPOJOs = async (obj) => {
+   return await structuredClone(obj)
 }

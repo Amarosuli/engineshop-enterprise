@@ -73,8 +73,8 @@ export class CommonSets {
             icon: 'ri:article-line'
          },
          {
-            title: 'Engine Type',
-            href: '/manage/engine-type',
+            title: 'Engine Family',
+            href: '/manage/engine-family',
             icon: 'ri:article-line'
          },
       ]

@@ -3,6 +3,7 @@
 	import { _modalShow, _rowSet } from '$lib/utils/store';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
+	import '$lib/scss/_table.scss';
 	import SelectCell from './selectCell.svelte';
 
 	export let dataTable = [];
@@ -48,11 +49,13 @@
 					let rowNumber = parseInt(row.id) + 1;
 					return rowNumber;
 				},
-				plugins: plugin
+				plugins: {
+					sort: { invert: true }
+				}
 			};
 
 			colArray.forEach((v, index) => {
-				v = { ...v, plugin };
+				v = { ...v, plugins: plugin };
 				this.cols[index] = this.table.column(v);
 			});
 			this.cols.unshift(this.table.column(ColOrder));
@@ -66,13 +69,13 @@
 	const { sortKeys } = table.plugin.sort;
 	const { selectedDataIds } = table.plugin.selected;
 
-	const sortFn = (hrc) => {
+	let sortFn = (col) => {
 		if ($sortKeys[0] == undefined) {
 			return '';
 		}
-		if ($sortKeys[0].order === 'asc' && $sortKeys[0].id == hrc.id) {
+		if ($sortKeys[0].order === 'asc' && $sortKeys[0].id == col.id) {
 			return 'sort-asc sort-active';
-		} else if ($sortKeys[0].order === 'desc' && $sortKeys[0].id == hrc.id) {
+		} else if ($sortKeys[0].order === 'desc' && $sortKeys[0].id == col.id) {
 			return 'sort-desc sort-active';
 		} else {
 			return '';
@@ -83,7 +86,7 @@
 		_rowSet(row); // set data from clicked row
 		_modalShow('detail'); // show modal detail
 
-		// console.log(row);
+		console.log(row);
 		// console.log($selectedDataIds);
 	};
 </script>
@@ -104,7 +107,7 @@
 				<tr {...Ra}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} Cp={col.props()} let:Ca let:Cp>
-							<th {...Ca} on:click={Cp.sort.toggle} class="col-sort {sortFn(col)}">
+							<th {...Ca} on:click={Cp.sort.toggle} class={`col-sort ${sortFn(col)}`}>
 								<Render of={col.render()} />
 							</th>
 						</Subscribe>
@@ -120,7 +123,7 @@
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} let:Ca>
 							<td {...Ca}>
-								<span>
+								<span class={col.id === 'selected' ? 'col-checkbox' : ''}>
 									<Render of={col.render()} />
 								</span>
 							</td>

@@ -1,7 +1,7 @@
 <script>
 	import { fade, fly, slide } from 'svelte/transition';
 	import { quintIn } from 'svelte/easing';
-	import { _modalHide } from '$lib/utils/store';
+	import { _modalHide, _rowRem, _modal } from '$lib/utils/store';
 
 	export let id = '';
 	export let position = 'mid';
@@ -21,15 +21,19 @@
 		mobile: 'h-full w-full'
 	};
 
-	const backDropOnClik = () => {
-		hideOnClick ? _modalHide(id) : '';
+	const backDropOnClik = (e) => {
+		console.log(e.target.id);
+		if (e.target.getAttribute('data-backDrop')) {
+			hideOnClick ? _modalHide(id) : '';
+		}
+		console.log($_modal);
 	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div {id} class="absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click={backDropOnClik}>
-	<div class="relative z-30 lg:mx-0 {ContentSize[position]} bg-sky-400" transition:slide={{ axis: 'x', easing: quintIn, duration: 300 }}>
+<div {id} data-backDrop={true} class="backDrop absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click|stopPropagation|preventDefault={backDropOnClik}>
+	<div class="relative z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:slide={{ axis: 'x', easing: quintIn, duration: 300 }}>
 		<slot />
 	</div>
 </div>

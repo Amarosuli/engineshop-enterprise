@@ -6,7 +6,11 @@ export const _modalShow = (id) => {
    _modal.update(v => v = [...v, { id }])
 }
 export const _modalHide = (id) => {
-   _modal.update(v => v = v.filter(x => x === id))
+   _modal.update(v => v = v.filter(x => {
+      if (x.id !== id) {
+         return x
+      }
+   }))
 }
 
 

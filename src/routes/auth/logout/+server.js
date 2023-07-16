@@ -5,7 +5,7 @@ export const GET = async ({ locals }) => {
    try {
       await locals.pb.authStore.clear()
    } catch (error) {
-      console.log('Error: ', error);
+      // console.log('Error: ', error);
    }
 
    throw redirect(303, '/')
