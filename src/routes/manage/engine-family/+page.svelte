@@ -4,7 +4,6 @@
 
 	export let data;
 	const { engineFamily } = data;
-
 	const dataCol = [
 		{
 			header: 'Name',
@@ -15,6 +14,8 @@
 			accessor: 'description'
 		}
 	];
+
+	let search = '';
 
 	// NOTE : esc pressed need to fix due to all modal will be closed when triggered
 </script>
@@ -31,8 +32,8 @@
 				<button class="px-3 py-2 bg-slate-600" on:click={() => _modalShow('edit')}>Edit</button>
 			</div>
 			<div class="mx-2 w-full flex flex-col mt-4">
-				<p class="font-semibold flex justify-between py-2 px-3 border-b">Family Name: <span class="font-bold">{$_row?.original.name}</span></p>
-				<p class="font-semibold flex justify-between py-2 px-3 border-b">Description: <span class="font-bold">{$_row?.original.description}</span></p>
+				<p class="font-semibold flex justify-between py-2 px-3 border-b">Family Name: <span class="font-bold">{$_row?.original?.name}</span></p>
+				<p class="font-semibold flex justify-between py-2 px-3 border-b">Description: <span class="font-bold">{$_row?.original?.description}</span></p>
 			</div>
 		</div>
 	</Modal>
@@ -45,7 +46,12 @@
 	<Modal id="create" position="right">Content</Modal>
 {/if}
 {#if $_modal.find(({ id }) => id === 'delete')}
-	<Modal id="edit" position="center">Content</Modal>
+	<!-- <Modal id="delete" position="mid">Content</Modal> -->
+	<div class="absolute flex right-0 bottom-10 justify-center items-center mx-auto z-20 h-max bg-orange-200 shadow w-max py-3 pl-6 pr-3 space-x-3">
+		<span>Delete selected data?</span>
+		<button class="px-4 py-1 bg-red-400 text-xs">Yes</button>
+		<button class="px-4 py-1 bg-green-200 text-xs">Reset</button>
+	</div>
 {/if}
 
 <!-- <ModalWithDialog /> -->
@@ -55,16 +61,17 @@
 
 	<div class="w-full h-full flex flex-col bg-white">
 		<div class="tableHead bg-sky-200 px-4 pt-4 pb-6">
-			<span class="text-xl font-extrabold tracking-wide text-slate-700">Engine List</span>
+			<span class="text-xl font-extrabold tracking-wide text-slate-700">Engine Families</span>
 			<div class="flex justify-between">
 				<div class="w-1/2 xl:w-[400px]">
-					<Search />
+					<Search bind:value={search} />
 				</div>
 				<Menu title="Export" />
 			</div>
 		</div>
 		<div class="h-full overflow-auto">
-			<Table dataTable={engineFamily} {dataCol} />
+			<!-- <Table dataTable={engineFamily} {dataCol} /> -->
+			<svelte:component this={Table} dataTable={engineFamily} {dataCol} {search} />
 		</div>
 	</div>
 </div>

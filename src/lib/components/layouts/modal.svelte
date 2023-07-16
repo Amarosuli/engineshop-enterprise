@@ -7,8 +7,20 @@
 	export let position = 'mid';
 	export let hideOnClick = true;
 
+	let Trans = slide;
+	let TransitionProperties = { axis: 'x', easing: quintIn, duration: 300 };
+
+	switch (position) {
+		case 'mid':
+			Trans = fade;
+			break;
+
+		default:
+			Trans = slide;
+			break;
+	}
 	const ModalPosition = {
-		mid: 'justify-center items-center mx-6',
+		mid: 'justify-center items-center mx-6 xl:mx-0',
 		right: 'justify-end',
 		left: 'justify-start',
 		mobile: 'justify-center items-center'
@@ -26,14 +38,13 @@
 		if (e.target.getAttribute('data-backDrop')) {
 			hideOnClick ? _modalHide(id) : '';
 		}
-		console.log($_modal);
 	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div {id} data-backDrop={true} class="backDrop absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click|stopPropagation|preventDefault={backDropOnClik}>
-	<div class="relative z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:slide={{ axis: 'x', easing: quintIn, duration: 300 }}>
+	<div class="relative z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:Trans={TransitionProperties}>
 		<slot />
 	</div>
 </div>

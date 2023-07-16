@@ -1,12 +1,13 @@
 <script>
 	import 'iconify-icon';
-	export const id = Math.random().toString();
-	export const name = 'text';
-	export const error = '';
-	export const label = '';
-	export const required = false;
-	export const placeholder = 'type something..';
-	export const autocomplete = 'off';
+	export let id = Math.random().toString();
+	export let name = 'text';
+	export let error = '';
+	export let label = '';
+	export let required = false;
+	export let placeholder = 'type something..';
+	export let autocomplete = 'off';
+	export let value = '';
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -30,7 +31,7 @@
 	</label>
 	<div class="relative justify-center">
 		<iconify-icon class="absolute ml-3 mt-1" color="" rotate="1" icon="bi:search" />
-		<input type="text" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} />
+		<input type="text" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value />
 	</div>
 	{#if error}
 		<span>{error}</span>

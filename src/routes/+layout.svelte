@@ -1,5 +1,6 @@
 <script>
 	import '../app.postcss';
+	import '$lib/scss/_table.scss';
 
 	export let data;
 	import { Layout } from '$lib/components';

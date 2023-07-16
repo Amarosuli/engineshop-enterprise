@@ -1,0 +1,79 @@
+table {
+	@apply w-full bg-slate-50;
+
+	td,
+	th {
+		@apply relative border-b border-solid px-[5px] py-[10px] text-left align-middle text-[0.65rem] outline-none md:text-xs;
+		&:first-child {
+			@apply w-1 pl-[20px];
+		}
+		&:last-child {
+			@apply pr-[20px];
+		}
+	}
+	th {
+		@apply h-16 select-none bg-slate-200 px-2 text-[0.65rem] font-semibold hover:bg-slate-300 md:text-xs;
+	}
+	td {
+		@apply h-14 break-words;
+	}
+
+	.col-checkbox {
+		@apply w-1 px-[20px];
+	}
+
+	.col-checkbox > input {
+		@apply h-6 w-6 cursor-pointer accent-amber-200;
+	}
+	.col-number {
+		@apply w-1 p-[20px];
+	}
+	.col-sort {
+		$pos: 10px;
+		$iconSize: 25px;
+		padding-right: $iconSize + $pos - 5;
+		cursor: pointer;
+
+		&:after {
+			content: '\2191';
+			position: absolute;
+			right: 15px;
+			top: 50%;
+			margin-top: -($iconSize * 0.5);
+			line-height: $iconSize;
+			height: $iconSize;
+			font-weight: normal;
+			opacity: 0;
+		}
+		&.sort-desc:after {
+			content: '\2191';
+		}
+		&.sort-asc:after {
+			content: '\2193';
+		}
+		&.sort-active {
+			&:after {
+				opacity: 1;
+			}
+		}
+	}
+
+	thead {
+		@apply bg-slate-400;
+
+		th {
+			@apply sticky top-0 z-10 bg-sky-100;
+		}
+		tr {
+			@apply outline-none;
+		}
+	}
+
+	tbody {
+		@apply h-max overflow-y-hidden;
+
+		tr {
+			@apply cursor-pointer select-none hover:bg-slate-100;
+		}
+	}
+}

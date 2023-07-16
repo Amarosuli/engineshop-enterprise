@@ -3,11 +3,12 @@
 	import { _modalShow, _rowSet } from '$lib/utils/store';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
-	import '$lib/scss/_table.scss';
+
 	import SelectCell from './selectCell.svelte';
 
 	export let dataTable = [];
 	export let dataCol = [];
+	export let search = '';
 
 	const data = readable(dataTable);
 
@@ -69,25 +70,36 @@
 	const { sortKeys } = table.plugin.sort;
 	const { selectedDataIds } = table.plugin.selected;
 
+	$: $filterValue = search; // binding with the search value
+	$: console.log($selectedDataIds);
+	let sortClass = '';
+	let sortId = '';
 	let sortFn = (col) => {
-		if ($sortKeys[0] == undefined) {
-			return '';
-		}
-		if ($sortKeys[0].order === 'asc' && $sortKeys[0].id == col.id) {
-			return 'sort-asc sort-active';
-		} else if ($sortKeys[0].order === 'desc' && $sortKeys[0].id == col.id) {
-			return 'sort-desc sort-active';
+		if ($sortKeys.length === 1) {
+			if ($sortKeys[0].order === 'asc' && $sortKeys[0].id == col.id) {
+				sortClass = 'sort-asc sort-active';
+				sortId = col.id;
+			} else if ($sortKeys[0].order === 'desc' && $sortKeys[0].id == col.id) {
+				sortClass = 'sort-desc sort-active';
+				sortId = col.id;
+			} else {
+				sortClass = '';
+			}
 		} else {
-			return '';
+			sortClass = '';
 		}
 	};
 
-	const handleClick = (row) => {
-		_rowSet(row); // set data from clicked row
-		_modalShow('detail'); // show modal detail
+	const handleClick = (event, row) => {
+		if (event.target.getAttribute('data-row')) {
+			_rowSet(row); // set data from clicked row
+			_modalShow('detail'); // show modal detail
+		}
+	};
 
-		console.log(row);
-		// console.log($selectedDataIds);
+	const handleSelect = (e) => {
+		// show modal / notif delete with list of selected id
+		_modalShow('delete');
 	};
 </script>
 
@@ -107,7 +119,7 @@
 				<tr {...Ra}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} Cp={col.props()} let:Ca let:Cp>
-							<th {...Ca} on:click={Cp.sort.toggle} class={`col-sort ${sortFn(col)}`}>
+							<th {...Ca} on:click={Cp.sort.toggle} on:click={() => sortFn(col)} class={`col-sort ${sortId === col.id ? sortClass : ''}`}>
 								<Render of={col.render()} />
 							</th>
 						</Subscribe>
@@ -119,13 +131,19 @@
 	<tbody {...$B}>
 		{#each $Br as row (row.id)}
 			<Subscribe Ra={row.attrs()} let:Ra>
-				<tr {...Ra} on:click={() => handleClick(row)}>
+				<tr {...Ra} on:click={(e) => handleClick(e, row)}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} let:Ca>
-							<td {...Ca}>
-								<span class={col.id === 'selected' ? 'col-checkbox' : ''}>
+							<td {...Ca} data-row={true}>
+								<!-- svelte-ignore a11y-click-events-have-key-events -->
+								<!-- svelte-ignore a11y-no-static-element-interactions -->
+								{#if col.id === 'selected'}
+									<span on:click={handleSelect} class={`${col.id === 'selected' ? 'col-checkbox' : ''}`}>
+										<Render of={col.render()} />
+									</span>
+								{:else}
 									<Render of={col.render()} />
-								</span>
+								{/if}
 							</td>
 						</Subscribe>
 					{/each}
@@ -134,85 +152,3 @@
 		{/each}
 	</tbody>
 </table>
-
-<style lang="scss">
-	table {
-		@apply w-full bg-slate-50;
-
-		td,
-		th {
-			@apply relative border-b border-solid px-[5px] py-[10px] text-left align-middle text-[0.65rem] outline-none md:text-xs;
-			&:first-child {
-				@apply w-1 pl-[20px];
-			}
-			&:last-child {
-				@apply pr-[20px];
-			}
-		}
-		th {
-			@apply h-12 select-none bg-slate-200 px-2 text-[0.65rem] font-semibold hover:bg-slate-300 md:text-xs;
-		}
-		td {
-			@apply h-14 break-words;
-		}
-
-		.col-checkbox {
-			@apply w-1 px-[20px];
-		}
-
-		.col-checkbox > input {
-			@apply cursor-pointer accent-amber-200;
-		}
-		.col-number {
-			@apply w-1 p-[20px];
-		}
-		.col-sort {
-			$pos: 10px;
-			$iconSize: 25px;
-			padding-right: $iconSize + $pos - 5;
-			cursor: pointer;
-
-			&:after {
-				content: '\2191';
-				position: absolute;
-				right: 15px;
-				top: 50%;
-				margin-top: -($iconSize * 0.5);
-				line-height: $iconSize;
-				height: $iconSize;
-				font-weight: normal;
-				opacity: 0;
-			}
-			&.sort-desc:after {
-				content: '\2191';
-			}
-			&.sort-asc:after {
-				content: '\2193';
-			}
-			&.sort-active {
-				&:after {
-					opacity: 1;
-				}
-			}
-		}
-
-		thead {
-			// @apply bg-slate-200;
-
-			th {
-				@apply sticky top-0 z-10;
-			}
-			tr {
-				@apply outline-none;
-			}
-		}
-
-		tbody {
-			@apply h-[600px] overflow-y-hidden;
-
-			tr {
-				@apply cursor-pointer select-none hover:bg-slate-100;
-			}
-		}
-	}
-</style>
