@@ -12,8 +12,8 @@ export const load = async ({ locals }) => {
 }
 
 export const actions = {
-   default: async (event) => {
-      const form = await superValidate(event, LoginSchema)
+   default: async ({ request, locals }) => {
+      const form = await superValidate(request, LoginSchema)
 
       if (!form.valid) {
          console.log(form);
@@ -28,7 +28,7 @@ export const actions = {
 
       try {
          const { username, password } = form.data
-         await event.locals.pb.collection('users').authWithPassword(username, password, { expand: 'unit' })
+         await locals.pb.collection('users').authWithPassword(username, password, { expand: 'unit' })
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

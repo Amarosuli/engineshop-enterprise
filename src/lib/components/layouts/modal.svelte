@@ -34,7 +34,7 @@
 	};
 
 	const backDropOnClik = (e) => {
-		console.log(e.target.id);
+		// console.log(e.target.id);
 		if (e.target.getAttribute('data-backDrop')) {
 			hideOnClick ? _modalHide(id) : '';
 		}
@@ -43,8 +43,11 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div {id} data-backDrop={true} class="backDrop absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click|stopPropagation|preventDefault={backDropOnClik}>
-	<div class="relative z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:Trans={TransitionProperties}>
+<div {id} data-backDrop={true} class="backDrop absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click|stopPropagation={backDropOnClik}>
+	<div class="relative flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:Trans={TransitionProperties}>
 		<slot />
+		<div class="flex justify-center items-center py-3 border-t">
+			<button class="px-3 py-2 bg-orange-300" on:click={() => _modalHide(id)}>Cancel </button>
+		</div>
 	</div>
 </div>

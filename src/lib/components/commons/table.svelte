@@ -1,6 +1,6 @@
 <script>
 	import { readable } from 'svelte/store';
-	import { _modalShow, _rowSet } from '$lib/utils/store';
+	import { _modalShow, _modalHide, _rowSet, _setSelectedRows } from '$lib/utils/store';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
@@ -9,6 +9,7 @@
 	export let dataTable = [];
 	export let dataCol = [];
 	export let search = '';
+	export let selectedRows = [];
 
 	const data = readable(dataTable);
 
@@ -19,7 +20,7 @@
 			this.table = createTable(data, {
 				sort: addSortBy({ disableMultiSort: false }),
 				tableFilter: addTableFilter(),
-				selected: addSelectedRows(),
+				select: addSelectedRows(),
 				hidden: addHiddenColumns(),
 				export: addDataExport()
 			});
@@ -35,12 +36,13 @@
 		createColsArray = (colArray, plugin) => {
 			const ColSelect = {
 				id: 'selected',
-				header: '',
+				header: ({ row }, { pluginStates }) => {
+					const { allRowsSelected } = pluginStates.select;
+					return createRender(SelectCell, { isSelected: allRowsSelected });
+				},
 				cell: ({ row }, { pluginStates }) => {
-					const { isSelected } = pluginStates.selected.getRowState(row);
-					return createRender(SelectCell, {
-						isSelected
-					});
+					const { isSelected } = pluginStates.select.getRowState(row);
+					return createRender(SelectCell, { isSelected });
 				}
 			};
 			const ColOrder = {
@@ -67,28 +69,19 @@
 	const table = new SuperTable(data, dataCol);
 	const { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B } = table.init;
 	const { filterValue } = table.plugin.tableFilter;
-	const { sortKeys } = table.plugin.sort;
-	const { selectedDataIds } = table.plugin.selected;
+	const { sortKeys } = table.plugin.sort; // currently not used
+	let { selectedDataIds, allRowsSelected, someRowsSelected } = table.plugin.select;
 
 	$: $filterValue = search; // binding with the search value
-	$: console.log($selectedDataIds);
-	let sortClass = '';
-	let sortId = '';
-	let sortFn = (col) => {
-		if ($sortKeys.length === 1) {
-			if ($sortKeys[0].order === 'asc' && $sortKeys[0].id == col.id) {
-				sortClass = 'sort-asc sort-active';
-				sortId = col.id;
-			} else if ($sortKeys[0].order === 'desc' && $sortKeys[0].id == col.id) {
-				sortClass = 'sort-desc sort-active';
-				sortId = col.id;
-			} else {
-				sortClass = '';
-			}
-		} else {
-			sortClass = '';
+	$: selectedRows = $Br.filter((value, index) => {
+		if ($selectedDataIds[index]) {
+			// return if only id is true
+			return value;
 		}
-	};
+	}); // binding with the selectedRows value
+
+	// NOTE: need to make reset selected rows from parent, from state of someRowsSelected
+	// RESOLVE: someRowsSelected is Readable not Writable. Cant use this
 
 	const handleClick = (event, row) => {
 		if (event.target.getAttribute('data-row')) {
@@ -97,10 +90,7 @@
 		}
 	};
 
-	const handleSelect = (e) => {
-		// show modal / notif delete with list of selected id
-		_modalShow('delete');
-	};
+	$: Object.keys($selectedDataIds).length !== 0 ? _modalShow('delete') : _modalHide('delete');
 </script>
 
 <!-- 
@@ -119,7 +109,7 @@
 				<tr {...Ra}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} Cp={col.props()} let:Ca let:Cp>
-							<th {...Ca} on:click={Cp.sort.toggle} on:click={() => sortFn(col)} class={`col-sort ${sortId === col.id ? sortClass : ''}`}>
+							<th {...Ca} on:click={Cp.sort.toggle} class="col-sort" class:col-checkbox={col.id === 'selected'} class:sort-active={Cp.sort.order !== undefined} class:sort-asc={Cp.sort.order === 'asc'} class:sort-desc={Cp.sort.order === 'desc'}>
 								<Render of={col.render()} />
 							</th>
 						</Subscribe>
@@ -130,20 +120,12 @@
 	</thead>
 	<tbody {...$B}>
 		{#each $Br as row (row.id)}
-			<Subscribe Ra={row.attrs()} let:Ra>
-				<tr {...Ra} on:click={(e) => handleClick(e, row)}>
+			<Subscribe Ra={row.attrs()} Rp={row.props()} let:Ra let:Rp>
+				<tr {...Ra} on:click={(e) => handleClick(e, row)} class:selected={Rp.select.selected}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} let:Ca>
-							<td {...Ca} data-row={true}>
-								<!-- svelte-ignore a11y-click-events-have-key-events -->
-								<!-- svelte-ignore a11y-no-static-element-interactions -->
-								{#if col.id === 'selected'}
-									<span on:click={handleSelect} class={`${col.id === 'selected' ? 'col-checkbox' : ''}`}>
-										<Render of={col.render()} />
-									</span>
-								{:else}
-									<Render of={col.render()} />
-								{/if}
+							<td {...Ca} data-row={true} class="col-checkbox">
+								<Render of={col.render()} />
 							</td>
 						</Subscribe>
 					{/each}

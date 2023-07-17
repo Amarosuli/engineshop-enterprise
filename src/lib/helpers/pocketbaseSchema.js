@@ -9,5 +9,5 @@ export const getFullList = async (pbClient, collectionName) => {
 }
 
 export const getEngineFamily = async (locals) => {
-   return await getFullList(locals, 'engine_family')
+   return await getFullList(locals, 'engine_families')
 }

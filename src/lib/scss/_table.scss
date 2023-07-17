@@ -1,5 +1,5 @@
 table {
-	@apply w-full bg-slate-50;
+	@apply w-full bg-slate-100;
 
 	td,
 	th {
@@ -12,7 +12,7 @@ table {
 		}
 	}
 	th {
-		@apply h-16 select-none bg-slate-200 px-2 text-[0.65rem] font-semibold hover:bg-slate-300 md:text-xs;
+		@apply h-16 select-none bg-slate-300 px-2 font-bold  hover:bg-slate-400 md:text-xs;
 	}
 	td {
 		@apply h-14 break-words;
@@ -59,13 +59,13 @@ table {
 	}
 
 	thead {
-		@apply bg-slate-400;
+		// @apply bg-slate-400;
 
 		th {
-			@apply sticky top-0 z-10 bg-sky-100;
+			@apply sticky top-0 z-10;
 		}
 		tr {
-			@apply outline-none;
+			@apply text-slate-700 outline-none;
 		}
 	}
 
@@ -73,7 +73,10 @@ table {
 		@apply h-max overflow-y-hidden;
 
 		tr {
-			@apply cursor-pointer select-none hover:bg-slate-100;
+			@apply cursor-pointer select-none text-slate-700 hover:bg-slate-200;
 		}
 	}
+}
+.selected {
+	@apply bg-stone-200;
 }

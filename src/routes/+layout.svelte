@@ -1,6 +1,7 @@
 <script>
 	import '../app.postcss';
 	import '$lib/scss/_table.scss';
+	import '$lib/scss/_modal.scss';
 
 	export let data;
 	import { Layout } from '$lib/components';

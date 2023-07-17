@@ -1,0 +1,13 @@
+// MODAL CREATE, DETAIL, EDIT
+.modal-container {
+	@apply mt-4 flex w-full flex-col items-center justify-center px-4;
+}
+.modal-header {
+	@apply flex w-full items-center justify-between px-3;
+}
+.modal-title {
+	@apply border-b border-dashed border-slate-700 py-2 text-lg font-extrabold;
+}
+.modal-content {
+	@apply mx-2 mt-4 flex w-full flex-col;
+}

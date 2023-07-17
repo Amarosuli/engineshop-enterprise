@@ -18,3 +18,6 @@ export const _modalHide = (id) => {
 export const _row = writable({})
 export const _rowSet = (obj) => { _row.set(obj) }
 export const _rowRem = () => { _row.set({}) }
+export const _selectedRows = writable({})
+export const _setSelectedRows = (obj) => { _selectedRows.set(obj) }
+export const _resSelectedRows = _row.set({})

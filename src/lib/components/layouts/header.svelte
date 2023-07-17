@@ -25,7 +25,7 @@
 
 <style lang="scss">
 	.header {
-		@apply flex h-[4rem] select-none items-center justify-between bg-white p-4;
+		@apply flex h-[4rem] select-none items-center justify-between bg-slate-300 p-4;
 
 		a {
 			@apply flex select-none items-center justify-center space-x-2;
@@ -33,7 +33,7 @@
 				@apply h-8 w-8;
 			}
 			span {
-				@apply hidden text-sm font-bold tracking-wider text-slate-700 transition-colors ease-linear hover:text-teal-900 lg:block;
+				@apply hidden text-sm font-bold tracking-wider text-slate-700 transition-colors duration-100 ease-linear hover:text-teal-600 lg:block;
 			}
 		}
 

@@ -2,4 +2,4 @@
 	export let isSelected;
 </script>
 
-<input type="checkbox" bind:checked={$isSelected} />
+<input type="checkbox" data-isChecked={$isSelected} bind:checked={$isSelected} />
