@@ -4,6 +4,6 @@
 
 <style>
 	div {
-		@apply relative flex h-full w-full overflow-auto;
+		@apply relative h-full w-full;
 	}
 </style>

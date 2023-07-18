@@ -7,6 +7,7 @@
 	export let placeholder = 'type something..';
 	export let autocomplete = 'off';
 	export let value = '';
+	export let hidden = false;
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -25,10 +26,10 @@
 </script>
 
 <div>
-	<label for={id}>
-		<span>{label}</span>
+	<label for={id} class:hidden>
+		<span class:hidden>{label}</span>
 	</label>
-	<input type="text" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value />
+	<input type="text" class={isNotEmpty} class:hidden on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value />
 	{#if error}
 		<span>{error}</span>
 	{/if}

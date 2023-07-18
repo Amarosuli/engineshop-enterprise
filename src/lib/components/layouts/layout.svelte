@@ -5,7 +5,9 @@
 </script>
 
 <Window />
+<!-- Base: relative -->
 <Base>
+	<!-- Container: absolute flex -->
 	<Container>
 		<Header {user} />
 		<Content>

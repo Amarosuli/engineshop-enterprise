@@ -20,7 +20,7 @@
 	}
 
 	const ModalPosition = {
-		mid: 'justify-center items-center mx-6 xl:mx-0',
+		mid: 'justify-center items-center',
 		right: 'justify-end',
 		left: 'justify-start',
 		mobile: 'justify-center items-center'

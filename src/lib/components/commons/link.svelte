@@ -16,7 +16,7 @@
 
 <a class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" {href}>{title}</a>
 
-<style>
+<style style="postcss">
 	a {
 		@apply px-3 py-2 text-sm;
 	}

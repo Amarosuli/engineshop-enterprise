@@ -3,6 +3,7 @@ import { CPOJOs } from '$lib/utils/func'
 
 export const handle = async ({ event, resolve }) => {
    event.locals.pb = pb
+   event.locals.pb.autoCancellation(false) // globally disable auto cancellation
    event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '')
 
    try {

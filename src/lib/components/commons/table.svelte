@@ -10,6 +10,7 @@
 	export let dataCol = [];
 	export let search = '';
 	export let selectedRows = [];
+	export let exportJSON = '';
 
 	const data = readable(dataTable);
 
@@ -43,14 +44,17 @@
 				cell: ({ row }, { pluginStates }) => {
 					const { isSelected } = pluginStates.select.getRowState(row);
 					return createRender(SelectCell, { isSelected });
+				},
+				plugins: {
+					export: { exclude: true }
 				}
 			};
+			let a = 0;
 			const ColOrder = {
 				id: 'order',
 				header: 'No',
-				cell: ({ row }) => {
-					let rowNumber = parseInt(row.id) + 1;
-					return rowNumber;
+				accessor: () => {
+					return (a += 1);
 				},
 				plugins: {
 					sort: { invert: true }
@@ -68,10 +72,12 @@
 
 	const table = new SuperTable(data, dataCol);
 	const { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B } = table.init;
-	const { filterValue } = table.plugin.tableFilter;
 	const { sortKeys } = table.plugin.sort; // currently not used
+	const { filterValue } = table.plugin.tableFilter;
+	const { exportedData } = table.plugin.export;
 	let { selectedDataIds, allRowsSelected, someRowsSelected } = table.plugin.select;
 
+	$: exportJSON = $exportedData;
 	$: $filterValue = search; // binding with the search value
 	$: selectedRows = $Br.filter((value, index) => {
 		if ($selectedDataIds[index]) {

@@ -25,7 +25,7 @@
 
 <style lang="scss">
 	.header {
-		@apply flex h-[4rem] select-none items-center justify-between bg-slate-300 p-4;
+		@apply relative flex h-[4rem] shrink-0 select-none items-center justify-between bg-slate-300 p-4;
 
 		a {
 			@apply flex select-none items-center justify-center space-x-2;
