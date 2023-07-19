@@ -12,7 +12,7 @@
 	export let selectedRows = [];
 	export let exportJSON = '';
 
-	const { isDelete } = modal;
+	const { isDelete, show } = modal;
 	const data = readable(dataTable);
 
 	class SuperTable {
@@ -117,6 +117,8 @@
 	}
 
 	$: Object.keys($selectedDataIds).length !== 0 ? modal.show('delete') : modal.hide('delete');
+
+	$: lengthOfRow = $Br.length === 0;
 </script>
 
 <svelte:window on:keydown={escHandler} />
@@ -162,3 +164,9 @@
 		{/each}
 	</tbody>
 </table>
+{#if lengthOfRow}
+	<div class="w-full flex flex-col justify-center items-center py-6 gap-3">
+		<span class="text-center font-bold tracking-wide"> No Data Found </span>
+		<button class="text-center tracking-wide px-3 py-2 bg-slate-200 hover:bg-slate-300 shadow" on:click={() => show('create')}> Create a new one </button>
+	</div>
+{/if}
