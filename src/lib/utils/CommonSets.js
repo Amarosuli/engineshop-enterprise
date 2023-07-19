@@ -77,6 +77,11 @@ export class CommonSets {
             href: '/manage/engine-family',
             icon: 'ri:article-line'
          },
+         {
+            title: 'Customer',
+            href: '/manage/customer',
+            icon: 'ri:article-line'
+         },
       ]
    };
 

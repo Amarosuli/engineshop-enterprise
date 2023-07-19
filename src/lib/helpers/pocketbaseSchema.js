@@ -17,3 +17,7 @@ export const getEngineModels = async (locals) => {
    const options = { expand: 'family_id' }
    return await getFullList(locals, 'engine_models', options)
 }
+
+export const getCustomers = async (locals) => {
+   return await getFullList(locals, 'customers')
+}

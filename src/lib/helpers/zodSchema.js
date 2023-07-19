@@ -15,3 +15,11 @@ export const engineModelSchema = z.object({
    description: z.string().optional(),
    family_id: z.string()
 })
+
+export const customerSchema = z.object({
+   name: z.string().min(1, { message: 'Family Name cannot be empty' }),
+   description: z.string().optional(),
+   // logo input file
+   code_IATA: z.string().optional(),
+   code_ICAO: z.string().optional(),
+})
