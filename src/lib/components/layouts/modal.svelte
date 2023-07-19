@@ -1,7 +1,7 @@
 <script>
 	import { fade, fly, slide } from 'svelte/transition';
 	import { quintIn } from 'svelte/easing';
-	import { _modalHide, _rowRem, _modal } from '$lib/utils/store';
+	import { _rowRem, modal } from '$lib/utils/store';
 
 	export let id = '';
 	export let position = 'mid';
@@ -36,7 +36,7 @@
 	const backDropOnClik = (e) => {
 		// console.log(e.target.id);
 		if (e.target.getAttribute('data-backDrop')) {
-			hideOnClick ? _modalHide(id) : '';
+			hideOnClick ? modal.hide(id) : '';
 		}
 	};
 </script>
@@ -47,7 +47,7 @@
 	<div class="relative flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:Trans={TransitionProperties}>
 		<slot />
 		<div class="flex justify-center items-center py-3 border-t">
-			<button class="px-3 py-2 bg-orange-300" on:click={() => _modalHide(id)}>Cancel </button>
+			<button class="px-3 py-2 bg-orange-300" on:click={() => modal.hide(id)}>Cancel </button>
 		</div>
 	</div>
 </div>

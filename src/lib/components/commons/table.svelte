@@ -1,6 +1,6 @@
 <script>
 	import { readable } from 'svelte/store';
-	import { _modalShow, _modalHide, _rowSet, _setSelectedRows } from '$lib/utils/store';
+	import { modal, _rowSet, _setSelectedRows } from '$lib/utils/store';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
@@ -12,6 +12,7 @@
 	export let selectedRows = [];
 	export let exportJSON = '';
 
+	const { isDelete } = modal;
 	const data = readable(dataTable);
 
 	class SuperTable {
@@ -92,12 +93,33 @@
 	const handleClick = (event, row) => {
 		if (event.target.getAttribute('data-row')) {
 			_rowSet(row); // set data from clicked row
-			_modalShow('detail'); // show modal detail
+			modal.show('detail'); // show modal detail
 		}
 	};
 
-	$: Object.keys($selectedDataIds).length !== 0 ? _modalShow('delete') : _modalHide('delete');
+	function escHandler(e) {
+		if (!e) {
+			return;
+		}
+
+		if (e.keyCode === 27) {
+			let modalNames = ['create', 'detail', 'update', 'confirm'];
+			// maybe we can use pop function in store to hide modal one by one according to it's order
+			if ($isDelete && $selectedDataIds) {
+				modalNames.forEach((name) => {
+					modal.hide(name);
+				});
+				return;
+			}
+			modal.reset(); // reset modal store
+			// reset table row store
+		}
+	}
+
+	$: Object.keys($selectedDataIds).length !== 0 ? modal.show('delete') : modal.hide('delete');
 </script>
+
+<svelte:window on:keydown={escHandler} />
 
 <!-- 
    T -- Table

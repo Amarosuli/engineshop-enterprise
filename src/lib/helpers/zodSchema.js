@@ -9,3 +9,9 @@ export const engineFamilySchema = z.object({
    name: z.string().min(1, { message: 'Family Name cannot be empty' }),
    description: z.string().optional(),
 })
+
+export const engineModelSchema = z.object({
+   name: z.string().min(1, { message: 'Family Name cannot be empty' }),
+   description: z.string().optional(),
+   family_id: z.string()
+})

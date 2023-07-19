@@ -1,15 +1,27 @@
 import { superValidate } from 'sveltekit-superforms/server';
-import { getEngineFamilies } from '$lib/helpers/pocketbaseSchema'
-import { engineFamilySchema } from '$lib/helpers/zodSchema'
+import { getEngineModels, getEngineFamilies } from '$lib/helpers/pocketbaseSchema'
+import { engineModelSchema } from '$lib/helpers/zodSchema'
 import { fail, redirect } from '@sveltejs/kit';
 import { _row } from '$lib/utils/store'
 import { get } from 'svelte/store'
 import { goto } from '$app/navigation'
 
 export const load = async ({ locals }) => {
-   const form = await superValidate(engineFamilySchema)
+   const form = await superValidate(engineModelSchema)
+
+   let engineModels = async () => {
+      /**
+       * add 'family' key to array
+       * value from the expand relation ( expand.family_id.name )
+       */
+      let raw = await getEngineModels(locals)
+      let engineModels = raw.map(value => ({ ...value, family: value?.expand?.family_id?.name }))
+      return engineModels
+   }
+
    return {
-      engineFamily: await getEngineFamilies(locals),
+      engineModels: await engineModels(),
+      engineFamilies: await getEngineFamilies(locals), // required to be an select options for the create form and update form
       form
 
    }
@@ -17,26 +29,22 @@ export const load = async ({ locals }) => {
 
 export const actions = {
    create: async ({ request, locals }) => {
-      const form = await superValidate(request, engineFamilySchema)
+      const form = await superValidate(request, engineModelSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form })
       }
 
-      /**
-       * 
-      */
-
       try {
-         await locals.pb.collection('engine_families').create(form.data)
+         await locals.pb.collection('engine_models').create(form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
          }
          return fail(error.status, { form })
       }
-      console.log(form);
+      // console.log('VALID: ', form);
 
       return { form }
    },
@@ -49,8 +57,8 @@ export const actions = {
       const formData = await request.formData()
       const { id } = Object.fromEntries(formData)
 
-      // const form = await superValidate(request, engineFamilySchema) -- old
-      const form = await superValidate(formData, engineFamilySchema)
+      // const form = await superValidate(request, engineModelSchema) -- old
+      const form = await superValidate(formData, engineModelSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
@@ -58,14 +66,12 @@ export const actions = {
       }
 
       try {
-         // check form data is equal to curent data
-         let currentData = await locals.pb.collection('engine_families').getOne(id)
-         if (currentData) {
-            if (currentData.name === form.data.name && currentData.description === form.data.description) {
-               return { form }
-            }
-            await locals.pb.collection('engine_families').update(id, form.data)
-         }
+         /**
+          * it feels wasting time to check form data is equal to curent data.
+          *  will remove this or find the new better way
+          */
+
+         await locals.pb.collection('engine_models').update(id, form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

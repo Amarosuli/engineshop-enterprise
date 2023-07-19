@@ -1,7 +1,6 @@
 <script>
 	import 'iconify-icon';
 	import { CommonSets } from '$lib/utils/CommonSets';
-	import { Text, Password, File, Select } from '$lib/components';
 
 	let { apps: AppsMenu, manages: ManagesMenu } = CommonSets.MainMenu;
 </script>

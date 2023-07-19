@@ -1,16 +1,18 @@
 <script>
-	export const id = Math.random().toString();
-	export const name = 'select';
-	export const error = '';
-	export const label = 'label.select';
-	export const required = true;
-	export const placeholder = 'type something..';
-	export const autocomplete = 'off';
+	export let id = Math.random().toString();
+	export let name = 'select';
+	export let error = '';
+	export let label = 'label.select';
+	export let required = true;
+	export let autocomplete = 'off';
+	export let options = []; // [ {value, title} ]
+	export let value = '';
 
 	let isNotEmpty;
 	$: isNotEmpty;
 
 	const onChange = (e) => {
+		console.log(e.target.value);
 		if (!e || !e.target) {
 			return;
 		}
@@ -27,8 +29,16 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<select {id} {name}>
+	<select class={isNotEmpty} {id} {name} {required} {autocomplete} on:change={onChange} bind:value>
 		<option value="">--</option>
+		<!-- rename the options key incase conflict with the value props -->
+		{#each options as { value: v, title: t }, index}
+			{#if value && value === v}
+				<option selected value={v}>{t}</option>
+			{:else}
+				<option value={v}>{t}</option>
+			{/if}
+		{/each}
 	</select>
 	{#if error}
 		<span>{error}</span>

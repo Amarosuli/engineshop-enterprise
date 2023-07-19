@@ -1,10 +1,14 @@
 <script>
-	import { Modal, ModalWithDialog, Search, Menu, Table, Text } from '$lib/components';
-	import { _modal, _modalShow, _modalHide, _row } from '$lib/utils/store';
 	import { superForm } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import { _row, modal } from '$lib/utils/store';
+	import { Modal, ModalWithDialog, Search, Menu, Table, Text } from '$lib/components';
 
 	export let data;
+
+	/**
+	 * Superform: applyAction set to false so we can handle onResult.
+	 * onResult void success, reload page using window.location. goto method not work
+	 */
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		onResult: async ({ result }) => {
@@ -13,7 +17,9 @@
 			}
 		}
 	});
+
 	const { engineFamily } = data;
+	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal;
 	const dataCol = [
 		{
 			header: 'Name',
@@ -29,22 +35,23 @@
 	let search = '';
 	let exportJSON;
 
-	let handleReset = () => {
+	function handleReset() {
 		let elements = document.querySelectorAll('[data-isChecked]');
 		elements.forEach((el) => {
-			// el.getAttribute('dataset-isChecked') === 'true'
+			// el.getAttribute('dataset-isChecked') === 'true' -- old
 			if (el.dataset.ischecked === 'true') {
 				el.click();
 			}
 		});
-	};
+	}
 
 	// check if data in _row store exist and id of modal update is exist (modal update open)
-	$: $_modal.find(({ id }) => id === 'update') ? setUpdate(1) : '';
-	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $_modal.find(({ id }) => id === 'create') ? setUpdate(0) : '';
+	$: $isUpdate ? setUpdate(1) : '';
 
-	let setUpdate = (isTrue) => {
+	// reset _row store only when modal create open (so we will get the data for page.server)
+	$: $isCreate ? setUpdate(0) : '';
+
+	function setUpdate(isTrue) {
 		if (isTrue) {
 			$form.name = $_row?.original?.name;
 			$form.description = $_row?.original?.description;
@@ -52,26 +59,25 @@
 			$form.name = '';
 			$form.description = '';
 		}
-	};
+	}
 
-	const handleExport = () => {
+	function handleExport() {
 		console.log(exportJSON);
 
-		// create to excel or pdf
-	};
-	// NOTE : esc pressed need to fix due to all modal will be closed when triggered
+		// TODO: export to excel or pdf
+	}
 </script>
 
 <svelte:head>
 	<title>Manage - Engine List</title>
 </svelte:head>
 
-{#if $_modal.find(({ id }) => id === 'detail')}
+{#if $isDetail}
 	<Modal id="detail" position="right">
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Detail Form</h1>
-				<button class="px-3 py-2 bg-slate-600" on:click={() => _modalShow('update')}>Update</button>
+				<button class="px-3 py-2 bg-slate-600" on:click={() => modal.show('update')}>Update</button>
 			</div>
 			<div class="modal-content">
 				<p class="font-semibold flex justify-between py-3 px-3 border-b">Family Name: <span class="font-bold">{$_row?.original?.name}</span></p>
@@ -81,9 +87,8 @@
 	</Modal>
 {/if}
 
-{#if $_modal.find(({ id }) => id === 'update')}
+{#if $isUpdate}
 	<Modal id="update" position="right">
-		<SuperDebug data={form} />
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Update Form</h1>
@@ -103,7 +108,7 @@
 	</Modal>
 {/if}
 
-{#if $_modal.find(({ id }) => id === 'create')}
+{#if $isCreate}
 	<Modal id="create" position="right">
 		<div class="modal-container">
 			<div class="modal-header">
@@ -123,16 +128,16 @@
 	</Modal>
 {/if}
 
-{#if $_modal.find(({ id }) => id === 'delete')}
+{#if $isDelete}
 	<!-- <Modal id="delete" position="mid">Content</Modal> -->
 	<div class="absolute flex right-0 bottom-10 justify-center items-center mx-auto z-20 h-max bg-orange-200 shadow w-max py-3 pl-6 pr-3 space-x-3">
-		<span>Delete selected data?</span>
-		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => _modalShow('confirm')}>Yes</button>
+		<span>Delete {selectedRows.length} selected data?</span>
+		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal.show('confirm')}>Yes</button>
 		<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
 	</div>
 {/if}
 
-{#if $_modal.find(({ id }) => id === 'confirm')}
+{#if $isConfirm}
 	<ModalWithDialog id="confirm">
 		<div class="modal-container">
 			<div class="modal-header">
@@ -177,7 +182,7 @@
 			</div>
 			<div class="flex flex-wrap gap-4 justify-between items-center">
 				<div class="lg:flex gap-3">
-					<button class="p-2 h-max bg-slate-400" on:click={() => _modalShow('create')}>Create</button>
+					<button class="p-2 h-max bg-slate-400" on:click={() => modal.show('create')}>Create</button>
 					<button class="p-2 h-max bg-slate-400" on:click={() => handleExport()}>Export</button>
 					<!-- <Menu title="Export" /> -->
 				</div>

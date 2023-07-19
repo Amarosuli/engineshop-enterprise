@@ -1,10 +1,9 @@
 <script>
-	import { Container, Content, Header, Base, Notification, Window } from '$lib/components';
+	import { Container, Content, Header, Base, Notification } from '$lib/components';
 
 	export let user;
 </script>
 
-<Window />
 <!-- Base: relative -->
 <Base>
 	<!-- Container: absolute flex -->
