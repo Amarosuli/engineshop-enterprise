@@ -25,9 +25,4 @@ export const getCustomers = async (locals) => {
 export const getEngineList = async (locals) => {
    const options = { expand: 'model_id,customer_id' }
    return await getFullList(locals, 'engine_list', options)
-   // if (result) {
-   //    return result
-   // } else {
-   //    return []
-   // }
 }

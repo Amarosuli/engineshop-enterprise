@@ -23,3 +23,13 @@ export const customerSchema = z.object({
    code_IATA: z.string().optional(),
    code_ICAO: z.string().optional(),
 })
+
+export const engineListSchema = z.object({
+   esn: z.string().min(1, { message: 'Engine Serial Number cannot be empty' }),
+   config: z.string().optional(),
+   model_id: z.string().min(1, { message: 'Model cannot be empty' }),
+   customer_id: z.string().min(1, { message: 'Customer cannot be empty' }),
+   isAvailable: z.boolean().default(true),
+   excludePreservation: z.boolean().default(false),
+   notes: z.string().optional()
+})

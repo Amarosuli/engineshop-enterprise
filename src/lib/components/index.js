@@ -19,6 +19,7 @@ export { default as Search } from './fields/search.svelte'
 export { default as Switch } from './fields/switch.svelte'
 export { default as Select } from './fields/select.svelte'
 export { default as Password } from './fields/password.svelte'
+export { default as TextArea } from './fields/textarea.svelte'
 
 // COMMON
 export { default as Btn } from './commons/button.svelte'

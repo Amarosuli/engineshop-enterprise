@@ -2,7 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { _row, modal } from '$lib/utils/store';
-	import { Modal, ModalWithDialog, Search, Menu, Select, Table, Text } from '$lib/components';
+	import { Modal, ModalWithDialog, Search, Menu, Select, Table, Text, Switch, TextArea } from '$lib/components';
 
 	export let data;
 
@@ -23,7 +23,10 @@
 	 * destructure of data from page.server.js
 	 * make using of specific data more simpler for Table Components props and other needs
 	 */
-	const { engineList } = data;
+	const { engineList, engineModels, customers } = data;
+
+	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
+	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
 
 	/**
 	 * destructure of modal costum store
@@ -99,11 +102,21 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form.name = $_row?.original?.name;
-			$form.description = $_row?.original?.description;
+			$form.esn = $_row?.original?.esn;
+			$form.config = $_row?.original?.config;
+			$form.model_id = $_row?.original?.model_id;
+			$form.customer_id = $_row?.original?.customer_id;
+			$form.isAvailable = $_row?.original?.isAvailable;
+			$form.excludePreservation = $_row?.original?.excludePreservation;
+			$form.notes = $_row?.original?.notes;
 		} else {
-			$form.name = '';
-			$form.description = '';
+			$form.esn = '';
+			$form.config = '';
+			$form.model_id = '';
+			$form.customer_id = '';
+			// $form.isAvailable = ''; already have a default value
+			// $form.excludePreservation = ''; already have a default value
+			$form.notes = '';
 		}
 	}
 
@@ -134,11 +147,13 @@
 				<button class="px-3 py-2 bg-slate-600" on:click={() => modal.show('update')}>Update</button>
 			</div>
 			<div class="modal-content">
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Customer Name: <span class="font-bold">{$_row?.original?.name}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Description: <span class="font-bold">{$_row?.original?.description}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Logo: <span class="font-bold">{$_row?.original?.logo}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">IATA Code: <span class="font-bold">{$_row?.original?.code_IATA}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">ICAO Code: <span class="font-bold">{$_row?.original?.code_ICAO}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Engine Serial Number: <span class="font-bold">{$_row?.original?.esn}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Configuration: <span class="font-bold">{$_row?.original?.config}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Model Name: <span class="font-bold">{$_row?.original?.model}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Customer Name: <span class="font-bold">{$_row?.original?.customer}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Engine InShop: <span class="font-bold">{$_row?.original?.isAvailable}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Preservation: <span class="font-bold">{$_row?.original?.excludePreservation}</span></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Notes: <span class="font-bold">{$_row?.original?.notes}</span></p>
 			</div>
 		</div>
 	</Modal>
@@ -153,11 +168,13 @@
 			<div class="modal-content">
 				<form action="?/update" method="POST" class="space-y-3 mx-2" use:enhance>
 					<Text id="id" name="id" bind:value={$_row.original.id} hidden />
-					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
-					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-					<Text id="logo" name="logo" label="Logo" bind:value={$form.logo} error={$errors.logo} />
-					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
-					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
+					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
+					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
+					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
+					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
+					<Switch id="isAvailable" name="isAvailable" label="Engine InShop" bind:value={$form.isAvailable} />
+					<Switch id="excludePreservation" name="excludePreservation" label="Preservation" bind:value={$form.excludePreservation} />
+					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
 
 					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Update</button>
 					{#if $errors.pocketbaseErrors}
@@ -178,12 +195,13 @@
 			</div>
 			<div class="modal-content">
 				<form action="?/create" method="POST" class="space-y-3 mx-2" use:enhance>
-					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
-					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-					<Text id="logo" name="logo" label="Logo" bind:value={$form.logo} error={$errors.logo} />
-					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
-					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
-
+					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
+					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
+					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
+					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
+					<Switch id="isAvailable" name="isAvailable" label="Engine InShop" bind:value={$form.isAvailable} />
+					<Switch id="excludePreservation" name="excludePreservation" label="Preservation" bind:value={$form.excludePreservation} />
+					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
 					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Create</button>
 					{#if $errors.pocketbaseErrors}
 						<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors.pocketbaseErrors}</span>
@@ -241,7 +259,7 @@
 		</div>
 	</div>
 	<div class="basis-full flex flex-col flex-nowrap">
-		<div class="h-36 pt-4 pb-4 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between overflow-x-auto">
+		<div class="h-max pt-4 pb-12 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between overflow-x-auto">
 			<div class="w-max min-w-lg">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine List</span>
 				<Search bind:value={search} />
