@@ -1,10 +1,11 @@
 <script>
-	export const id = Math.random().toString();
-	export const name = 'text';
-	export const error = '';
-	export const label = 'label.file';
-	export const required = false;
-	export const accept = '*';
+	export let id = Math.random().toString();
+	export let name = 'text';
+	export let error = '';
+	export let label = 'label.file';
+	export let required = false;
+	export let accept = '*';
+	export let value = '';
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -26,10 +27,15 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="file" class=" {isNotEmpty}" on:change={onChange} {id} {name} {accept} {required} />
+	<input type="file" class=" {isNotEmpty}" on:change={onChange} {id} {name} {accept} {required} {value} />
+
+	<p class="mt-1 text-xs text-gray-500" id="file_input_help">type allowed {accept}</p>
 	{#if error}
 		<span>{error}</span>
 	{/if}
+
+	<!-- <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+<input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help" id="file_input" type="file"> -->
 </div>
 
 <style>
@@ -46,6 +52,6 @@
 		@apply self-start tracking-widest;
 	}
 	input {
-		@apply h-10 border-b border-slate-200 bg-slate-50 px-4 py-1  text-slate-700 transition-colors ease-out hover:border-sky-200 hover:bg-slate-200 focus:border-sky-500 focus:bg-slate-50 focus:outline-none;
+		@apply block h-10 w-full cursor-pointer border-b border-slate-200 bg-white py-[4.5px] pl-[4.5px] text-sm text-slate-700 transition-colors ease-out hover:border-sky-200 hover:bg-slate-200 focus:border-sky-500 focus:bg-slate-50 focus:outline-none;
 	}
 </style>

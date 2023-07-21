@@ -174,7 +174,7 @@
 			<p class="text-slate-600">Engine Families are categorize by it's types.</p>
 		</div>
 	</div>
-	<div class="basis-full flex flex-col flex-nowrap">
+	<div class="basis-full flex flex-col flex-nowrap overflow-auto">
 		<div class="h-max pt-4 pb-12 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between overflow-x-auto">
 			<div class="w-max min-w-lg">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine Families</span>

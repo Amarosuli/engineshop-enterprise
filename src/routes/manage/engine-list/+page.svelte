@@ -188,13 +188,13 @@
 
 {#if $isCreate}
 	<Modal id="create" position="right">
-		<SuperDebug data={$form} />
+		<!-- <SuperDebug data={$form} /> -->
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Create Form</h1>
 			</div>
 			<div class="modal-content">
-				<form action="?/create" method="POST" class="space-y-3 mx-2" use:enhance>
+				<form id={`${'create'}Form`} action="?/create" method="POST" class="space-y-3 mx-2" use:enhance>
 					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
 					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
@@ -258,7 +258,7 @@
 			<p class="text-slate-600">Engine Models are categorize by it's varian.</p>
 		</div>
 	</div>
-	<div class="basis-full flex flex-col flex-nowrap">
+	<div class="basis-full flex flex-col flex-nowrap overflow-auto">
 		<div class="h-max pt-4 pb-12 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between overflow-x-auto">
 			<div class="w-max min-w-lg">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine List</span>

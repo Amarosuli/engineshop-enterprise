@@ -16,10 +16,13 @@ export const engineModelSchema = z.object({
    family_id: z.string()
 })
 
+const MAX_LOGO_SIZE = 200000
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 export const customerSchema = z.object({
    name: z.string().min(1, { message: 'Customer Name cannot be empty' }),
    description: z.string().optional(),
-   // logo input file
+   // logo input file not handle by superform
+   // logo: z.instanceof(File).optional(),
    code_IATA: z.string().optional(),
    code_ICAO: z.string().optional(),
 })

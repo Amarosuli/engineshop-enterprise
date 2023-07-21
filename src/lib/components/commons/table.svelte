@@ -5,6 +5,7 @@
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
 	import SelectCell from './selectCell.svelte';
+	import ImageCell from './imageCell.svelte';
 
 	export let dataTable = [];
 	export let dataCol = [];
@@ -36,6 +37,9 @@
 		}
 
 		createColsArray = (colArray, plugin) => {
+			/**
+			 * define select column and it's plugin
+			 */
 			const ColSelect = {
 				id: 'selected',
 				header: ({ row }, { pluginStates }) => {
@@ -50,6 +54,11 @@
 					export: { exclude: true }
 				}
 			};
+
+			/**
+			 * define order column, i'm sure there's feature to do this
+			 * but i cant find it so i only knew this way (the sort plugin works).
+			 */
 			let a = 0;
 			const ColOrder = {
 				id: 'order',
@@ -62,10 +71,34 @@
 				}
 			};
 
+			/**
+			 * check if there's image to display
+			 * so we add costum createRender with ImageCell components
+			 */
+			colArray = colArray.map((v, index) => {
+				if (v.isImage === true) {
+					v.cell = ({ row }) => {
+						return createRender(ImageCell, { row });
+					};
+					return v;
+				}
+				return v;
+			});
+
+			/**
+			 * recreate the array to include the plugin
+			 * then creating table.column()
+			 * only data that work with table.column
+			 */
 			colArray.forEach((v, index) => {
 				v = { ...v, plugins: plugin };
 				this.cols[index] = this.table.column(v);
 			});
+
+			/**
+			 * add the select column and order column with unshift
+			 * so the array will insert to the first index
+			 */
 			this.cols.unshift(this.table.column(ColOrder));
 			this.cols.unshift(this.table.display(ColSelect));
 		};

@@ -1,4 +1,10 @@
 import { CPOJOs } from '$lib/utils/func'
+import { PUBLIC_API_PB } from '$env/static/public'
+
+export const getFile = (collectionId, recordId, fileName, thumb = '0x0') => {
+   let url = `${PUBLIC_API_PB}/api/files/${collectionId}/${recordId}/${fileName}?thumb=${thumb}`
+   return url
+}
 
 export const getFullList = async (pbClient, collectionName, options) => {
    let result = await pbClient.pb.collection(collectionName).getFullList({

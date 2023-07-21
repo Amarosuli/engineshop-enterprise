@@ -45,9 +45,17 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div {id} data-backDrop={true} class="backDrop absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click|stopPropagation={backDropOnClik}>
 	<div class="relative flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:Trans={TransitionProperties}>
-		<slot />
-		<div class="flex justify-center items-center py-3 border-t">
+		<div class="w-full h-max overflow-y-auto">
+			<slot />
+		</div>
+		<div class="flex gap-3 mx-6 justify-end items-center py-3 border-t">
 			<button class="px-3 py-2 bg-orange-300" on:click={() => modal.hide(id)}>Cancel </button>
+			{#if id === 'create'}
+				<button class="px-3 py-2 bg-orange-300" type="submit" form={`${id}Form`}>Create</button>
+			{/if}
+			{#if id === 'update'}
+				<button class="px-3 py-2 bg-orange-300" type="submit" form={`${id}Form`}>Update</button>
+			{/if}
 		</div>
 	</div>
 </div>
