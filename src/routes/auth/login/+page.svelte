@@ -1,5 +1,5 @@
 <script>
-	import { Text, Password } from '$lib/components';
+	import { Text, Password, Btn } from '$lib/components';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	export let data;
@@ -14,12 +14,13 @@
 	});
 </script>
 
-<div class="absolute inset-0 flex flex-col justify-center items-center w-full lg:w-1/2 mx-auto">
+<div class="absolute inset-0 flex flex-col justify-center items-center w-full lg:w-1/2 mx-auto bg-slate-200/40">
 	<h1 class="text-2xl font-extrabold pb-3 border-b-2 border-dashed border-sky-700 text-sky-700">Login Form</h1>
 	<form method="POST" use:enhance>
 		<Text id="username" name="username" label="Employee ID" required={true} placeholder="your employee id" bind:value={$form.username} error={$errors.username} />
 		<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
-		<button type="submit">Login</button>
+		<!-- <button type="submit">Login</button> -->
+		<Btn type="submit" title="Login" color="base" center />
 		{#if $errors.pocketbaseErrors}
 			<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors.pocketbaseErrors}</span>
 		{/if}

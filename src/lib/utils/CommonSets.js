@@ -12,38 +12,38 @@ export class CommonSets {
    static ColorSet = {
       base: {
          textColor: 'text-slate-50',
-         bgColor: 'bg-slate-700',
-         hoverColor: 'hover:bg-slate-600'
+         bgColor: 'bg-slate-600',
+         hoverColor: 'hover:bg-slate-500'
       },
       success: {
          textColor: 'text-green-50',
-         bgColor: 'bg-green-700',
-         hoverColor: 'hover:bg-green-600'
+         bgColor: 'bg-green-600',
+         hoverColor: 'hover:bg-green-500'
       },
       danger: {
          textColor: 'text-red-50',
-         bgColor: 'bg-red-700',
-         hoverColor: 'hover:bg-red-600'
+         bgColor: 'bg-red-600',
+         hoverColor: 'hover:bg-red-500'
       },
       warning: {
          textColor: 'text-orange-50',
-         bgColor: 'bg-orange-700',
-         hoverColor: 'hover:bg-orange-600'
+         bgColor: 'bg-orange-600',
+         hoverColor: 'hover:bg-orange-500'
       },
       info: {
          textColor: 'text-sky-50',
-         bgColor: 'bg-sky-700',
-         hoverColor: 'hover:bg-sky-600'
+         bgColor: 'bg-sky-600',
+         hoverColor: 'hover:bg-sky-500'
       },
       light: {
          textColor: 'text-white-50',
-         bgColor: 'bg-white-700',
-         hoverColor: 'hover:bg-white-600'
+         bgColor: 'bg-white-600',
+         hoverColor: 'hover:bg-white-500'
       },
       dark: {
-         textColor: 'text-dark-50',
-         bgColor: 'bg-dark-700',
-         hoverColor: 'hover:bg-dark-600'
+         textColor: 'text-gray-50',
+         bgColor: 'bg-gray-600',
+         hoverColor: 'hover:bg-gray-500'
       }
    };
 
@@ -65,22 +65,26 @@ export class CommonSets {
          {
             title: 'Engine List',
             href: '/manage/engine-list',
-            icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Engine+list&background=random&size=30&bold=true&uppercase=false'
+            // icon: 'ri:article-line'
          },
          {
             title: 'Engine Model',
             href: '/manage/engine-model',
-            icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Engine+model&background=random&size=30&bold=true&uppercase=false'
+            // icon: 'ri:article-line'
          },
          {
             title: 'Engine Family',
             href: '/manage/engine-family',
-            icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Engine+family&background=random&size=30&bold=true&uppercase=false'
+            // icon: 'ri:article-line'
          },
          {
             title: 'Customer',
             href: '/manage/customer',
-            icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Customer&background=random&size=30&bold=true&uppercase=false'
+            // icon: 'ri:article-line'
          },
       ]
    };

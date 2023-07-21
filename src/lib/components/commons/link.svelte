@@ -18,6 +18,6 @@
 
 <style style="postcss">
 	a {
-		@apply px-3 py-2 text-sm;
+		@apply w-fit rounded-lg px-4 py-2 text-center text-xs font-semibold tracking-wide shadow transition-colors ease-out;
 	}
 </style>

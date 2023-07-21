@@ -200,7 +200,7 @@
 {/if}
 
 {#if $isConfirm}
-	<ModalWithDialog id="confirm">
+	<ModalWithDialog id="confirm" position="right">
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Are you sure ?</h1>
