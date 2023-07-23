@@ -30,7 +30,7 @@
 	<label for={id} class:hidden>
 		<span class:hidden>{label}</span>
 	</label>
-	<input type="text" class={isNotEmpty} class:hidden on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} {disabled} bind:value />
+	<input type="date" class={isNotEmpty} class:hidden on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} {disabled} bind:value />
 	{#if error}
 		<span>{error}</span>
 	{/if}

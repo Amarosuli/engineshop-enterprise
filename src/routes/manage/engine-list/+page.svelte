@@ -56,12 +56,16 @@
 			accessor: 'customer'
 		},
 		{
-			header: 'Engine InShop',
+			header: 'Availability',
 			accessor: 'isAvailable'
 		},
 		{
+			header: 'Serviceability',
+			accessor: 'isServiceable'
+		},
+		{
 			header: 'Preserve',
-			accessor: 'excludePreservation'
+			accessor: 'isPreservable'
 		},
 		{
 			header: 'Notes',

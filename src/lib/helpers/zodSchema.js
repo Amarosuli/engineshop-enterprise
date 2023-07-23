@@ -33,6 +33,13 @@ export const engineListSchema = z.object({
    model_id: z.string().min(1, { message: 'Model cannot be empty' }),
    customer_id: z.string().min(1, { message: 'Customer cannot be empty' }),
    isAvailable: z.boolean().default(true),
-   excludePreservation: z.boolean().default(false),
+   isServiceable: z.boolean().default(false),
+   isPreservable: z.boolean().default(true),
    notes: z.string().optional()
+})
+
+export const engineAvailabilitySchema = z.object({
+   date_in: z.date(),
+   date_out: z.date().optional(),
+   isInShop: z.boolean().default(true)
 })

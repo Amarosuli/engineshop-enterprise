@@ -20,7 +20,7 @@
 	}
 </script>
 
-<button class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} {type} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}">{title}</button>
+<button class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} {type} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" on:click>{title}</button>
 
 <style>
 	button {

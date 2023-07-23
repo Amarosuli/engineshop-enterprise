@@ -59,7 +59,12 @@ export class CommonSets {
             title: 'Preservation Control',
             href: '/',
             icon: 'ri:article-line'
-         }
+         },
+         {
+            title: 'Engine In & Out',
+            href: '/app/engine-in-out',
+            icon: 'ri:article-line'
+         },
       ],
       manages: [
          {

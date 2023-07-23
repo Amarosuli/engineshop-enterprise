@@ -32,3 +32,8 @@ export const getEngineList = async (locals) => {
    const options = { expand: 'model_id,customer_id' }
    return await getFullList(locals, 'engine_list', options)
 }
+
+export const getEngineAvailability = async (locals) => {
+   const options = { expand: 'engine_id' }
+   return await getFullList(locals, 'engine_availability', options)
+}
