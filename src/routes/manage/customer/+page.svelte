@@ -2,7 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { _row, modal } from '$lib/utils/store';
-	import { Modal, ModalWithDialog, Search, File, Table, Text } from '$lib/components';
+	import { Modal, Search, File, Table, Text } from '$lib/components';
 	import { getFile } from '$lib/helpers/pocketbaseSchema';
 
 	export let data;
@@ -200,7 +200,7 @@
 {/if}
 
 {#if $isConfirm}
-	<ModalWithDialog id="confirm" position="mid">
+	<Modal id="confirm" position="mid">
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Are you sure ?</h1>
@@ -225,7 +225,7 @@
 			</div>
 			<div class="modal-content" />
 		</div>
-	</ModalWithDialog>
+	</Modal>
 {/if}
 
 <div class="absolute inset-0 flex">

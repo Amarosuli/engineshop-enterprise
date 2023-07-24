@@ -1,5 +1,6 @@
 <script>
 	import '../app.postcss';
+	import '$lib/scss/_base.scss';
 	import '$lib/scss/_table.scss';
 	import '$lib/scss/_modal.scss';
 

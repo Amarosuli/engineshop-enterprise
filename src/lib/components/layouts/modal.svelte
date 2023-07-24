@@ -1,26 +1,51 @@
 <script>
-	import { fade, fly, slide } from 'svelte/transition';
-	import { quintIn } from 'svelte/easing';
+	import classes from 'svelte-transition-classes';
+	import { blurIn, blurOut, popIn, popOut, slideRightIn, slideRightOut, slideLeftIn, slideLeftOut } from '$lib/utils/TransitionSets';
 	import { _rowRem, modal } from '$lib/utils/store';
+	import { fade, fly, slide, scale } from 'svelte/transition';
+	import { quintInOut, quintIn, backInOut } from 'svelte/easing';
 
+	// if still use the store to manage the modal id, maybe we need to call _modalHide within the onDestroy function
 	export let id = '';
 	export let position = 'mid';
 	export let hideOnClick = true;
 
-	let Trans = slide;
-	let TransitionProperties = { axis: 'x', easing: quintIn, duration: 300 };
+	let IN = (node) => {
+		switch (position) {
+			case 'mid':
+				return classes(node, popIn);
+				break;
+			case 'left':
+				return classes(node, slideLeftIn);
+				break;
+			case 'right':
+				return classes(node, slideRightIn);
+				break;
+			default:
+				break;
+		}
+	};
 
-	switch (position) {
-		case 'mid':
-			Trans = fade;
-			break;
+	let OUT = (node) => {
+		switch (position) {
+			case 'mid':
+				return classes(node, popOut);
+				break;
+			case 'left':
+				return classes(node, slideLeftOut);
+				break;
+			case 'right':
+				return classes(node, slideRightOut);
+				break;
+			default:
+				break;
+		}
+	};
 
-		default:
-			Trans = slide;
-			break;
-	}
+	let open = true;
+
 	const ModalPosition = {
-		mid: 'justify-center items-center mx-6 xl:mx-0',
+		mid: 'justify-center items-center ',
 		right: 'justify-end',
 		left: 'justify-start',
 		mobile: 'justify-center items-center'
@@ -42,14 +67,14 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div {id} data-backDrop={true} class="backDrop absolute flex {ModalPosition[position]} z-20 w-full h-full bg-slate-700/70" transition:fade={{ duration: 300, easing: quintIn }} on:click|stopPropagation={backDropOnClik}>
-	<div class="relative flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" transition:Trans={TransitionProperties}>
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<dialog {id} data-backDrop={true} class="absolute flex {ModalPosition[position]}  z-20 w-full h-full bg-slate-700/70 overflow-hidden" {open} in:classes={blurIn} out:classes={blurOut} on:click|stopPropagation|preventDefault={backDropOnClik}>
+	<div class="absolute flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" in:IN|local out:OUT|local>
 		<div class="w-full h-max overflow-y-auto">
 			<slot />
 		</div>
 		<div class="flex gap-3 mx-6 justify-end items-center py-3 border-t">
-			<button class="px-3 py-2 bg-orange-300" on:click={() => modal.hide(id)}>Cancel </button>
+			<button class="px-3 py-2 bg-orange-300" on:click={() => modal.hide(id)}>Cancel</button>
 			{#if id === 'create'}
 				<button class="px-3 py-2 bg-orange-300" type="submit" form={`${id}Form`}>Create</button>
 			{/if}
@@ -58,4 +83,11 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</dialog>
+
+<style>
+	dialog {
+		padding: 0;
+		margin: 0;
+	}
+</style>

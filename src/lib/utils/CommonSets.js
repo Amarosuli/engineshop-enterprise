@@ -1,3 +1,4 @@
+
 export class CommonSets {
    /** 
     * Naming covension slightly refer to bootstrap
@@ -115,7 +116,6 @@ export class CommonSets {
          color: 'info'
       }
    ];
-
 
 }
 

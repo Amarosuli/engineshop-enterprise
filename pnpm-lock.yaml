@@ -7,6 +7,9 @@ dependencies:
   pocketbase:
     specifier: ^0.15.3
     version: 0.15.3
+  svelte-transition-classes:
+    specifier: ^0.1.1
+    version: 0.1.1
 
 devDependencies:
   '@sveltejs/adapter-auto':
@@ -1920,6 +1923,10 @@ packages:
   /svelte-subscribe@1.0.5:
     resolution: {integrity: sha512-p+vRSBVzR9BQC72mjd2eqCv8zx5euLZQJF7QqAw5d41aKzQVOq90y71/NXch+nDNMjWbRo0CX+brcWYgPryJlw==}
     dev: true
+
+  /svelte-transition-classes@0.1.1:
+    resolution: {integrity: sha512-LVQt9X8YlABH4N5iNtlXyYfN/pK8Yp8/Oy8Gx48j9kpCfv8F0HuXFcx2U4AzB7UuxTniYGEdqoV3q1c/ya4I7w==}
+    dev: false
 
   /svelte@4.0.5:
     resolution: {integrity: sha512-PHKPWP1wiWHBtsE57nCb8xiWB3Ht7/3Kvi3jac0XIxUM2rep8alO7YoAtgWeGD7++tFy46krilOrPW0mG3Dx+A==}

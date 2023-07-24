@@ -82,12 +82,6 @@
 			<div class="w-max min-w-lg">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine Incoming & Outgoing</span>
 				<p>Registering for engine incoming to shop and outgoing from shop</p>
-
-				<pre>incoming:
-               check esn from engine_list
-               if no create new one and set availability to true
-               if yes create new record on engine_availability
-            </pre>
 			</div>
 			<div class="flex flex-wrap gap-4 justify-between items-center">
 				<div class="lg:flex gap-3">

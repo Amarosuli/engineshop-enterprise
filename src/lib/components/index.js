@@ -7,7 +7,6 @@ export { default as Window } from './layouts/window.svelte'
 export { default as Content } from './layouts/content.svelte'
 export { default as Container } from './layouts/container.svelte'
 export { default as Notification } from './layouts/notification.svelte'
-export { default as ModalWithDialog } from './layouts/modalWithDialog.svelte'
 
 // FIELD
 export { default as Text } from './fields/text.svelte'

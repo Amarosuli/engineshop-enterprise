@@ -1,0 +1,11 @@
+html {
+	-webkit-tap-highlight-color: transparent;
+}
+
+button[type='submit'] {
+	@apply select-none border-none px-4 py-2 align-middle text-sm;
+}
+
+button[type='button'] {
+	@apply select-none border-none px-4 py-2 align-middle text-sm;
+}
