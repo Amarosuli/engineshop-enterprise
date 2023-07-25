@@ -242,11 +242,10 @@
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Customers</span>
 				<Search bind:value={search} />
 			</div>
-			<div class="flex flex-wrap gap-4 justify-between items-center">
-				<div class="lg:flex gap-3">
+			<div class="pb-8 lg:pb-0 flex flex-wrap justify-between items-center">
+				<div class="flex flex-col lg:flex-row gap-3">
 					<button class="p-2 h-max bg-slate-400" on:click={() => modal.show('create')}>Create</button>
 					<button class="p-2 h-max bg-slate-400" on:click={() => handleExport()}>Export</button>
-					<!-- <Menu title="Export" /> -->
 				</div>
 			</div>
 		</div>

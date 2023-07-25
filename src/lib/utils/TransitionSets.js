@@ -1,26 +1,28 @@
 
 export const fadeIn = {
-   base: 'transition-opacity ease-out duration-200',
+   duration: 300,
+   base: 'transition-opacity ease-out duration-300',
    from: 'opacity-0',
    to: 'opacity-100'
 }
 
 export const fadeOut = {
-   base: 'transition-opacity ease-in duration-200',
+   duration: 300,
+   base: 'transition-opacity ease-in duration-300',
    from: 'opacity-100',
    to: 'opacity-0'
 }
 export const blurIn = {
    duration: 200,
-   base: 'transition ease-in duration-200',
-   from: 'backdrop-blur-none opacity-0',
-   to: 'backdrop-blur-sm opacity-100'
+   base: 'transition-all ease-out duration-200',
+   from: 'backdrop-blur-none bg-slate-700/0',
+   to: 'backdrop-blur-sm bg-slate-700/70'
 }
 export const blurOut = {
    duration: 200,
-   base: 'transition ease-in duration-200',
-   from: 'backdrop-blur-sm opacity-100',
-   to: 'backdrop-blur-none opacity-0'
+   base: 'transition-all ease-in duration-200',
+   from: 'backdrop-blur-sm bg-slate-700/70',
+   to: 'backdrop-blur-none bg-slate-700/0'
 }
 
 export const slideRightIn = {

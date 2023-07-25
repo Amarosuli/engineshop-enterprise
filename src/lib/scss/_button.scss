@@ -8,7 +8,7 @@
 	&:active:hover,
 	&:active:focus {
 		@apply transition-all duration-300 ease-out;
-		// @apply scale-95 resize-none transition-transform ease-in-out;
+		@apply scale-95 resize-none transition-transform ease-in-out;
 	}
 
 	// animation: button-pop var(--animation-btn, 0.25s);
