@@ -31,7 +31,7 @@ export const load = async ({ locals }) => {
 }
 
 export const actions = {
-   create: async ({ request, locals }) => {
+   incoming: async ({ request, locals }) => {
       const form = await superValidate(request, engineAvailabilitySchema)
 
       if (!form.valid) {
@@ -40,12 +40,10 @@ export const actions = {
       }
 
       try {
-         // create engine_list, then get the id from result
-         let { id } = await locals.pb.collection('engine_list').create(form.data)
-
-         // create new object for create engine_availability
+         // create engine_availability, then set availability in engine_list to true
          let engineAvailabilityData = { "engine_id": id, "date_in": new Date(), "isInShop": true }
          await locals.pb.collection('engine_availability').create(engineAvailabilityData)
+         await locals.pb.collection('engine_list').update(id, { isAvailable: true })
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

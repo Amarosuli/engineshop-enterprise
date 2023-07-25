@@ -2,7 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { _row, modal } from '$lib/utils/store';
-	import { Modal, ModalWithDialog, Search, Menu, Select, Link, Btn, Table, Text, Date, Switch, TextArea } from '$lib/components';
+	import { Modal, Search, Menu, Select, Link, Btn, Table, Text, Date, Switch, TextArea } from '$lib/components';
 
 	export let data;
 
@@ -36,28 +36,47 @@
 
 	let isEngineExist = false;
 	let inputCheck = '';
-	let selectedEngine = {};
+	let selectedData = {};
 	let curentEngine = {};
 
 	$: curentEngine;
 	function handleCheck() {
 		let result = engineList.find(({ esn }) => inputCheck === esn);
-		console.log(result);
-		if (result) {
-			isEngineExist = true;
-			selectedEngine = result;
 
-			/**
-			 * find the engine_availability data with id equal to result.id
-			 * get the last one with date_out is not empty and isInShop false
-			 * if isInShop true and date_out is empty, display info "Engine already in Shop, only for outgoing"
-			 * if isInShop false, display the incoming form which is mean "create new data to engine_availability"
-			 */
-			curentEngine = engineAvailability.find(({ engine_id }) => engine_id === result.id);
-			console.log(curentEngine);
+		// 1a. check if esn exist in engine_list,  pass to next conditional
+		if (result) {
+			engineAvailability.forEach((val) => {
+				if (val.engine_id === result.id) {
+					if (val.isInShop) {
+						// 2b. if last record in engine_availability.isInShop is TRUE (engine still inshop)
+						// show confirm "engine already in engineshop, only available for outgoing process"
+						console.log('engine already inshop, available only for outgoing');
+						isEngineExist = false;
+
+						// 2b1. if curent formDisplay is "outgoing"
+						if (formDisplay === 'outgoing') {
+							isEngineExist = true;
+							selectedData = val;
+						} else {
+							// show notification
+							console.log('engine already outshop, available for incoming only');
+							selectedData = {};
+						}
+					} else {
+						// 2a. if last record in engine_availability.isInShop is FALSE (engine not inshop)
+						// show form incoming
+						console.log('create incoming form');
+						isEngineExist = true;
+						selectedData = val;
+					}
+				}
+				return;
+			});
 		} else {
+			// 1b. if esn not exist in engine_list, show confirm "engine not found, go to manage/engine-list to create"
 			isEngineExist = false;
-			selectedEngine = {};
+			selectedData = {};
+			modal.show('confirm');
 		}
 	}
 </script>
@@ -65,6 +84,23 @@
 <svelte:head>
 	<title>Manage - Engine List</title>
 </svelte:head>
+
+{#if $isConfirm}
+	<Modal id="confirm" position="mid">
+		<div class="modal-container">
+			<div class="modal-header">
+				<h1 class="modal-title">ESN {inputCheck} Not Found</h1>
+			</div>
+			<div class="mt-6 flex flex-col space-y-3 justify-start">
+				<p class="font-bold text-lg">! ESN {inputCheck} Not Found</p>
+				<p>Go to <strong>engine-list</strong> to create new Engine</p>
+				<Link href="/manage/engine-list" title="Go To Engine List" color="warning" />
+			</div>
+
+			<div class="modal-content" />
+		</div>
+	</Modal>
+{/if}
 
 <div class="absolute inset-0 flex">
 	<div class="basis-1/4 hidden md:block">
@@ -100,20 +136,14 @@
 					</div>
 					{#if isEngineExist}
 						<div class="mt-6">
-							<form action="POST" class="space-y-3">
-								<Text id="id" name="id" hidden bind:value={selectedEngine.id} disabled />
+							<form action="?/incoming" method="POST" class="space-y-3">
+								<Text id="id" name="id" hidden bind:value={selectedData.id} disabled />
 								<Text id="esn" name="esn" label="ESN" bind:value={inputCheck} disabled />
-								<Date id="date_in" name="date_in" label="Incoming Date" bind:value={curentEngine.date_in} />
-								<Date id="date_out" name="date_out" label="Outgoing Date" bind:value={curentEngine.date_out} />
-								<Switch id="isInShop" name="isInShop" label="Is Engine In Shop" bind:value={curentEngine.isInShop} />
-								<Btn type="submit" title="Check" on:click={handleCheck} left />
+								<Date id="date_in" name="date_in" label="Incoming Date" bind:value={$form.date_in} />
+								<Date id="date_out" name="date_out" label="Outgoing Date" bind:value={$form.date_out} />
+								<Switch id="isInShop" name="isInShop" label="Is Engine In Shop" bind:value={$form.isInShop} />
+								<Btn type="submit" title="Register Engine" on:click={handleCheck} left />
 							</form>
-						</div>
-					{:else}
-						<div class="mt-6 flex flex-col space-y-3">
-							<p class="font-bold text-lg">! ESN {inputCheck} Not Found</p>
-							<p>Go to <strong>engine-list</strong> to create new Engine</p>
-							<Link href="/manage/engine-list" title="Go To Engine List" color="warning" />
 						</div>
 					{/if}
 				</div>
@@ -124,6 +154,18 @@
 						<Text id="check" name="check" label="Check ESN" bind:value={inputCheck} />
 						<Btn type="submit" title="Check" on:click={handleCheck} left />
 					</div>
+					{#if isEngineExist}
+						<div class="mt-6">
+							<form action="?/outgoing" method="POST" class="space-y-3">
+								<Text id="id" name="id" hidden bind:value={selectedData.id} disabled />
+								<Text id="esn" name="esn" label="ESN" bind:value={inputCheck} disabled />
+								<Date id="date_in" name="date_in" label="Incoming Date" bind:value={selectedData.date_in} />
+								<Date id="date_out" name="date_out" label="Outgoing Date" bind:value={selectedData.date_out} />
+								<Switch id="isInShop" name="isInShop" label="Is Engine In Shop" bind:value={selectedData.isInShop} />
+								<Btn type="submit" title="Release Engine" on:click={handleCheck} left />
+							</form>
+						</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
