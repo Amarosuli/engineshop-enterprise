@@ -11,7 +11,7 @@
 		<Header {user} />
 		<Content>
 			<slot />
+			<Notification />
 		</Content>
-		<!-- <Notification /> -->
 	</Container>
 </Base>

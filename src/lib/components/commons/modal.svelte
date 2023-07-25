@@ -1,9 +1,9 @@
 <script>
 	import classes from 'svelte-transition-classes';
 	import { blurIn, blurOut, popIn, popOut, slideRightIn, slideRightOut, slideLeftIn, slideLeftOut } from '$lib/utils/TransitionSets';
+	import { Btn } from '$lib/components';
 	import { _rowRem, modal } from '$lib/utils/store';
-	import { fade, fly, slide, scale } from 'svelte/transition';
-	import { quintInOut, quintIn, backInOut } from 'svelte/easing';
+	import { onDestroy } from 'svelte';
 
 	// if still use the store to manage the modal id, maybe we need to call _modalHide within the onDestroy function
 	export let id = '';
@@ -64,6 +64,10 @@
 			hideOnClick ? modal.hide(id) : '';
 		}
 	};
+
+	onDestroy(() => {
+		modal.hide(id);
+	});
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -74,12 +78,12 @@
 			<slot />
 		</div>
 		<div class="flex gap-3 mx-6 justify-end items-center py-3 border-t">
-			<button class="px-3 py-2 bg-orange-300" on:click={() => modal.hide(id)}>Cancel</button>
+			<Btn type="button" title="Cancel" color="info" on:click={() => modal.hide(id)} />
 			{#if id === 'create'}
-				<button class="px-3 py-2 bg-orange-300" type="submit" form={`${id}Form`}>Create</button>
+				<Btn type="submit" title="Create" color="warning" form={`${id}Form`} />
 			{/if}
 			{#if id === 'update'}
-				<button class="px-3 py-2 bg-orange-300" type="submit" form={`${id}Form`}>Update</button>
+				<Btn type="submit" title="Update" color="warning" form={`${id}Form`} />
 			{/if}
 		</div>
 	</div>

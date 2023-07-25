@@ -1,6 +1,5 @@
 // LAYOUT
 export { default as Base } from './layouts/base.svelte'
-export { default as Modal } from './layouts/modal.svelte'
 export { default as Header } from './layouts/header.svelte'
 export { default as Layout } from './layouts/layout.svelte'
 export { default as Window } from './layouts/window.svelte'
@@ -25,4 +24,5 @@ export { default as TextArea } from './fields/textarea.svelte'
 export { default as Btn } from './commons/button.svelte'
 export { default as Link } from './commons/link.svelte'
 export { default as Menu } from './commons/menu.svelte'
+export { default as Modal } from './commons/modal.svelte'
 export { default as Table } from './commons/table.svelte'

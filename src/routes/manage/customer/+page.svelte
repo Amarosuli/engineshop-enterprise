@@ -140,7 +140,7 @@
 
 {#if $isUpdate}
 	<Modal id="update" position="right">
-		<SuperDebug data={$form} />
+		<!-- <SuperDebug data={$form} /> -->
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Update Form</h1>
@@ -167,7 +167,7 @@
 
 {#if $isCreate}
 	<Modal id="create" position="right">
-		<SuperDebug data={$form} />
+		<!-- <SuperDebug data={$form} /> -->
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Create Form</h1>

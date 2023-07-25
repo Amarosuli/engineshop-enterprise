@@ -1,16 +1,15 @@
 <script>
 	import { CommonSets } from '$lib/utils/CommonSets';
-
 	import '$lib/scss/_button.scss';
-	// export let href = '/';
 
 	export let title = 'link';
-	export let color = 'base';
+	export let color = 'base'; // base, success, danger, warning, info, light, dark
 	export let size = 'compact'; // compact, full
 	export let type = 'button'; // button, submit
 	export let center = false;
 	export let right = false;
 	export let left = false;
+	export let form = '';
 
 	/**
 	 * Checking @color is valid name ref to @ColorName
@@ -24,4 +23,5 @@
 	}
 </script>
 
-<button class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} {type} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" on:click>{title}</button>
+<button {form} class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} {type} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" on:click
+	>{title}</button>
