@@ -1,3 +1,4 @@
+import { randomHexColor } from '$lib/utils/func'
 
 export class CommonSets {
    /** 
@@ -59,12 +60,12 @@ export class CommonSets {
          {
             title: 'Preservation Control',
             href: '/',
-            icon: 'ri:article-line'
+            icon: 'ri-timer-line',
          },
          {
-            title: 'Engine In & Out',
+            title: 'Engine In Engine Out',
             href: '/app/engine-in-out',
-            icon: 'ri:article-line'
+            icon: 'ri-arrow-up-down-fill',
          },
       ],
       manages: [

@@ -1,23 +1,19 @@
 <script>
 	import { onMount } from 'svelte';
-	import { getFile } from '$lib/helpers/pocketbaseSchema';
 
-	export let row;
+	export let src = '';
 	export let alt = 'alt';
-	export let className = 'w-8 object-contain';
+	export let crossorigin = 'anonymous';
+	export let className = 'imgIcon';
 
-	let src = '';
 	let loaded = false;
 	let failed = false;
 	let loading = false;
 
-	onMount(async () => {
+	onMount(() => {
 		const img = new Image();
-		if (row?.original?.logo) {
-			src = await getFile(row?.original?.collectionId, row?.original?.id, row?.original?.logo);
-			img.src = src;
-			loading = true;
-		}
+		img.src = src;
+		loading = true;
 
 		img.onload = () => {
 			loading = false;
@@ -32,11 +28,11 @@
 </script>
 
 {#if loaded}
-	<img {src} {alt} crossorigin="anonymous" class={`${className}`} />
+	<img {src} {alt} {crossorigin} class={`${className}`} />
 {:else if failed}
 	<img src="https://icon-library.com/images/not-found-icon/not-found-icon-20.jpg" alt="Not Found" class={`${className}`} />
 {:else if loading}
-	<img src="https://c.tenor.com/On7kvXhzml4AAAAi/loading-gif.gif" alt="loading.." class={`${className}`} />
+	<img src="https://c.tenor.com/On7kvXhzml4AAAAi/loading-gif.gif" alt="loading.." {crossorigin} class={`${className}`} />
 {/if}
 
 <style>

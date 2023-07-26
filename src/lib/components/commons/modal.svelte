@@ -72,7 +72,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog {id} data-backDrop={true} class="absolute flex {ModalPosition[position]}  z-20 w-full h-full overflow-hidden" {open} in:classes={blurIn} out:classes={blurOut} on:click|stopPropagation|preventDefault={backDropOnClik}>
+<dialog {id} data-backDrop={true} class="absolute flex {ModalPosition[position]}  z-20 w-full h-full overflow-hidden" {open} in:classes={blurIn} out:classes={blurOut} on:click|stopPropagation={backDropOnClik}>
 	<div class="absolute flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" in:IN|local out:OUT|local>
 		<div class="w-full h-max overflow-y-auto">
 			<slot />

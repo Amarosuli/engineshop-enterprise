@@ -21,6 +21,7 @@ export { default as Password } from './fields/password.svelte'
 export { default as TextArea } from './fields/textarea.svelte'
 
 // COMMON
+export { default as Img } from './commons/image.svelte'
 export { default as Btn } from './commons/button.svelte'
 export { default as Link } from './commons/link.svelte'
 export { default as Menu } from './commons/menu.svelte'
