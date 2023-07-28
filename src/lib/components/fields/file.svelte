@@ -5,7 +5,7 @@
 	export let label = 'label.file';
 	export let required = false;
 	export let accept = '*';
-	export let value = '';
+	export let value = null;
 
 	let isNotEmpty;
 	$: isNotEmpty;
@@ -27,7 +27,7 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="file" class=" {isNotEmpty}" on:change={onChange} {id} {name} {accept} {required} {value} />
+	<input type="file" class={isNotEmpty} {id} {name} {accept} on:change={onChange} {required} {value} />
 
 	<p class="mt-1 text-xs text-gray-500" id="file_input_help">type allowed {accept}</p>
 	{#if error}

@@ -3,7 +3,7 @@
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { _row, modal } from '$lib/utils/store';
 	import { Modal, Search, File, Table, Text } from '$lib/components';
-	import { getFile } from '$lib/helpers/pocketbaseSchema';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 
 	export let data;
 
@@ -95,9 +95,13 @@
 		if (isTrue) {
 			$form.name = $_row?.original?.name;
 			$form.description = $_row?.original?.description;
+			$form.code_IATA = $_row?.original?.code_IATA;
+			$form.code_ICAO = $_row?.original?.code_ICAO;
 		} else {
 			$form.name = '';
 			$form.description = '';
+			$form.code_IATA = '';
+			$form.code_ICAO = '';
 		}
 	}
 
@@ -130,7 +134,7 @@
 			<div class="modal-content">
 				<p class="font-semibold flex justify-between py-3 px-3 border-b">Customer Name: <span class="font-bold">{$_row?.original?.name}</span></p>
 				<p class="font-semibold flex justify-between py-3 px-3 border-b">Description: <span class="font-bold">{$_row?.original?.description}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Logo: <img class="max-w-md h-max object-contain" src={$_row?.original?.logo ? getFile($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} /></p>
+				<p class="font-semibold flex justify-between py-3 px-3 border-b">Logo: <img class="max-w-md h-max object-contain" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} /></p>
 				<p class="font-semibold flex justify-between py-3 px-3 border-b">IATA Code: <span class="font-bold">{$_row?.original?.code_IATA}</span></p>
 				<p class="font-semibold flex justify-between py-3 px-3 border-b">ICAO Code: <span class="font-bold">{$_row?.original?.code_ICAO}</span></p>
 			</div>
@@ -150,7 +154,7 @@
 					<Text id="id" name="id" bind:value={$_row.original.id} hidden />
 					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
 					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-					<img class="w-max object-contain" src={$_row?.original?.logo ? getFile($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" />
+					<img class="w-max object-contain" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" />
 					<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
 					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
 					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
@@ -167,22 +171,22 @@
 
 {#if $isCreate}
 	<Modal id="create" position="right">
-		<!-- <SuperDebug data={$form} /> -->
+		<SuperDebug data={$form} />
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Create Form</h1>
 			</div>
 			<div class="modal-content">
 				<form action="?/create" method="POST" class="space-y-3 mx-2" enctype="multipart/form-data" use:enhance>
-					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
-					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-					<File id="logo" name="logo" label="Customer Logo" bind:value={$form.logo} error={$errors.logo} />
-					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
-					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
+					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors?.name} />
+					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors?.description} />
+					<File id="logo" name="logo" label="Customer Logo" />
+					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors?.code_IATA} />
+					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors?.code_ICAO} />
 
 					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Create</button>
-					{#if $errors.pocketbaseErrors}
-						<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors.pocketbaseErrors}</span>
+					{#if $errors?.pocketbaseErrors}
+						<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors?.pocketbaseErrors}</span>
 					{/if}
 				</form>
 			</div>

@@ -1,29 +1,29 @@
 import { superValidate } from 'sveltekit-superforms/server';
-import { getCustomers } from '$lib/helpers/pocketbaseSchema'
-import { customerSchema } from '$lib/helpers/zodSchema'
 import { fail, redirect } from '@sveltejs/kit';
+
 import { _row } from '$lib/utils/store'
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
+
 export const load = async ({ locals }) => {
-   const form = await superValidate(customerSchema)
 
    return {
-      customers: await getCustomers(locals),
-      form
+      customers: await CommonHelpers.getCustomers(locals),
+      form: await superValidate(CommonHelpers.customerSchema)
 
    }
 }
 
 export const actions = {
    create: async ({ request, locals }) => {
-      // grab formData to send to pocketbase API
       const formData = await request.formData()
-      // then formData pass into superValidate so superform will do the validation process
-      const form = await superValidate(formData, customerSchema)
+      const form = await superValidate(formData, CommonHelpers.customerSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form })
       }
+
+      const logo = formData.get('logo')
 
       try {
          /**
@@ -32,43 +32,38 @@ export const actions = {
           * so superform only work for the validation not for the final data to send to the API
           * and use the formData() that already grabbed into const formData variable.
           */
-         await locals.pb.collection('customers').create(formData)
+
+         logo.size === 0 ? formData.delete('logo') : ""
+         locals.pb.collection('customers').create(formData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
          }
          return fail(error.status, { form })
       }
-      // console.log('VALID: ', form);
 
       return { form }
    },
    update: async ({ request, locals }) => {
-      // grab formData to send to pocketbase API
       const formData = await request.formData()
-      // get the id
-      const id = formData.get('id')
-      // get the logo for checking
-      const logo = formData.get('logo')
-      // then formData pass into superValidate so superform will do the validation process
-      const form = await superValidate(formData, customerSchema)
+      const form = await superValidate(formData, CommonHelpers.customerSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form })
       }
 
+      const id = formData.get('id')
+      const logo = formData.get('logo')
+
       try {
          /**
-          * if no image, delete the key
-          * so pocketbase not remove the curent image in pocketbase
+          * if no id, return fail
+          * if no image, delete the key (prevent pocketbase remove the curent image in database)
          */
+         logo.size === 0 ? formData.delete('logo') : ""
 
-         if (logo.size === 0) {
-            formData.delete('logo')
-         }
-
-         await locals.pb.collection('customers').update(id, formData)
+         await updateDate(locals, 'customers', id, formData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

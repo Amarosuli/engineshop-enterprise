@@ -1,15 +1,14 @@
-import { pb } from '$lib/helpers/pocketbaseClient'
-import { CPOJOs } from '$lib/utils/func'
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const handle = async ({ event, resolve }) => {
-   event.locals.pb = pb
+   event.locals.pb = CommonHelpers.pb
    event.locals.pb.autoCancellation(false) // globally disable auto cancellation
    event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '')
 
    try {
       if (event.locals.pb.authStore.isValid) {
          await event.locals.pb.collection('users').authRefresh()
-         event.locals.user = CPOJOs(event.locals.pb.authStore.model)
+         event.locals.user = CommonHelpers.CPOJOs(event.locals.pb.authStore.model)
       }
    } catch (_) {
       event.locals.pb.authStore.clear()

@@ -1,9 +1,11 @@
 <script>
 	import { onMount } from 'svelte';
-	import { getFile } from '$lib/helpers/pocketbaseSchema';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 
 	export let row;
+	export let column;
 	export let alt = 'alt';
+	export let crossorigin = 'anonymous';
 	export let className = 'w-8 object-contain';
 
 	let src = '';
@@ -11,10 +13,15 @@
 	let failed = false;
 	let loading = false;
 
-	onMount(async () => {
+	onMount(() => {
+		/** @TODO image not shown in mobile devices
+		 * it was not my code, it was the pocketbase use localhost
+		 * and it's not opened
+		 */
 		const img = new Image();
-		if (row?.original?.logo) {
-			src = await getFile(row?.original?.collectionId, row?.original?.id, row?.original?.logo);
+		if (row.original?.[column]) {
+			src = CommonHelpers.getFileUrl(row.original?.collectionId, row.original?.id, row.original?.[column]);
+			console.log(src);
 			img.src = src;
 			loading = true;
 		}
@@ -32,7 +39,7 @@
 </script>
 
 {#if loaded}
-	<img {src} {alt} crossorigin="anonymous" class={`${className}`} />
+	<img {src} {alt} {crossorigin} class={`${className}`} />
 {:else if failed}
 	<img src="https://icon-library.com/images/not-found-icon/not-found-icon-20.jpg" alt="Not Found" class={`${className}`} />
 {:else if loading}

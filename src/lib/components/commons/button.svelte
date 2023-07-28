@@ -9,7 +9,7 @@
 	export let center = false;
 	export let right = false;
 	export let left = false;
-	export let form = '';
+	export let form = null;
 
 	/**
 	 * Checking @color is valid name ref to @ColorName

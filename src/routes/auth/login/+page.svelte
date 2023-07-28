@@ -1,5 +1,6 @@
 <script>
 	import { Text, Password, Btn } from '$lib/components';
+
 	import { superForm } from 'sveltekit-superforms/client';
 
 	export let data;

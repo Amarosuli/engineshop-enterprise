@@ -4,6 +4,8 @@
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+
 	import SelectCell from './selectCell.svelte';
 	import ImageCell from './imageCell.svelte';
 
@@ -78,7 +80,8 @@
 			colArray = colArray.map((v, index) => {
 				if (v.isImage === true) {
 					v.cell = ({ row }) => {
-						return createRender(ImageCell, { row });
+						let column = v.accessor;
+						return createRender(ImageCell, { row, column });
 					};
 					return v;
 				}

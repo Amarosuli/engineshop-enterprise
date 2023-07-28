@@ -1,19 +1,21 @@
 import { superValidate } from 'sveltekit-superforms/server'
-import { LoginSchema } from '$lib/helpers/zodSchema'
 import { fail, redirect } from '@sveltejs/kit'
+
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const load = async ({ locals }) => {
    if (locals.pb.authStore.model) {
       throw redirect(303, '/')
    }
-   const form = await superValidate(LoginSchema)
+
+   const form = await superValidate(CommonHelpers.LoginSchema)
 
    return { form }
 }
 
 export const actions = {
    default: async ({ request, locals }) => {
-      const form = await superValidate(request, LoginSchema)
+      const form = await superValidate(request, CommonHelpers.LoginSchema)
 
       if (!form.valid) {
          console.log(form);

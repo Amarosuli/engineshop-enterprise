@@ -1,5 +1,5 @@
-import { CPOJOs } from '$lib/utils/func'
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const load = async ({ locals }) => {
-   return { user: CPOJOs(await locals.pb.authStore.model) }
+   return { user: CommonHelpers.CPOJOs(await locals.pb.authStore.model) }
 }
