@@ -1,9 +1,10 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+
 	import { _row, modal } from '$lib/utils/store';
-	import { Modal, Search, File, Table, Text } from '$lib/components';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+	import { Modal, Form, Search, File, Table, Text, Btn, Img } from '$lib/components';
 
 	export let data;
 
@@ -129,7 +130,7 @@
 		<div class="modal-container">
 			<div class="modal-header">
 				<h1 class="modal-title">Detail Form</h1>
-				<button class="px-3 py-2 bg-slate-600" on:click={() => modal.show('update')}>Update</button>
+				<Btn title="Update" color="warning" on:click={() => modal.show('update')} />
 			</div>
 			<div class="modal-content">
 				<p class="font-semibold flex justify-between py-3 px-3 border-b">Customer Name: <span class="font-bold">{$_row?.original?.name}</span></p>
@@ -144,53 +145,27 @@
 
 {#if $isUpdate}
 	<Modal id="update" position="right">
-		<!-- <SuperDebug data={$form} /> -->
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">Update Form</h1>
-			</div>
-			<div class="modal-content">
-				<form action="?/update" method="POST" class="space-y-3 mx-2" enctype="multipart/form-data" use:enhance>
-					<Text id="id" name="id" bind:value={$_row.original.id} hidden />
-					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
-					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-					<img class="w-max object-contain" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" />
-					<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
-					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
-					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
-
-					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Update</button>
-					{#if $errors.pocketbaseErrors}
-						<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors.pocketbaseErrors}</span>
-					{/if}
-				</form>
-			</div>
-		</div>
+		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
+			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
+			<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
+			<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
+			<Img className="w-max object-contain" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" />
+			<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
+			<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
+			<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
+		</Form>
 	</Modal>
 {/if}
 
 {#if $isCreate}
 	<Modal id="create" position="right">
-		<SuperDebug data={$form} />
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">Create Form</h1>
-			</div>
-			<div class="modal-content">
-				<form action="?/create" method="POST" class="space-y-3 mx-2" enctype="multipart/form-data" use:enhance>
-					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors?.name} />
-					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors?.description} />
-					<File id="logo" name="logo" label="Customer Logo" />
-					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors?.code_IATA} />
-					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors?.code_ICAO} />
-
-					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Create</button>
-					{#if $errors?.pocketbaseErrors}
-						<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors?.pocketbaseErrors}</span>
-					{/if}
-				</form>
-			</div>
-		</div>
+		<Form id="create" action="?/create" title="Create" method="POST" enctype="multipart/form-data" {enhance}>
+			<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors?.name} />
+			<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors?.description} />
+			<File id="logo" name="logo" label="Customer Logo" />
+			<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors?.code_IATA} />
+			<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors?.code_ICAO} />
+		</Form>
 	</Modal>
 {/if}
 
@@ -248,8 +223,8 @@
 			</div>
 			<div class="pb-8 lg:pb-0 flex flex-wrap justify-between items-center">
 				<div class="flex flex-col lg:flex-row gap-3">
-					<button class="p-2 h-max bg-slate-400" on:click={() => modal.show('create')}>Create</button>
-					<button class="p-2 h-max bg-slate-400" on:click={() => handleExport()}>Export</button>
+					<Btn title="Create" on:click={() => modal.show('create')} />
+					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>
 		</div>

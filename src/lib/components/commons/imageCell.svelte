@@ -21,7 +21,6 @@
 		const img = new Image();
 		if (row.original?.[column]) {
 			src = CommonHelpers.getFileUrl(row.original?.collectionId, row.original?.id, row.original?.[column]);
-			console.log(src);
 			img.src = src;
 			loading = true;
 		}

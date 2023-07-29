@@ -80,7 +80,7 @@
 		<div class="flex gap-3 mx-6 justify-end items-center py-3 border-t">
 			<Btn type="button" title="Cancel" color="info" on:click={() => modal.hide(id)} />
 			{#if id === 'create'}
-				<Btn type="submit" title="Create" color="warning" form={`${id}Form`} />
+				<Btn type="submit" title="Create" color="base" form={`${id}Form`} />
 			{/if}
 			{#if id === 'update'}
 				<Btn type="submit" title="Update" color="warning" form={`${id}Form`} />

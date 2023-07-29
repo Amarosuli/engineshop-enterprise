@@ -33,8 +33,8 @@ export const actions = {
           * and use the formData() that already grabbed into const formData variable.
           */
 
-         logo.size === 0 ? formData.delete('logo') : ""
-         locals.pb.collection('customers').create(formData)
+         if (logo.size === 0) formData.delete('logo')
+         CommonHelpers.createData(locals, 'customers', formData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -61,9 +61,8 @@ export const actions = {
           * if no id, return fail
           * if no image, delete the key (prevent pocketbase remove the curent image in database)
          */
-         logo.size === 0 ? formData.delete('logo') : ""
-
-         await updateDate(locals, 'customers', id, formData)
+         if (logo.size === 0) formData.delete('logo')
+         CommonHelpers.updateData(locals, 'customers', id, formData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
