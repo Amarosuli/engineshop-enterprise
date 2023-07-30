@@ -72,26 +72,19 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog {id} data-backDrop={true} class="absolute flex {ModalPosition[position]}  z-20 w-full h-full overflow-hidden" {open} in:classes={blurIn} out:classes={blurOut} on:click|stopPropagation={backDropOnClik}>
-	<div class="absolute flex flex-col justify-between z-30 lg:mx-0 {ContentSize[position]} bg-slate-100" in:IN|local out:OUT|local>
-		<div class="w-full h-max overflow-y-auto">
+<dialog {id} data-backDrop={true} class="modal-backdrop {ModalPosition[position]}" {open} in:classes={blurIn} out:classes={blurOut} on:click|stopPropagation={backDropOnClik}>
+	<div class="modal-container {ContentSize[position]}" in:IN|local out:OUT|local>
+		<div class="modal-content">
 			<slot />
 		</div>
 		<div class="flex gap-3 mx-6 justify-end items-center py-3 border-t">
 			<Btn type="button" title="Cancel" color="info" on:click={() => modal.hide(id)} />
 			{#if id === 'create'}
-				<Btn type="submit" title="Create" color="base" form={`${id}Form`} />
+				<Btn type="submit" title="Create" color="base" formId={`${id}Form`} />
 			{/if}
 			{#if id === 'update'}
-				<Btn type="submit" title="Update" color="warning" form={`${id}Form`} />
+				<Btn type="submit" title="Update" color="warning" formId={`${id}Form`} />
 			{/if}
 		</div>
 	</div>
 </dialog>
-
-<style>
-	dialog {
-		padding: 0;
-		margin: 0;
-	}
-</style>

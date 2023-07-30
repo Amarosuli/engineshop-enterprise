@@ -1,0 +1,31 @@
+.manage-container {
+	@apply absolute inset-0 flex;
+}
+
+.manage-l {
+	@apply hidden basis-1/4 md:block;
+}
+
+.manage-r {
+	@apply flex basis-full flex-col flex-nowrap overflow-auto;
+}
+
+.manage-r-header {
+	@apply flex h-max flex-nowrap justify-between gap-4 overflow-x-auto bg-slate-200 px-6 pb-12 pt-4;
+}
+
+.manage-r-title {
+	@apply w-max;
+}
+
+.title {
+	@apply text-xl font-extrabold tracking-wide text-slate-600;
+}
+
+.manage-r-action {
+	@apply flex flex-wrap items-center justify-between pb-8 lg:pb-0;
+}
+
+.manage-r-content {
+	@apply relative overflow-y-auto bg-red-200;
+}

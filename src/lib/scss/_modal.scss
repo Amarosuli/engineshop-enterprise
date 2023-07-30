@@ -1,13 +1,10 @@
 // MODAL CREATE, DETAIL, EDIT
+.modal-backdrop {
+	@apply absolute z-20 m-0 flex h-full w-full overflow-hidden p-0;
+}
 .modal-container {
-	@apply mt-4 flex w-full flex-col items-center justify-center px-4;
-}
-.modal-header {
-	@apply flex w-full items-center justify-between px-3;
-}
-.modal-title {
-	@apply border-b border-dashed border-slate-700 py-2 text-xl font-extrabold;
+	@apply absolute z-30 flex flex-col justify-between bg-slate-100 lg:mx-0;
 }
 .modal-content {
-	@apply mx-2 mt-4 flex w-full flex-col;
+	@apply h-max w-full overflow-y-auto;
 }

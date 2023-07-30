@@ -4,7 +4,9 @@
 	import '$lib/scss/_base.scss';
 	import '$lib/scss/_table.scss';
 	import '$lib/scss/_modal.scss';
-
+	import '$lib/scss/_form.scss';
+	import '$lib/scss/_button.scss';
+	import '$lib/scss/_manage.scss';
 	export let data;
 	import { Layout } from '$lib/components';
 </script>

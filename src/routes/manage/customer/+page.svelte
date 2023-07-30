@@ -1,6 +1,5 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
 	import { _row, modal } from '$lib/utils/store';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -207,28 +206,28 @@
 	</Modal>
 {/if}
 
-<div class="absolute inset-0 flex">
-	<div class="basis-1/4 hidden md:block">
+<div class="manage-container">
+	<div class="manage-l">
 		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
 			<h1 class="text-xl text-slate-700 font-extrabold">Total Customer</h1>
 			<p class="text-base font-semibold">15 Customers</p>
 			<p class="text-slate-600">Engine Models are categorize by it's varian.</p>
 		</div>
 	</div>
-	<div class="basis-full flex flex-col flex-nowrap overflow-auto">
-		<div class="h-max pt-4 pb-12 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between overflow-x-auto">
-			<div class="w-max min-w-lg">
-				<span class="text-xl font-extrabold tracking-wide text-slate-600">Customers</span>
+	<div class="manage-r">
+		<div class="manage-r-header">
+			<div class="manage-r-title">
+				<span class="title">Customers</span>
 				<Search bind:value={search} />
 			</div>
-			<div class="pb-8 lg:pb-0 flex flex-wrap justify-between items-center">
-				<div class="flex flex-col lg:flex-row gap-3">
+			<div class="manage-r-action">
+				<div class="btn-group">
 					<Btn title="Create" on:click={() => modal.show('create')} />
 					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>
 		</div>
-		<div class="relative bg-red-200 overflow-y-auto">
+		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
 			<svelte:component this={Table} dataTable={customers} {dataCol} {search} bind:selectedRows bind:exportJSON />
 		</div>

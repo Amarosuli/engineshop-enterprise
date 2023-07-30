@@ -3,6 +3,10 @@
 	--bnt-focus-scale: 1;
 }
 
+.btn-group {
+	@apply flex flex-col gap-3 lg:flex-row;
+}
+
 .btn {
 	@apply select-none border-none px-4 py-2 align-middle text-sm;
 	&:active:hover,
