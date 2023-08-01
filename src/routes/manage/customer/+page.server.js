@@ -1,11 +1,10 @@
 import { superValidate } from 'sveltekit-superforms/server';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 
 import { _row } from '$lib/utils/store'
 import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const load = async ({ locals }) => {
-
    return {
       customers: await CommonHelpers.getCustomers(locals),
       form: await superValidate(CommonHelpers.customerSchema)
@@ -34,7 +33,7 @@ export const actions = {
           */
 
          if (logo.size === 0) formData.delete('logo')
-         CommonHelpers.createData(locals, 'customers', formData)
+         await CommonHelpers.createData(locals, 'customers', formData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -62,7 +61,7 @@ export const actions = {
           * if no image, delete the key (prevent pocketbase remove the curent image in database)
          */
          if (logo.size === 0) formData.delete('logo')
-         CommonHelpers.updateData(locals, 'customers', id, formData)
+         await CommonHelpers.updateData(locals, 'customers', id, formData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

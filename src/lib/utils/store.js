@@ -19,7 +19,7 @@ function ModalStore() {
    }
 }
 
-export const modal = ModalStore()
+export const modal$ = ModalStore()
 
 
 // TABLE STORE - ROW

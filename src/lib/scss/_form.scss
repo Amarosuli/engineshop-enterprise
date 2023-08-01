@@ -2,7 +2,7 @@
 	@apply mt-4 flex w-full flex-col items-center justify-center px-4;
 }
 .form-header {
-	@apply flex w-full items-center justify-between px-3;
+	@apply flex w-full select-none items-center justify-between px-3;
 }
 .form-title {
 	@apply border-b border-dashed border-slate-700 py-2 text-xl font-extrabold;

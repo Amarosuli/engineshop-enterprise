@@ -1,7 +1,7 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { _row, modal } from '$lib/utils/store';
+	import { _row, modal$ } from '$lib/utils/store';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Form, Search, File, Table, Text, Btn, Img } from '$lib/components';
 
@@ -30,7 +30,7 @@
 	 * destructure of modal costum store
 	 * make using method more simpler
 	 */
-	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal;
+	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
 
 	/**
 	 * define the table column
@@ -121,22 +121,37 @@
 </script>
 
 <svelte:head>
-	<title>Manage - Customers</title>
+	<title>Manage : Customers</title>
 </svelte:head>
 
 {#if $isDetail}
 	<Modal id="detail" position="right">
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal.show('update')} />
+		<div class="list-container">
+			<div class="list-header">
+				<h1 class="list-title">Detail Form</h1>
+				<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
 			</div>
-			<div class="modal-content">
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Customer Name: <span class="font-bold">{$_row?.original?.name}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Description: <span class="font-bold">{$_row?.original?.description}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">Logo: <img class="max-w-md h-max object-contain" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} /></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">IATA Code: <span class="font-bold">{$_row?.original?.code_IATA}</span></p>
-				<p class="font-semibold flex justify-between py-3 px-3 border-b">ICAO Code: <span class="font-bold">{$_row?.original?.code_ICAO}</span></p>
+			<div class="list-content">
+				<div class="list-row">
+					<span class="list-row-title">Customer Name: </span>
+					<span class="list-row-content">{$_row?.original?.name}</span>
+				</div>
+				<div class="list-row">
+					<span class="list-row-title">Description: </span>
+					<span class="list-row-content">{$_row?.original?.description}</span>
+				</div>
+				<div class="list-row">
+					<span class="list-row-title">Logo: </span>
+					<span class="list-row-content"><Img className="object-scale-down h-10" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" /></span>
+				</div>
+				<div class="list-row">
+					<span class="list-row-title">IATA Code: </span>
+					<span class="list-row-content">{$_row?.original?.code_IATA}</span>
+				</div>
+				<div class="list-row">
+					<span class="list-row-title">ICAO Code: </span>
+					<span class="list-row-content">{$_row?.original?.code_ICAO}</span>
+				</div>
 			</div>
 		</div>
 	</Modal>
@@ -172,16 +187,16 @@
 	<!-- <Modal id="delete" position="mid">Content</Modal> -->
 	<div class="absolute flex right-0 bottom-10 justify-center items-center mx-auto z-20 h-max bg-orange-200 shadow w-max py-3 pl-6 pr-3 space-x-3">
 		<span>Delete {selectedRows.length} selected data?</span>
-		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal.show('confirm')}>Yes</button>
+		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
 		<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
 	</div>
 {/if}
 
 {#if $isConfirm}
 	<Modal id="confirm" position="mid">
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">Are you sure ?</h1>
+		<div class="list-container">
+			<div class="list-header">
+				<h1 class="list-title">Are you sure ?</h1>
 			</div>
 			<div class="w-full pt-3">
 				{#each selectedRows as { original }, index}
@@ -222,7 +237,7 @@
 			</div>
 			<div class="manage-r-action">
 				<div class="btn-group">
-					<Btn title="Create" on:click={() => modal.show('create')} />
+					<Btn title="Create" on:click={() => modal$.show('create')} />
 					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>

@@ -1,33 +1,31 @@
 import { superValidate } from 'sveltekit-superforms/server';
-import { getEngineList, getEngineModels, getCustomers } from '$lib/helpers/pocketbaseSchema'
-import { engineListSchema } from '$lib/helpers/zodSchema'
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
+
 import { _row } from '$lib/utils/store'
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const load = async ({ locals }) => {
-   const form = await superValidate(engineListSchema)
-
    let engineList = async () => {
       /**
        * add 'model' and 'customer key to array
        * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
        */
-      let raw = await getEngineList(locals)
+      let raw = await CommonHelpers.getEngineList(locals)
       let engineModels = raw.map(value => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name }))
       return engineModels
    }
    return {
-      form,
+      form: await superValidate(CommonHelpers.engineListSchema),
       engineList: await engineList(),
-      engineModels: await getEngineModels(locals),
-      customers: await getCustomers(locals)
+      engineModels: await CommonHelpers.getEngineModels(locals),
+      customers: await CommonHelpers.getCustomers(locals)
 
    }
 }
 
 export const actions = {
    create: async ({ request, locals }) => {
-      const form = await superValidate(request, engineListSchema)
+      const form = await superValidate(request, CommonHelpers.engineListSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
@@ -42,10 +40,12 @@ export const actions = {
        */
       try {
          // 1. create data to engine_list, then get the id from result
-         let { id } = await locals.pb.collection('engine_list').create(form.data)
+         // let { id } = await locals.pb.collection('engine_list').create(form.data)
+         let { id } = await CommonHelpers.createData(locals, 'engine_list', form.data)
          // 2. create new object for create data to engine_availability
          let engineAvailabilityData = { "engine_id": id, "date_in": new Date(), "isInShop": true }
-         await locals.pb.collection('engine_availability').create(engineAvailabilityData)
+         // await locals.pb.collection('engine_availability').create(engineAvailabilityData)
+         await CommonHelpers.createData(locals, 'engine_availability', engineAvailabilityData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -63,23 +63,21 @@ export const actions = {
        * then formData pass into superValidate to validate what necessary
        */
       const formData = await request.formData()
-      const { id } = Object.fromEntries(formData)
-
-      // const form = await superValidate(request, engineListSchema) -- old
-      const form = await superValidate(formData, engineListSchema)
+      const form = await superValidate(formData, CommonHelpers.engineListSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form })
       }
 
+      const id = formData.get('id')
+
       try {
          /**
           * it feels wasting time to check form data is equal to curent data.
           *  will remove this or find the new better way
           */
-
-         await locals.pb.collection('engine_list').update(id, form.data)
+         await CommonHelpers.updateData(locals, 'engine_list', id, form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

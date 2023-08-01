@@ -1,35 +1,32 @@
 import { superValidate } from 'sveltekit-superforms/server';
-import { getEngineModels, getEngineFamilies } from '$lib/helpers/pocketbaseSchema'
-import { engineModelSchema } from '$lib/helpers/zodSchema'
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
+
 import { _row } from '$lib/utils/store'
-import { get } from 'svelte/store'
-import { goto } from '$app/navigation'
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const load = async ({ locals }) => {
-   const form = await superValidate(engineModelSchema)
-
    let engineModels = async () => {
       /**
        * add 'family' key to array
        * value from the expand relation ( expand.family_id.name )
        */
-      let raw = await getEngineModels(locals)
+      let raw = await CommonHelpers.getEngineModels(locals)
       let engineModels = raw.map(value => ({ ...value, family: value?.expand?.family_id?.name }))
       return engineModels
    }
 
    return {
+      form: await superValidate(CommonHelpers.engineModelSchema),
       engineModels: await engineModels(),
-      engineFamilies: await getEngineFamilies(locals), // required to be an select options for the create form and update form
-      form
+      engineFamilies: await CommonHelpers.getEngineFamilies(locals), // required to be an select options for the create form and update form
+
 
    }
 }
 
 export const actions = {
    create: async ({ request, locals }) => {
-      const form = await superValidate(request, engineModelSchema)
+      const form = await superValidate(request, CommonHelpers.engineModelSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
@@ -37,7 +34,7 @@ export const actions = {
       }
 
       try {
-         await locals.pb.collection('engine_models').create(form.data)
+         await CommonHelpers.createData(locals, 'engine_models', form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -55,23 +52,21 @@ export const actions = {
        * then formData pass into superValidate to validate what necessary
        */
       const formData = await request.formData()
-      const { id } = Object.fromEntries(formData)
-
-      // const form = await superValidate(request, engineModelSchema) -- old
-      const form = await superValidate(formData, engineModelSchema)
+      const form = await superValidate(formData, CommonHelpers.engineModelSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form })
       }
 
+      const id = formData.get('id')
+
       try {
          /**
           * it feels wasting time to check form data is equal to curent data.
           *  will remove this or find the new better way
           */
-
-         await locals.pb.collection('engine_models').update(id, form.data)
+         await CommonHelpers.updateData(locals, 'engine_models', id, form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

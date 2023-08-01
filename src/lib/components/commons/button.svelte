@@ -8,7 +8,7 @@
 	export let center = false;
 	export let right = false;
 	export let left = false;
-	export let formId = null;
+	export let form = null;
 
 	/**
 	 * Checking @color is valid name ref to @ColorName
@@ -22,5 +22,5 @@
 	}
 </script>
 
-<button {formId} class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} {type} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" on:click
+<button {type} {form} class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" on:click
 	>{title}</button>

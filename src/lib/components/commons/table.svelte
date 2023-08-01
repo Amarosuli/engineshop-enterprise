@@ -1,6 +1,6 @@
 <script>
 	import { readable } from 'svelte/store';
-	import { modal, _rowSet, _setSelectedRows } from '$lib/utils/store';
+	import { modal$, _rowSet, _setSelectedRows } from '$lib/utils/store';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
@@ -15,7 +15,7 @@
 	export let selectedRows = [];
 	export let exportJSON = '';
 
-	const { isDelete, show } = modal;
+	const { isDelete, show } = modal$;
 	const data = readable(dataTable);
 
 	class SuperTable {
@@ -129,7 +129,7 @@
 	const handleClick = (event, row) => {
 		if (event.target.getAttribute('data-row')) {
 			_rowSet(row); // set data from clicked row
-			modal.show('detail'); // show modal detail
+			modal$.show('detail'); // show modal detail
 		}
 	};
 
@@ -143,16 +143,16 @@
 			// maybe we can use pop function in store to hide modal one by one according to it's order
 			if ($isDelete && $selectedDataIds) {
 				modalNames.forEach((name) => {
-					modal.hide(name);
+					modal$.hide(name);
 				});
 				return;
 			}
-			modal.reset(); // reset modal store
+			modal$.reset(); // reset modal store
 			// reset table row store
 		}
 	}
 
-	$: Object.keys($selectedDataIds).length !== 0 ? modal.show('delete') : modal.hide('delete');
+	$: Object.keys($selectedDataIds).length !== 0 ? modal$.show('delete') : modal$.hide('delete');
 
 	$: lengthOfRow = $Br.length === 0;
 </script>
