@@ -1,4 +1,6 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+
 	import 'iconify-icon';
 	export let id = Math.random().toString();
 	export let name = 'text';
@@ -23,15 +25,25 @@
 			isNotEmpty = '';
 		}
 	};
+
+	const dispatch = createEventDispatcher();
+	const onEnter = (e) => {
+		if (!e || !e.target) {
+			return;
+		}
+
+		if (e.keyCode === 13 || e.key === 'Enter') dispatch('Enter', { value: value });
+	};
 </script>
 
 <div>
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<div class="relative justify-center">
-		<iconify-icon class="absolute ml-3 mt-1" color="" rotate="1" icon="bi:search" />
-		<input type="text" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value />
+	<div class="group marker:relative justify-center">
+		<!-- <iconify-icon class="absolute ml-3 mt-1" color="" rotate="1" icon="bi:search" /> -->
+		<i class="ri-search-2-line ri-xl group:focus:text-sky-600 absolute ml-2 mt-1" />
+		<input type="text peer" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value on:keydown={onEnter} />
 	</div>
 	{#if error}
 		<span>{error}</span>
@@ -52,6 +64,6 @@
 		@apply self-start tracking-widest;
 	}
 	input {
-		@apply h-10 border-b border-slate-200 py-2 pl-9 pr-4 text-slate-700 transition-colors ease-out hover:border-sky-200 hover:bg-slate-200 focus:border-sky-500 focus:bg-slate-50 focus:outline-none;
+		@apply h-10 border-b border-slate-200 py-2 pl-10 pr-4 text-slate-700 transition-colors ease-out hover:border-sky-200 hover:bg-slate-200 focus:border-sky-500 focus:bg-slate-50 focus:outline-none;
 	}
 </style>

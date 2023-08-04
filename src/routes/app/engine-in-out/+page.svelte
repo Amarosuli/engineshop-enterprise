@@ -1,8 +1,10 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
-	import { _row, modal } from '$lib/utils/store';
-	import { Modal, Search, Menu, Select, Link, Btn, Table, Text, Date, Switch, TextArea } from '$lib/components';
+
+	import { _row, modal$ } from '$lib/utils/store';
+	import { Modal, Search, Menu, Select, Link, Btn, Table, Text, Form, Date, Switch, TextArea } from '$lib/components';
+
 	import OutgoingForm from './OutgoingForm.svelte';
 	import IncomingForm from './IncomingForm.svelte';
 
@@ -32,23 +34,35 @@
 	 * destructure of modal costum store
 	 * make using method more simpler
 	 */
-	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal;
+	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
 
 	let formDisplay = 'incoming';
 
 	let isEngineExist = false;
 	let inputCheck = '';
+	let inputCheckError = '';
 	let selectedData = {};
 	let curentEngine = {};
 
 	function resetVars() {
 		isEngineExist = false;
+		inputCheckError = '';
 		inputCheck = '';
 		selectedData = {};
 		curentEngine = {};
 	}
-	function handleCheck() {
-		let result = engineList.find(({ esn }) => inputCheck === esn);
+
+	function handleCheck(e) {
+		// check if input is empty
+		if (e.detail.value.length === 0) {
+			inputCheckError = 'Input cannot be empty';
+			resetVars();
+			return;
+		}
+		// then if value is not empty
+		inputCheck = e.detail.value;
+		inputCheckError = '';
+		let result = engineList.find(({ esn }) => e.detail.value === esn);
 
 		// 1a. check if esn exist in engine_list,  pass to next conditional
 		if (result) {
@@ -66,7 +80,7 @@
 							selectedData = val;
 						} else {
 							// show notification
-							modal.show('confirmOutgoingOnly');
+							modal$.show('confirmOutgoingOnly');
 							console.log('engine already outshop, available for incoming only');
 							selectedData = {};
 						}
@@ -77,7 +91,7 @@
 							isEngineExist = false;
 							selectedData = val;
 							console.log('create incoming form');
-							modal.show('confirmIncomingOnly');
+							modal$.show('confirmIncomingOnly');
 						} else {
 							isEngineExist = true;
 							selectedData = val;
@@ -90,7 +104,7 @@
 			// 1b. if esn not exist in engine_list, show confirm "engine not found, go to manage/engine-list to create"
 			isEngineExist = false;
 			selectedData = {};
-			modal.show('confirmNotFound');
+			modal$.show('confirmNotFound');
 		}
 	}
 </script>
@@ -99,53 +113,53 @@
 	<title>Manage - Engine List</title>
 </svelte:head>
 
-{#if $modal.find((v) => v.id === 'confirmNotFound')}
+{#if $modal$.find((v) => v.id === 'confirmNotFound')}
 	<Modal id="confirmNotFound" position="mid">
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">ESN {inputCheck} Not Exist</h1>
+		<div class="list-container">
+			<div class="list-header">
+				<h1 class="list-title">ESN {inputCheck} Not Exist</h1>
 			</div>
-			<div class="mt-6 flex flex-col space-y-3 justify-start">
-				<p class="font-bold text-lg">! ESN {inputCheck} not recognized</p>
+			<div class="mt-6 flex flex-col space-y-3">
+				<p class="font-bold text-lg">ESN {inputCheck} not recognized</p>
 				<p>Go to <strong>engine-list</strong> to create new Engine</p>
 				<Link href="/manage/engine-list" title="Go To Engine List" color="warning" />
 			</div>
 
-			<div class="modal-content" />
+			<div class="list-content" />
 		</div>
 	</Modal>
 {/if}
 
-{#if $modal.find((v) => v.id === 'confirmOutgoingOnly')}
+{#if $modal$.find((v) => v.id === 'confirmOutgoingOnly')}
 	<Modal id="confirmOutgoingOnly" position="mid">
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">ESN {inputCheck} Exist</h1>
+		<div class="list-container">
+			<div class="list-header">
+				<h1 class="list-title">ESN {inputCheck} Exist</h1>
 			</div>
 			<div class="mt-6 flex flex-col space-y-3 justify-start">
-				<p class="font-bold text-lg">! ESN {inputCheck} already inshop</p>
+				<p class="font-bold text-lg">But ESN {inputCheck} already inshop</p>
 				<p>Switch to <strong>outgoing </strong> to release engine</p>
 				<!-- <Link href="/manage/engine-list" title="Go To Engine List" color="warning" /> -->
 			</div>
 
-			<div class="modal-content" />
+			<div class="list-content" />
 		</div>
 	</Modal>
 {/if}
 
-{#if $modal.find((v) => v.id === 'confirmIncomingOnly')}
+{#if $modal$.find((v) => v.id === 'confirmIncomingOnly')}
 	<Modal id="confirmIncomingOnly" position="mid">
-		<div class="modal-container">
-			<div class="modal-header">
-				<h1 class="modal-title">ESN {inputCheck} Exist</h1>
+		<div class="list-container">
+			<div class="list-header">
+				<h1 class="list-title">ESN {inputCheck} Exist</h1>
 			</div>
 			<div class="mt-6 flex flex-col space-y-3 justify-start">
-				<p class="font-bold text-lg">! ESN {inputCheck} already released</p>
+				<p class="font-bold text-lg">But ESN {inputCheck} already released</p>
 				<p>Switch to <strong>incoming </strong> to register engine</p>
 				<!-- <Link href="/manage/engine-list" title="Go To Engine List" color="warning" /> -->
 			</div>
 
-			<div class="modal-content" />
+			<div class="list-content" />
 		</div>
 	</Modal>
 {/if}
@@ -177,10 +191,11 @@
 		<div class="relative overflow-y-auto">
 			<div class="w-full h-max bg-slate-200 mt-4 px-6 pt-4 pb-6">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine <span class="text-orange-600 underline capitalize">{formDisplay}</span> Form</span>
-				<div class="flex justify-center items-end gap-3 w-fit mt-4">
-					<Text id="check" name="check" label="Check ESN" bind:value={inputCheck} required />
-					<Btn title="Check" type="submit" color="warning" on:click={handleCheck} left />
-				</div>
+				<form action="" class="flex justify-center items-center gap-3 w-fit mt-4">
+					<Search id="check" name="check" label="Check ESN" error={inputCheckError} required on:Enter={handleCheck} />
+					<!-- <Text id="check" name="check" label="Check ESN" bind:value={inputCheck} error={inputCheckError} required />
+					<Btn title="Check" type="submit" color="warning" on:click={handleCheck} left /> -->
+				</form>
 				{#if formDisplay === 'incoming'}
 					{#if isEngineExist}
 						<IncomingForm {selectedData} {inputCheck} {form} />

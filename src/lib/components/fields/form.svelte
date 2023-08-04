@@ -13,7 +13,7 @@
 		<h1 class="form-title">{title} Form</h1>
 	</div>
 	<div class="form-content">
-		<form class="form-body" id={`${id}Form`} {action} {method} {enctype} use:enhance>
+		<form class="form-body" id={`${id}Form`} {action} {method} {enctype} on:submit use:enhance>
 			<slot />
 			{#if $errors?.pocketbaseErrors}
 				<span class="form-error">{$errors?.pocketbaseErrors}</span>
