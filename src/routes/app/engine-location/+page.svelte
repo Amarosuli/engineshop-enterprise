@@ -193,6 +193,26 @@
 		}
 	];
 
+	const pillar = [
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', 'H', 'I', 'J'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
+		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0']
+	];
+
 	const tileSize = 120;
 	let pz, elArea;
 	let isNeoActive = true;
@@ -273,12 +293,23 @@
 			pz.zoomToPoint(3, e, { animate: true });
 		});
 	});
+
+	let togglePillar = false;
 </script>
 
 <svelte:window on:keydown={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} />
 
-<button on:click={() => (isNeoActive = !isNeoActive)} class="absolute z-40 right-4 top-16 px-4 py-2 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
-<button on:click={pz.reset()} class="absolute z-40 right-4 top-4 px-4 py-2 rounded-md shadow-md hover:bg-sky-400 bg-sky-300">Reset</button>
+<div class="absolute flex flex-col justify-center items-end z-40 bottom-4 right-4 bg-slate-600/50 shadow-lg">
+	<div class="flex flex-col px-3 py-4 space-y-4">
+		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Label</button>
+		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
+		<button on:click={() => (isNeoActive = !isNeoActive)} class=" px-4 py-2 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
+		<button on:click={pz.reset()} class="px-4 py-2 rounded-md shadow-md hover:bg-sky-400 bg-sky-300">Reset</button>
+	</div>
+	<div class="w-full flex justify-center items-center py-4 bg-slate-100">
+		<button class="font-bold">X</button>
+	</div>
+</div>
 <div class="manage-container overflow-auto bg-teal-300">
 	<div id="base" class="base" bind:this={baseDOM} style="height: {tileSize * 16}px; width: {tileSize * 10}px;">
 		<!-- BASE -->
@@ -289,13 +320,22 @@
 				</div>
 			{/each}
 		{/each}
+
 		<!-- AREA -->
 		{#each area as row, indexR}
-			<div id={row.id} class="area absolute flex justify-center items-center bg-green-400/40" style="margin-left: {row.pos.x}px; margin-top: {row.pos.y}px; height: {row.size.h}px; width: {row.size.w}px;">
+			<div id={row.id} class="area absolute flex justify-center items-center bg-green-400/40 border-[0.5px] border-orange-300" style="margin-left: {row.pos.x}px; margin-top: {row.pos.y}px; height: {row.size.h}px; width: {row.size.w}px;">
 				<span class="tile-text text-xxs">{row.text}</span>
 			</div>
 		{/each}
+
 		<!-- PILLAR -->
+		{#each pillar as row, indexR}
+			{#each row as col, indexC}
+				{#if col !== '0'}
+					<span class:hidden={togglePillar} class="absolute flex justify-center -top-1.5 -left-1.5 bg-slate-500 text-white w-3 h-3 rounded-full text-center items-center text-[4px]" style="margin-left: {tileSize * indexC}px; margin-top: {tileSize * indexR}px; ">{col}{indexR + 1}</span>
+				{/if}
+			{/each}
+		{/each}
 
 		<!-- ENGINE -->
 		<div on:neodrag:start={onDragStart} on:neodrag={onDrag} on:neodrag:end={onDragEnd} use:draggable={{ bounds: 'parent', disabled: isNeoActive }} class="engine">
@@ -309,13 +349,13 @@
 		@apply absolute bg-slate-300;
 	}
 	.base-tile {
-		@apply absolute flex items-center justify-center border bg-slate-100;
+		@apply absolute flex items-center justify-center border-[0.5px] border-dashed bg-slate-100;
 	}
 	.tile-text {
-		@apply select-none text-center;
+		@apply select-none text-center font-mono text-[8px];
 	}
 
 	.engine {
-		@apply absolute flex h-12 w-16 items-center justify-center rounded bg-slate-600 p-3 shadow-lg;
+		@apply absolute flex h-2 w-8 items-center justify-center rounded bg-slate-600 p-3 shadow-lg;
 	}
 </style>
