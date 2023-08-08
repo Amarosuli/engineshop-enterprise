@@ -92,6 +92,17 @@ export class CommonHelpers {
       return this.CPOJOs(result)
    }
 
+   /**
+    * 
+    * @param {*} pbClient 
+    * @param {String} collectionName 
+    * @param {String} filter 
+    */
+   static findByFilter = async (pbClient, collectionName, filter) => {
+      // issue? filter with template literals error output string.
+      return await pbClient.pb.collection(collectionName).getFirstListItem(filter)
+   }
+
    static getEngineFamilies = async (pbClient) => {
       return await this.getFullList(pbClient, 'engine_families')
    }
@@ -117,6 +128,10 @@ export class CommonHelpers {
 
    static getPreservationList = async (pbClient) => {
       return await this.getFullList(pbClient, 'preservation_list')
+   }
+
+   static getEngineLocation = async (pbClient) => {
+      return await this.getFullList(pbClient, 'engine_location')
    }
 
    /** Pocketbase Schemas @POST */

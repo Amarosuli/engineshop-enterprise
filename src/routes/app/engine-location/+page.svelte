@@ -1,8 +1,21 @@
 <script>
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+
 	import { onMount } from 'svelte';
 	import { draggable } from '@neodrag/svelte';
 	import Panzoom from '@panzoom/panzoom';
+	export let data;
 
+	let { engineList, engineLocation } = data;
+
+	let engineTile;
+
+	$: engineTile = engineList.map((value) => ({ ...value, loc: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
+
+	const initialPosition = {
+		x: 45,
+		y: 23
+	};
 	const base = [
 		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
 		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
@@ -223,6 +236,8 @@
 	 * base map should have default position to center of screen
 	 * default event panzoom is active | CLOSED
 	 * use toggler to move engine (deactivated panzoom) or use Shift Key | CLOSED
+	 *
+	 * When Engine Create, there's 3 step to do: Create Data in engine_list, Create Data in engine_availability, and Create Data in engine_location (with default value {x: 45, y:23}) it will increase work in initial data, but for this map will be simpler
 	 */
 
 	function isCollide(a, b) {
@@ -250,6 +265,7 @@
 	}
 
 	function onDragEnd(e) {
+		let lastPosition = { x: e.detail.offsetX, y: e.detail.offsetY };
 		let currentEl = e.detail.currentNode;
 		let inArea;
 		elArea.forEach((area) => {
@@ -258,14 +274,14 @@
 			}
 		});
 
-		console.log('::DRAGEND:: \n');
-		console.log(inArea.id);
+		console.log('::DRAGEND:: \n', lastPosition);
+		console.log(inArea.id || null);
 	}
 	let baseDOM;
 	// $: console.log(isNeoActive);
 	// $: console.log(baseDOM);
 
-	onMount(() => {
+	onMount(async () => {
 		elArea = document.querySelectorAll('.area');
 		const parent = document.getElementById('base');
 		pz = Panzoom(parent, {
@@ -291,6 +307,10 @@
 		parent.parentElement.addEventListener('click', (e) => {
 			if (!e.altKey) return;
 			pz.zoomToPoint(3, e, { animate: true });
+		});
+
+		await CommonHelpers.pb.collection('engine_location').subscribe('*', function (e) {
+			console.log('::REALTIME::\n', e);
 		});
 	});
 
@@ -338,9 +358,13 @@
 		{/each}
 
 		<!-- ENGINE -->
-		<div on:neodrag:start={onDragStart} on:neodrag={onDrag} on:neodrag:end={onDragEnd} use:draggable={{ bounds: 'parent', disabled: isNeoActive }} class="engine">
-			<span class="text-center text-[4px] break-words text-white">ESN 858418</span>
-		</div>
+		<!-- engineTile should have data loc, with default value or actual value -->
+		<!-- so the defaultPosition is always set by loc.position value without checking -->
+		{#each engineTile as { id, loc, esn }, index}
+			<div on:neodrag:start={onDragStart} on:neodrag={onDrag} on:neodrag:end={onDragEnd} use:draggable={{ bounds: 'parent', disabled: isNeoActive, defaultPosition: { x: initialPosition.x, y: initialPosition.y * (index + 1) } }} class="engine">
+				<span class="text-center text-[4px] break-words text-white">ESN {esn}</span>
+			</div>
+		{/each}
 	</div>
 </div>
 

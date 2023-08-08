@@ -44,3 +44,6 @@ export const _resSelectedRows = _row.set({})
 // }
 
 // export const table = TableStore()
+
+
+export const realtimeEngineLocation = writable({})

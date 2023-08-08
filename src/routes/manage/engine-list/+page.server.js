@@ -32,20 +32,35 @@ export const actions = {
          return fail(400, { form })
       }
 
+      // check if esn already exist
+
+
       /**
-       * create actions of engine-list have two task
+       * create actions of engine-list have 3 task
+       * pre - check if esn is already exist
        * 1. create data to engine_list
-       * 2. create data to engine_availability (assumed new engine is engine incoming)
+       * pre - no check, if the first data not exist it means new
+       * 2. create data to engine_availability (always assumed new engine is engine incoming, old data will be set)
+       * pre - no check, if the first data not exist it means new
+       * 3. create data to engine_location (with default position value)
        * if data in engine_list deleted, data in engine_availability also removed
        */
       try {
+
          // 1. create data to engine_list, then get the id from result
          // let { id } = await locals.pb.collection('engine_list').create(form.data)
          let { id } = await CommonHelpers.createData(locals, 'engine_list', form.data)
          // 2. create new object for create data to engine_availability
          let engineAvailabilityData = { "engine_id": id, "date_in": new Date(), "isInShop": true }
-         // await locals.pb.collection('engine_availability').create(engineAvailabilityData)
          await CommonHelpers.createData(locals, 'engine_availability', engineAvailabilityData)
+         // 3. create data to engine_location
+         let engineLocationData = {
+            "engine_id": id, "position": {
+               x: 45,
+               y: 23
+            }, "location": ''
+         }
+         await CommonHelpers.createData(locals, 'engine_location', engineLocationData)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
