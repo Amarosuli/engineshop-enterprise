@@ -1,7 +1,6 @@
 import { superValidate } from 'sveltekit-superforms/server';
 import { fail } from '@sveltejs/kit';
 
-import { _row } from '$lib/utils/store'
 import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export const load = async ({ locals }) => {
@@ -25,16 +24,6 @@ export const load = async ({ locals }) => {
 
 export const actions = {
    create: async ({ request, locals }) => {
-      const form = await superValidate(request, CommonHelpers.engineListSchema)
-
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form })
-      }
-
-      // check if esn already exist
-
-
       /**
        * create actions of engine-list have 3 task
        * pre - check if esn is already exist
@@ -43,24 +32,39 @@ export const actions = {
        * 2. create data to engine_availability (always assumed new engine is engine incoming, old data will be set)
        * pre - no check, if the first data not exist it means new
        * 3. create data to engine_location (with default position value)
-       * if data in engine_list deleted, data in engine_availability also removed
+       * if data in engine_list deleted, data in engine_availability and engine_location also removed
        */
-      try {
 
-         // 1. create data to engine_list, then get the id from result
-         // let { id } = await locals.pb.collection('engine_list').create(form.data)
-         let { id } = await CommonHelpers.createData(locals, 'engine_list', form.data)
-         // 2. create new object for create data to engine_availability
-         let engineAvailabilityData = { "engine_id": id, "date_in": new Date(), "isInShop": true }
-         await CommonHelpers.createData(locals, 'engine_availability', engineAvailabilityData)
-         // 3. create data to engine_location
-         let engineLocationData = {
-            "engine_id": id, "position": {
-               x: 45,
-               y: 23
-            }, "location": ''
+      const form = await superValidate(request, CommonHelpers.engineListSchema)
+
+      if (!form.valid) {
+         console.log('NOT VALID: ', form);
+         return fail(400, { form })
+      }
+
+      // pre[1] - Checking
+      try {
+         let isExist = await CommonHelpers.findByFilter(locals, 'engine_list', 'esn="' + form.data.esn + '"')
+         if (isExist) {
+            form.errors = {
+               esn: 'This ESN Already Exist'
+            }
+            return fail(400, { form })
          }
-         await CommonHelpers.createData(locals, 'engine_location', engineLocationData)
+      } catch (_) {
+         // console.log('::NOTEXIST::\n', _);
+      }
+
+      try {
+         let { id } = await CommonHelpers.createData(locals, 'engine_list', form.data) // [1] - Create
+         // pre[2]
+         let engineAvailabilityData = { "engine_id": id, "date_in": new Date(), "isInShop": true }
+         await CommonHelpers.createData(locals, 'engine_availability', engineAvailabilityData) // [2]
+         // pre[3]
+         let engineLocationData = {
+            "engine_id": id, "position": null, "location": ''
+         }
+         await CommonHelpers.createData(locals, 'engine_location', engineLocationData) // [3]
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

@@ -1,7 +1,7 @@
 lockfileVersion: '6.0'
 
 dependencies:
-  '@neodrag/svelte':
+  '@neodrag/vanilla':
     specifier: ^2.0.3
     version: 2.0.3
   '@panzoom/panzoom':
@@ -392,8 +392,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@neodrag/svelte@2.0.3:
-    resolution: {integrity: sha512-/7k4Byv6guBs6NpfzOnqOep8PM3HjhPg1rRPNsJsGNGDXSJNB+tn9NAi/vTXJBos3vN9XPlbnr3g/lNKGfg+Jg==}
+  /@neodrag/vanilla@2.0.3:
+    resolution: {integrity: sha512-wMIUqfs+dPGTeSngA0PNwywnaObKQ9p45rztiWotOG5xa3X73/OneJS/4Bh3AotuuxmZBv/1NSxYu5IKUIVuNA==}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:

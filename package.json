@@ -32,7 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@neodrag/svelte": "^2.0.3",
+		"@neodrag/vanilla": "^2.0.3",
 		"@panzoom/panzoom": "^4.5.1",
 		"eventsource": "^2.0.2",
 		"iconify-icon": "^1.0.8",

@@ -1,233 +1,24 @@
 <script>
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+	import { CommonSets } from '$lib/utils/CommonSets';
 
+	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
-	import { draggable } from '@neodrag/svelte';
+	import { Draggable } from '@neodrag/vanilla';
+	// import { draggable } from '@neodrag/svelte';
 	import Panzoom from '@panzoom/panzoom';
+
 	export let data;
 
 	let { engineList, engineLocation } = data;
+	let engineTile = writable([]);
+	$engineTile = engineList.map((value) => ({ ...value, loc: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
 
-	let engineTile;
-
-	$: engineTile = engineList.map((value) => ({ ...value, loc: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
-
-	const initialPosition = {
-		x: 45,
-		y: 23
-	};
-	const base = [
-		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['0', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['1', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-		['1', '1', '1', '1', '1', '1', '0', '0', '1', '1'],
-		['1', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['1', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['1', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['1', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['0', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['0', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['0', '1', '1', '1', '1', '1', '0', '0', '0', '0'],
-		['0', '1', '1', '1', '1', '1', '0', '0', '0', '0']
-	];
-
-	const area = [
-		{
-			id: 'GAEM3K',
-			pos: { x: 120, y: 0 },
-			size: { w: 180, h: 120 },
-			text: 'GAEM 3000'
-		},
-		{
-			id: 'GAEM1K',
-			pos: { x: 300, y: 0 },
-			size: { w: 180, h: 120 },
-			text: 'GAEM 1000'
-		},
-		{
-			id: 'KITTING',
-			pos: { x: 480, y: 0 },
-			size: { w: 480, h: 120 },
-			text: 'KITTING'
-		},
-		{
-			id: 'SURPLUS',
-			pos: { x: 960, y: 0 },
-			size: { w: 120, h: 120 },
-			text: 'SURPLUS'
-		},
-		{
-			id: 'OLDCLEANING',
-			pos: { x: 1080, y: 0 },
-			size: { w: 120, h: 120 },
-			text: 'OLD CLEANING'
-		},
-		{
-			id: 'ROAD1',
-			pos: { x: 120, y: 120 },
-			size: { w: 1080, h: 120 },
-			text: 'ROAD'
-		},
-		{
-			id: 'ROAD2',
-			pos: { x: 120, y: 600 },
-			size: { w: 1080, h: 60 },
-			text: 'ROAD'
-		},
-		{
-			id: 'TOILET1',
-			pos: { x: 120, y: 660 },
-			size: { w: 120, h: 60 },
-			text: 'TOILET'
-		},
-		{
-			id: 'CUSTOMER',
-			pos: { x: 240, y: 660 },
-			size: { w: 40, h: 60 },
-			text: 'CUSTOMER'
-		},
-		{
-			id: 'EO',
-			pos: { x: 280, y: 660 },
-			size: { w: 80, h: 60 },
-			text: 'EO'
-		},
-		{
-			id: 'GEMENGAD',
-			pos: { x: 420, y: 660 },
-			size: { w: 60, h: 120 },
-			text: 'GEMENGAD'
-		},
-		{
-			id: 'EPC',
-			pos: { x: 480, y: 660 },
-			size: { w: 160, h: 60 },
-			text: 'EPC'
-		},
-		{
-			id: 'ROAD3',
-			pos: { x: 360, y: 660 },
-			size: { w: 60, h: 1260 },
-			text: 'ROAD'
-		},
-		{
-			id: 'GANTRY1',
-			pos: { x: 360, y: 540 },
-			size: { w: 120, h: 60 },
-			text: 'GANTRY 1'
-		},
-		{
-			id: 'GANTRY2',
-			pos: { x: 360, y: 480 },
-			size: { w: 120, h: 60 },
-			text: 'GANTRY 2'
-		},
-		{
-			id: 'GANTRY3',
-			pos: { x: 360, y: 420 },
-			size: { w: 120, h: 60 },
-			text: 'GANTRY 3'
-		},
-		{
-			id: 'GANTRY4',
-			pos: { x: 360, y: 360 },
-			size: { w: 120, h: 60 },
-			text: 'GANTRY 4'
-		},
-		{
-			id: 'GANTRY5',
-			pos: { x: 360, y: 300 },
-			size: { w: 120, h: 60 },
-			text: 'GANTRY 5'
-		},
-		{
-			id: 'GANTRY6',
-			pos: { x: 360, y: 240 },
-			size: { w: 120, h: 60 },
-			text: 'GANTRY 6'
-		},
-		{
-			id: 'BAYROAD',
-			pos: { x: 320, y: 240 },
-			size: { w: 40, h: 360 },
-			text: 'BAY ROAD'
-		},
-		{
-			id: 'ROAD3',
-			pos: { x: 480, y: 240 },
-			size: { w: 40, h: 360 },
-			text: 'ROAD 3'
-		},
-		{
-			id: 'ROAD4',
-			pos: { x: 1040, y: 240 },
-			size: { w: 40, h: 360 },
-			text: 'ROAD'
-		},
-		{
-			id: 'BAY6',
-			pos: { x: 240, y: 240 },
-			size: { w: 80, h: 60 },
-			text: 'BAY 6'
-		},
-		{
-			id: 'BAY5',
-			pos: { x: 240, y: 300 },
-			size: { w: 80, h: 60 },
-			text: 'BAY 5'
-		},
-		{
-			id: 'BAY4',
-			pos: { x: 240, y: 360 },
-			size: { w: 80, h: 60 },
-			text: 'BAY 4'
-		},
-		{
-			id: 'BAY3',
-			pos: { x: 240, y: 420 },
-			size: { w: 80, h: 60 },
-			text: 'BAY 3'
-		},
-		{
-			id: 'BAY2',
-			pos: { x: 240, y: 480 },
-			size: { w: 80, h: 60 },
-			text: 'BAY 2'
-		},
-		{
-			id: 'BAY1',
-			pos: { x: 240, y: 540 },
-			size: { w: 80, h: 60 },
-			text: 'BAY 1'
-		}
-	];
-
-	const pillar = [
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', 'H', 'I', 'J'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0'],
-		['0', 'A', 'B', 'C', 'D', 'E', 'F', '0', '0', '0', '0']
-	];
-
-	const tileSize = 120;
-	let pz, elArea;
+	// $: console.log($engineTile);
+	let pz,
+		elArea,
+		engineInstance,
+		engineEl = [];
 	let isNeoActive = true;
 
 	/**
@@ -251,22 +42,51 @@
 		return !(aRect.y + aRect.height < bRect.y || aRect.y > bRect.y + bRect.height || aRect.x + aRect.width < bRect.x || aRect.x > bRect.x + bRect.width);
 	}
 	function neoSwitcher(e, val) {
-		if (val === 'on') if (e.shiftKey) isNeoActive = false;
+		if (val === 'on') {
+			if (e.shiftKey) {
+				isNeoActive = false;
+			}
+		}
 		if (val === 'off') isNeoActive = true;
 	}
 
 	function onDragStart(e) {
-		console.log('::DRAGSTART:: \n');
+		neoSwitcher(e, 'on');
+		console.log('::DRAGSTART:: \n', e.detail);
 	}
 
-	function onDrag(e) {
-		let pos = { x: e.detail.offsetX, y: e.detail.offsetY };
+	function onDrag({ currentNode, offsetX, offsetY }) {
+		console.log("::Trusted:: i'm moving");
+		// let pos = { x: e.detail.offsetX, y: e.detail.offsetY };
 		// console.log('::DRAGGING:: \n', pos);
 	}
 
+	/**
+	 *
+	 * @param {JSON} data
+	 */
+	async function updateData(data) {
+		const formData = new FormData();
+		formData.append('id', data.id);
+		formData.append('x', data.position.x);
+		formData.append('y', data.position.y);
+
+		const res = await fetch('/app/engine-location?/update', {
+			method: 'POST',
+			body: formData
+		});
+		const json = await res.json();
+
+		neoSwitcher('', 'off');
+		// console.log('RESULT\n', JSON.stringify(json));
+	}
+
 	function onDragEnd(e) {
-		let lastPosition = { x: e.detail.offsetX, y: e.detail.offsetY };
-		let currentEl = e.detail.currentNode;
+		console.log(e);
+		let lastPosition = { x: e.offsetX, y: e.offsetY };
+		let currentEl = e.currentNode;
+
+		// Check Collision
 		let inArea;
 		elArea.forEach((area) => {
 			if (isCollide(area, currentEl)) {
@@ -274,15 +94,33 @@
 			}
 		});
 
-		console.log('::DRAGEND:: \n', lastPosition);
-		console.log(inArea.id || null);
+		// Update the position data
+		let engineLocationData = {
+			id: currentEl.id,
+			position: lastPosition
+			// location: inArea.id
+		};
+
+		updateData(engineLocationData);
 	}
-	let baseDOM;
-	// $: console.log(isNeoActive);
-	// $: console.log(baseDOM);
+
+	function updatePosition(elementId, newPosition) {
+		let target = document.getElementById(elementId);
+
+		let targeto = engineEl.find(({ id }) => id === elementId);
+		targeto.instance.updateOptions({ position: newPosition });
+		return;
+	}
 
 	onMount(async () => {
-		elArea = document.querySelectorAll('.area');
+		elArea = document.querySelectorAll('.map-area');
+		engineInstance = document.querySelectorAll('.engine');
+
+		engineInstance.forEach((eng) => {
+			let engPosition = { x: eng.dataset.x, y: eng.dataset.y };
+			engineEl.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, onDragEnd: onDragEnd }) });
+		});
+
 		const parent = document.getElementById('base');
 		pz = Panzoom(parent, {
 			noBind: true,
@@ -309,15 +147,20 @@
 			pz.zoomToPoint(3, e, { animate: true });
 		});
 
-		await CommonHelpers.pb.collection('engine_location').subscribe('*', function (e) {
-			console.log('::REALTIME::\n', e);
+		/**
+		 * new how to check if current client is who made the request
+		 */
+		CommonHelpers.pb.collection('engine_location').subscribe('*', function (e) {
+			let { id, position } = e.record;
+			updatePosition(id, position);
+			// console.log('::REALTIME::\n', e);
 		});
 	});
 
 	let togglePillar = false;
 </script>
 
-<svelte:window on:keydown={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} />
+<svelte:document on:keydown|capture={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} />
 
 <div class="absolute flex flex-col justify-center items-end z-40 bottom-4 right-4 bg-slate-600/50 shadow-lg">
 	<div class="flex flex-col px-3 py-4 space-y-4">
@@ -331,28 +174,29 @@
 	</div>
 </div>
 <div class="manage-container overflow-auto bg-teal-300">
-	<div id="base" class="base" bind:this={baseDOM} style="height: {tileSize * 16}px; width: {tileSize * 10}px;">
+	<div id="base" class="base" style="height: {CommonSets.tileSize * 16}px; width: {CommonSets.tileSize * 10}px;">
 		<!-- BASE -->
-		{#each base as row, indexR}
+		{#each CommonSets.Base as row, indexR}
 			{#each row as col, indexC}
-				<div class="base-tile" class:!hidden={col == '0'} style="margin-left: {tileSize * indexC}px; margin-top: {tileSize * indexR}px; height: {tileSize}px; width: {tileSize}px;">
-					<!-- <span class="tile-text">{col}</span> -->
-				</div>
+				<svelte:element this="div" class="map-base" class:!hidden={col == '0'} style="margin-left: {CommonSets.tileSize * indexC}px; margin-top: {CommonSets.tileSize * indexR}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;" />
+				<!-- <div class="base-tile" class:!hidden={col == '0'} style="margin-left: {CommonSets.tileSize * indexC}px; margin-top: {CommonSets.tileSize * indexR}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;"> -->
+				<!-- <span class="tile-text">{col}</span> -->
+				<!-- </div> -->
 			{/each}
 		{/each}
 
 		<!-- AREA -->
-		{#each area as row, indexR}
-			<div id={row.id} class="area absolute flex justify-center items-center bg-green-400/40 border-[0.5px] border-orange-300" style="margin-left: {row.pos.x}px; margin-top: {row.pos.y}px; height: {row.size.h}px; width: {row.size.w}px;">
+		{#each CommonSets.Area as row, indexR}
+			<div id={row.id} class="map-area" style="margin-left: {row.pos.x}px; margin-top: {row.pos.y}px; height: {row.size.h}px; width: {row.size.w}px;">
 				<span class="tile-text text-xxs">{row.text}</span>
 			</div>
 		{/each}
 
 		<!-- PILLAR -->
-		{#each pillar as row, indexR}
+		{#each CommonSets.Pillar as row, indexR}
 			{#each row as col, indexC}
 				{#if col !== '0'}
-					<span class:hidden={togglePillar} class="absolute flex justify-center -top-1.5 -left-1.5 bg-slate-500 text-white w-3 h-3 rounded-full text-center items-center text-[4px]" style="margin-left: {tileSize * indexC}px; margin-top: {tileSize * indexR}px; ">{col}{indexR + 1}</span>
+					<span class:hidden={togglePillar} class="map-pillar" style="margin-left: {CommonSets.tileSize * indexC}px; margin-top: {CommonSets.tileSize * indexR}px; ">{col}{indexR + 1}</span>
 				{/if}
 			{/each}
 		{/each}
@@ -360,8 +204,8 @@
 		<!-- ENGINE -->
 		<!-- engineTile should have data loc, with default value or actual value -->
 		<!-- so the defaultPosition is always set by loc.position value without checking -->
-		{#each engineTile as { id, loc, esn }, index}
-			<div on:neodrag:start={onDragStart} on:neodrag={onDrag} on:neodrag:end={onDragEnd} use:draggable={{ bounds: 'parent', disabled: isNeoActive, defaultPosition: { x: initialPosition.x, y: initialPosition.y * (index + 1) } }} class="engine">
+		{#each $engineTile as { id, loc, esn }, index}
+			<div id={loc.id} data-x={loc.position?.x} data-y={loc.position?.y} class="engine {loc.id}">
 				<span class="text-center text-[4px] break-words text-white">ESN {esn}</span>
 			</div>
 		{/each}
@@ -372,8 +216,14 @@
 	.base {
 		@apply absolute bg-slate-300;
 	}
-	.base-tile {
+	.map-base {
 		@apply absolute flex items-center justify-center border-[0.5px] border-dashed bg-slate-100;
+	}
+	.map-area {
+		@apply absolute flex items-center justify-center border-[0.5px] border-orange-300 bg-green-400/40;
+	}
+	.map-pillar {
+		@apply absolute -left-1.5 -top-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-slate-500 text-center text-[4px] text-white;
 	}
 	.tile-text {
 		@apply select-none text-center font-mono text-[8px];

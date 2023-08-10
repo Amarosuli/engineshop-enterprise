@@ -54,7 +54,7 @@
 	const ContentSize = {
 		mid: 'h-[15rem] w-full xl:w-[500px] xl:h-[300px]',
 		left: 'h-full w-1/3',
-		right: 'h-full w-full xl:w-1/3',
+		right: 'h-full w-full md:w-1/2 xl:w-1/3',
 		mobile: 'h-full w-full'
 	};
 

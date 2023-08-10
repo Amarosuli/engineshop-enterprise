@@ -25,3 +25,19 @@ export const load = async ({ locals }) => {
       engineLocation: await CommonHelpers.getEngineLocation(locals)
    }
 }
+
+export const actions = {
+   update: async ({ request, locals }) => {
+      let form = await request.formData()
+      let id = form.get('id')
+      let x = form.get('x')
+      let y = form.get('y')
+
+      try {
+         let res = await locals.pb.collection('engine_location').update(id, { position: { x, y } })
+         console.log(res);
+      } catch (err) {
+         console.log('::ERROR::\n', err);
+      }
+   }
+}
