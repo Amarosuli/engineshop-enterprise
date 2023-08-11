@@ -109,7 +109,7 @@
 
 		let targeto = engineEl.find(({ id }) => id === elementId);
 		targeto.instance.updateOptions({ position: newPosition });
-		return;
+		// return;
 	}
 
 	onMount(async () => {
