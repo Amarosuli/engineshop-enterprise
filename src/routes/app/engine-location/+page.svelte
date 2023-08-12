@@ -1,34 +1,38 @@
 <script>
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { CommonSets } from '$lib/utils/CommonSets';
+	import Engine from './Engine.svelte';
 
 	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { Draggable } from '@neodrag/vanilla';
-	// import { draggable } from '@neodrag/svelte';
 	import Panzoom from '@panzoom/panzoom';
 
 	export let data;
 
 	let { engineList, engineLocation } = data;
-	let engineTile = writable([]);
-	$engineTile = engineList.map((value) => ({ ...value, loc: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
+	let engineTile = writable([]); // extend function to remove by id and add new data (or use invalidate)
+	$engineTile = engineList.map((value) => ({ ...value, _location: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
 
-	// $: console.log($engineTile);
 	let pz,
-		elArea,
-		engineInstance,
-		engineEl = [];
-	let isNeoActive = true;
+		mapArea,
+		baseElement,
+		engineElement,
+		engineInstance = [],
+		togglePillar = false,
+		toggleArea = false,
+		isNeoActive = true;
+
+	$: initialBasePosition = '';
 
 	/**
-	 * this page should implement loader
+	 * this page should implement loader | CLOSED
 	 * map structure : base - area (include road) - pillars - engine
 	 * base map should have default position to center of screen
 	 * default event panzoom is active | CLOSED
 	 * use toggler to move engine (deactivated panzoom) or use Shift Key | CLOSED
 	 *
-	 * When Engine Create, there's 3 step to do: Create Data in engine_list, Create Data in engine_availability, and Create Data in engine_location (with default value {x: 45, y:23}) it will increase work in initial data, but for this map will be simpler
+	 * When Engine Create, there's 3 step to do: Create Data in engine_list, Create Data in engine_availability, and Create Data in engine_location (with default value {x: 45, y:23}) it will increase work in initial data, but for this map will be simpler | CLOSED
 	 */
 
 	function isCollide(a, b) {
@@ -41,6 +45,7 @@
 
 		return !(aRect.y + aRect.height < bRect.y || aRect.y > bRect.y + bRect.height || aRect.x + aRect.width < bRect.x || aRect.x > bRect.x + bRect.width);
 	}
+
 	function neoSwitcher(e, val) {
 		if (val === 'on') {
 			if (e.shiftKey) {
@@ -50,21 +55,6 @@
 		if (val === 'off') isNeoActive = true;
 	}
 
-	function onDragStart(e) {
-		neoSwitcher(e, 'on');
-		console.log('::DRAGSTART:: \n', e.detail);
-	}
-
-	function onDrag({ currentNode, offsetX, offsetY }) {
-		console.log("::Trusted:: i'm moving");
-		// let pos = { x: e.detail.offsetX, y: e.detail.offsetY };
-		// console.log('::DRAGGING:: \n', pos);
-	}
-
-	/**
-	 *
-	 * @param {JSON} data
-	 */
 	async function updateData(data) {
 		const formData = new FormData();
 		formData.append('id', data.id);
@@ -82,13 +72,13 @@
 	}
 
 	function onDragEnd(e) {
-		console.log(e);
+		// console.log(e);
 		let lastPosition = { x: e.offsetX, y: e.offsetY };
 		let currentEl = e.currentNode;
 
 		// Check Collision
 		let inArea;
-		elArea.forEach((area) => {
+		mapArea.forEach((area) => {
 			if (isCollide(area, currentEl)) {
 				inArea = area;
 			}
@@ -98,73 +88,106 @@
 		let engineLocationData = {
 			id: currentEl.id,
 			position: lastPosition
-			// location: inArea.id
+			// location: inArea ? inArea.id : '-'
 		};
 
 		updateData(engineLocationData);
 	}
 
 	function updatePosition(elementId, newPosition) {
-		let target = document.getElementById(elementId);
+		/**
+		 * Try to check element status
+		 * if it 'user-select' (which mean it was user actions) just return
+		 * if it 'non user-select' (which mean it was on client and receive the realtime event) continue to update position
+		 */
+		let target = engineInstance.find(({ id }) => id === elementId);
+		target.instance.updateOptions({ position: newPosition });
+	}
 
-		let targeto = engineEl.find(({ id }) => id === elementId);
-		targeto.instance.updateOptions({ position: newPosition });
-		// return;
+	function updateOnDelete(e) {
+		/**
+		 * Delete engine element from DOM
+		 *(I think to remove related data from engineTile Store) remove data from store -> element removed
+		 * So we dont have to remove manually
+		 * */
+		console.log('::DELETE::\n', e);
+	}
+
+	function updateOnCreate(e) {
+		/**
+		 * Creating engine element to DOM
+		 *(I think to add new data to engineTile Store) add data to store -> render -> create instance
+		 * So we dont have to render manually
+		 * */
+		console.log('::CREATE::\n', e);
 	}
 
 	onMount(async () => {
-		elArea = document.querySelectorAll('.map-area');
-		engineInstance = document.querySelectorAll('.engine');
+		initialBasePosition = window.innerWidth / 6;
+		mapArea = document.querySelectorAll('.map-area');
+		engineElement = document.querySelectorAll('.engine');
+		baseElement = document.getElementById('base');
 
-		engineInstance.forEach((eng) => {
+		/**
+		 * Try to change this
+		 * Current process : render element -> element set x and y to 0 -> query element -> create instance in Array -> element set actual position
+		 * Maybe better if creating instance is before rendering element. It should make the element rendered to actual position at the first time
+		 */
+
+		engineElement.forEach((eng) => {
 			let engPosition = { x: eng.dataset.x, y: eng.dataset.y };
-			engineEl.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, onDragEnd: onDragEnd }) });
+			engineInstance.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, onDrag: onDragEnd }) });
 		});
 
-		const parent = document.getElementById('base');
-		pz = Panzoom(parent, {
+		pz = Panzoom(baseElement, {
 			noBind: true,
 			maxscale: 5
 		});
 
-		parent.addEventListener('pointerdown', (e) => {
+		baseElement.addEventListener('pointerdown', (e) => {
 			if (e.shiftKey) return;
 			if (!isNeoActive) return;
 			pz.handleDown(e);
 		});
 
-		document.addEventListener('pointermove', pz.handleMove);
-		document.addEventListener('pointerup', pz.handleUp);
-
-		parent.parentElement.addEventListener('wheel', (e) => {
+		baseElement.parentElement.addEventListener('wheel', (e) => {
 			if (e.shiftKey) return;
 			if (!isNeoActive) return;
 			pz.zoomWithWheel(e);
 		});
 
-		parent.parentElement.addEventListener('click', (e) => {
+		baseElement.parentElement.addEventListener('click', (e) => {
 			if (!e.altKey) return;
 			pz.zoomToPoint(3, e, { animate: true });
 		});
 
-		/**
-		 * new how to check if current client is who made the request
-		 */
 		CommonHelpers.pb.collection('engine_location').subscribe('*', function (e) {
-			let { id, position } = e.record;
-			updatePosition(id, position);
-			// console.log('::REALTIME::\n', e);
+			let { action, record } = e;
+
+			switch (action) {
+				case 'create':
+					updateOnCreate(e);
+					break;
+				case 'update':
+					let { id, position } = record;
+					updatePosition(id, position);
+					break;
+				case 'delete':
+					updateOnDelete(e);
+					break;
+				default:
+					break;
+			}
 		});
 	});
-
-	let togglePillar = false;
 </script>
 
-<svelte:document on:keydown|capture={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} />
+<svelte:document on:keydown|capture={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} on:pointermove={pz.handleMove} on:pointerup={pz.handleUp} />
 
+<!-- Set of actions -->
 <div class="absolute flex flex-col justify-center items-end z-40 bottom-4 right-4 bg-slate-600/50 shadow-lg">
 	<div class="flex flex-col px-3 py-4 space-y-4">
-		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Label</button>
+		<button on:click={() => (toggleArea = !toggleArea)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{toggleArea ? 'Show' : 'Hide'} Area</button>
 		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
 		<button on:click={() => (isNeoActive = !isNeoActive)} class=" px-4 py-2 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
 		<button on:click={pz.reset()} class="px-4 py-2 rounded-md shadow-md hover:bg-sky-400 bg-sky-300">Reset</button>
@@ -173,41 +196,40 @@
 		<button class="font-bold">X</button>
 	</div>
 </div>
+
+<!-- Map -->
 <div class="manage-container overflow-auto bg-teal-300">
-	<div id="base" class="base" style="height: {CommonSets.tileSize * 16}px; width: {CommonSets.tileSize * 10}px;">
+	<div id="base" class="base" style="height: {CommonSets.tileSize * 16}px; width: {CommonSets.tileSize * 10}px; margin-left: {initialBasePosition}px; margin-top: {CommonSets.tileSize / 2}px;">
 		<!-- BASE -->
-		{#each CommonSets.Base as row, indexR}
-			{#each row as col, indexC}
-				<svelte:element this="div" class="map-base" class:!hidden={col == '0'} style="margin-left: {CommonSets.tileSize * indexC}px; margin-top: {CommonSets.tileSize * indexR}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;" />
-				<!-- <div class="base-tile" class:!hidden={col == '0'} style="margin-left: {CommonSets.tileSize * indexC}px; margin-top: {CommonSets.tileSize * indexR}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;"> -->
-				<!-- <span class="tile-text">{col}</span> -->
-				<!-- </div> -->
+		{#each CommonSets.Base as row, rowIndex}
+			{#each row as col, colIndex}
+				<svelte:element this="div" class:!hidden={col == '0'} class="map-base" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;">
+					<!-- <span class="tile-text">{col}</span> -->
+				</svelte:element>
 			{/each}
 		{/each}
 
 		<!-- AREA -->
-		{#each CommonSets.Area as row, indexR}
-			<div id={row.id} class="map-area" style="margin-left: {row.pos.x}px; margin-top: {row.pos.y}px; height: {row.size.h}px; width: {row.size.w}px;">
+		{#each CommonSets.Area as row}
+			<div id={row.id} class:!hidden={toggleArea} class="map-area" style="margin-left: {row.pos.x}px; margin-top: {row.pos.y}px; height: {row.size.h}px; width: {row.size.w}px;">
 				<span class="tile-text text-xxs">{row.text}</span>
 			</div>
 		{/each}
 
 		<!-- PILLAR -->
-		{#each CommonSets.Pillar as row, indexR}
-			{#each row as col, indexC}
+		{#each CommonSets.Pillar as row, rowIndex}
+			{#each row as col, colIndex}
 				{#if col !== '0'}
-					<span class:hidden={togglePillar} class="map-pillar" style="margin-left: {CommonSets.tileSize * indexC}px; margin-top: {CommonSets.tileSize * indexR}px; ">{col}{indexR + 1}</span>
+					<span class:!hidden={togglePillar} class="map-pillar" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; ">{col}{rowIndex + 1}</span>
 				{/if}
 			{/each}
 		{/each}
 
 		<!-- ENGINE -->
-		<!-- engineTile should have data loc, with default value or actual value -->
-		<!-- so the defaultPosition is always set by loc.position value without checking -->
-		{#each $engineTile as { id, loc, esn }, index}
-			<div id={loc.id} data-x={loc.position?.x} data-y={loc.position?.y} class="engine {loc.id}">
-				<span class="text-center text-[4px] break-words text-white">ESN {esn}</span>
-			</div>
+		<!-- engineTile consist location data from 'engine_location' or null -->
+		<!-- at first render, if location is null set the default position else use the location position -->
+		{#each $engineTile as engine, index (engine.id)}
+			<svelte:component this={Engine} defaultPosition={CommonSets.defaultPosition + index} {engine} />
 		{/each}
 	</div>
 </div>
@@ -227,9 +249,5 @@
 	}
 	.tile-text {
 		@apply select-none text-center font-mono text-[8px];
-	}
-
-	.engine {
-		@apply absolute flex h-2 w-8 items-center justify-center rounded bg-slate-600 p-3 shadow-lg;
 	}
 </style>

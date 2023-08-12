@@ -35,7 +35,6 @@ export const actions = {
 
       try {
          let res = await locals.pb.collection('engine_location').update(id, { position: { x, y } })
-         console.log(res);
       } catch (err) {
          console.log('::ERROR::\n', err);
       }
