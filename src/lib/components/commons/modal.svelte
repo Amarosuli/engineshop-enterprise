@@ -2,7 +2,7 @@
 	import classes from 'svelte-transition-classes';
 	import { blurIn, blurOut, popIn, popOut, slideRightIn, slideRightOut, slideLeftIn, slideLeftOut } from '$lib/utils/TransitionSets';
 	import { Btn } from '$lib/components';
-	import { _rowRem, modal$ } from '$lib/utils/store';
+	import { _rowRem, modal$ } from '$lib/utils/Stores';
 	import { onDestroy } from 'svelte';
 
 	// if still use the store to manage the modal id, maybe we need to call _modalHide within the onDestroy function

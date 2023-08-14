@@ -1,7 +1,7 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { _row, modal$ } from '$lib/utils/store';
+	import { _row, modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Form, Search, File, Table, Text, Btn, Img } from '$lib/components';
 

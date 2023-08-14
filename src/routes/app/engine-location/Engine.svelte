@@ -18,7 +18,7 @@
 	 * */
 </script>
 
-<div {id} data-x={x} data-y={y} class="engine {engine.id}">
+<div {id} data-x={x} data-y={y} class="engine {engine.id} cursor-grab">
 	<span class="text-center text-[4px] break-words text-white">ESN {esn}</span>
 </div>
 

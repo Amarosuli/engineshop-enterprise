@@ -15,7 +15,7 @@
 	$engineTile = engineList.map((value) => ({ ...value, _location: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
 
 	let pz,
-		mapArea,
+		locationTags,
 		baseElement,
 		engineElement,
 		engineInstance = [],
@@ -60,6 +60,7 @@
 		formData.append('id', data.id);
 		formData.append('x', data.position.x);
 		formData.append('y', data.position.y);
+		formData.append('location', data.location);
 
 		const res = await fetch('/app/engine-location?/update', {
 			method: 'POST',
@@ -68,30 +69,46 @@
 		const json = await res.json();
 
 		neoSwitcher('', 'off');
-		// console.log('RESULT\n', JSON.stringify(json));
+	}
+
+	function onDragStart(e) {
+		let currentEl = e.currentNode;
+		currentEl.classList.add('!bg-red-400');
+	}
+
+	function onDrag(e) {
+		let currentEl = e.currentNode;
+
+		currentEl.classList.add('cursor-grabbing');
 	}
 
 	function onDragEnd(e) {
-		// console.log(e);
 		let lastPosition = { x: e.offsetX, y: e.offsetY };
 		let currentEl = e.currentNode;
 
-		// Check Collision
-		let inArea;
-		mapArea.forEach((area) => {
+		currentEl.classList.remove('cursor-grabbing');
+		currentEl.classList.remove('!bg-red-400');
+
+		// Check Collision - GSAP is perfect but just use it for a while
+		let inArea = [];
+		locationTags.forEach((area) => {
 			if (isCollide(area, currentEl)) {
-				inArea = area;
+				if (area !== undefined) {
+					inArea.push(area.id);
+				}
 			}
 		});
 
 		// Update the position data
 		let engineLocationData = {
 			id: currentEl.id,
-			position: lastPosition
-			// location: inArea ? inArea.id : '-'
+			position: lastPosition,
+			location: inArea.toString()
 		};
 
 		updateData(engineLocationData);
+
+		inArea = [];
 	}
 
 	function updatePosition(elementId, newPosition) {
@@ -124,7 +141,7 @@
 
 	onMount(async () => {
 		initialBasePosition = window.innerWidth / 6;
-		mapArea = document.querySelectorAll('.map-area');
+		locationTags = document.querySelectorAll('.location-tag');
 		engineElement = document.querySelectorAll('.engine');
 		baseElement = document.getElementById('base');
 
@@ -136,7 +153,7 @@
 
 		engineElement.forEach((eng) => {
 			let engPosition = { x: eng.dataset.x, y: eng.dataset.y };
-			engineInstance.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, onDrag: onDragEnd }) });
+			engineInstance.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, bounds: 'parent', onDragEnd: onDragEnd, onDrag: onDrag, onDragStart: onDragStart }) });
 		});
 
 		pz = Panzoom(baseElement, {
@@ -203,9 +220,11 @@
 		<!-- BASE -->
 		{#each CommonSets.Base as row, rowIndex}
 			{#each row as col, colIndex}
-				<svelte:element this="div" class:!hidden={col == '0'} class="map-base" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;">
-					<!-- <span class="tile-text">{col}</span> -->
-				</svelte:element>
+				{#if col !== '0'}
+					<svelte:element this="div" class="map-base" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;">
+						<!-- <span class="tile-text">{col}</span> -->
+					</svelte:element>
+				{/if}
 			{/each}
 		{/each}
 
@@ -221,6 +240,15 @@
 			{#each row as col, colIndex}
 				{#if col !== '0'}
 					<span class:!hidden={togglePillar} class="map-pillar" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; ">{col}{rowIndex + 1}</span>
+				{/if}
+			{/each}
+		{/each}
+
+		<!-- TAG -->
+		{#each CommonSets.LocationTag as row, rowIndex}
+			{#each row as col, colIndex}
+				{#if col !== '0'}
+					<svelte:element this="div" id={col} class="location-tag" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;" />
 				{/if}
 			{/each}
 		{/each}
@@ -246,6 +274,9 @@
 	}
 	.map-pillar {
 		@apply absolute -left-1.5 -top-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-slate-500 text-center text-[4px] text-white;
+	}
+	.location-tag {
+		@apply absolute flex items-center justify-center;
 	}
 	.tile-text {
 		@apply select-none text-center font-mono text-[8px];

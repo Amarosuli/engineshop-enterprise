@@ -2,7 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
-	import { _row, modal$ } from '$lib/utils/store';
+	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Select, Table, Form, Text, Switch, TextArea, Btn } from '$lib/components';
 
 	export let data;
@@ -66,7 +66,7 @@
 			header: 'Preserve Detail',
 			accessor: 'preserveDetail',
 			cell: ({ row }) => {
-            // this check will place on the CommonHelper soon
+				// this check will place on the CommonHelper soon
 				if (Object.keys(row.original.preserveDetail).length === 0 && row.original.preserveDetail.constructor === Object) {
 					return 'No Data';
 				} else {

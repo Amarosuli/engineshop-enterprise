@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 
-import { _row } from '$lib/utils/store'
+import { _row } from '$lib/utils/Stores'
 import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 import eventsource from 'eventsource';
@@ -32,9 +32,10 @@ export const actions = {
       let id = form.get('id')
       let x = form.get('x')
       let y = form.get('y')
+      let location = form.get('location')
 
       try {
-         let res = await locals.pb.collection('engine_location').update(id, { position: { x, y } })
+         let res = await locals.pb.collection('engine_location').update(id, { position: { x, y }, location })
       } catch (err) {
          console.log('::ERROR::\n', err);
       }

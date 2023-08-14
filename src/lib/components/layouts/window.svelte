@@ -1,5 +1,5 @@
 <script>
-	import { modal$, _row } from '$lib/utils/store';
+	import { modal$, _row } from '$lib/utils/Stores';
 
 	const escHandler = (e) => {
 		if (!e) {

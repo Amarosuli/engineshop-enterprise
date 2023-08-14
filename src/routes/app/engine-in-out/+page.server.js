@@ -1,10 +1,8 @@
 import { fail } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms/server';
 
-import { _row } from '$lib/utils/store'
+import { _row } from '$lib/utils/Stores'
 import { CommonHelpers } from '$lib/utils/CommonHelpers'
-import { engineAvailabilitySchema } from '$lib/helpers/zodSchema'
-import { getEngineList, getEngineAvailability } from '$lib/helpers/pocketbaseSchema'
 
 export const load = async ({ locals }) => {
 
@@ -13,19 +11,19 @@ export const load = async ({ locals }) => {
        * add 'model' and 'customer key to array
        * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
        */
-      let raw = await getEngineList(locals)
+      let raw = await CommonHelpers.getEngineList(locals)
       let engineModels = raw.map(value => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name }))
       return engineModels
    }
 
    let engineAvailability = async () => {
-      let raw = await getEngineAvailability(locals)
+      let raw = await CommonHelpers.getEngineAvailability(locals)
       let result = raw.map(value => ({ ...value, esn: value?.expand?.engine_id?.esn }))
       return result
    }
 
    return {
-      form: await superValidate(engineAvailabilitySchema),
+      form: await superValidate(CommonHelpers.engineAvailabilitySchema),
       engineList: await engineList(),
       engineAvailability: await engineAvailability(),
 
@@ -34,7 +32,7 @@ export const load = async ({ locals }) => {
 
 export const actions = {
    incoming: async ({ request, locals }) => {
-      const form = await superValidate(request, engineAvailabilitySchema)
+      const form = await superValidate(request, CommonHelpers.engineAvailabilitySchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
@@ -66,7 +64,7 @@ export const actions = {
       const { id } = Object.fromEntries(formData)
 
       // const form = await superValidate(request, engineListSchema) -- old
-      const form = await superValidate(formData, engineListSchema)
+      const form = await superValidate(formData, CommonHelpers.engineListSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);

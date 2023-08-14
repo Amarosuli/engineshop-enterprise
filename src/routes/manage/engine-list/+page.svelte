@@ -2,7 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
-	import { _row, modal$ } from '$lib/utils/store';
+	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Select, Table, Form, Text, Switch, TextArea, Btn } from '$lib/components';
 
 	export let data;
