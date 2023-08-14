@@ -71,22 +71,15 @@
 		neoSwitcher('', 'off');
 	}
 
-	function onDragStart(e) {
-		let currentEl = e.currentNode;
-		currentEl.classList.add('!bg-red-400');
-	}
-
 	function onDrag(e) {
 		let currentEl = e.currentNode;
-
-		currentEl.classList.add('cursor-grabbing');
+		currentEl.classList.add('!bg-red-400');
 	}
 
 	function onDragEnd(e) {
 		let lastPosition = { x: e.offsetX, y: e.offsetY };
 		let currentEl = e.currentNode;
 
-		currentEl.classList.remove('cursor-grabbing');
 		currentEl.classList.remove('!bg-red-400');
 
 		// Check Collision - GSAP is perfect but just use it for a while
@@ -139,6 +132,10 @@
 		console.log('::CREATE::\n', e);
 	}
 
+	function showEngineDetail(e, engineData) {
+		if (e.ctrlKey) console.log(engineData);
+	}
+
 	onMount(async () => {
 		initialBasePosition = window.innerWidth / 6;
 		locationTags = document.querySelectorAll('.location-tag');
@@ -153,7 +150,7 @@
 
 		engineElement.forEach((eng) => {
 			let engPosition = { x: eng.dataset.x, y: eng.dataset.y };
-			engineInstance.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, bounds: 'parent', onDragEnd: onDragEnd, onDrag: onDrag, onDragStart: onDragStart }) });
+			engineInstance.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, bounds: 'parent', onDragEnd: onDragEnd, onDrag: onDrag }) });
 		});
 
 		pz = Panzoom(baseElement, {
@@ -202,16 +199,20 @@
 <svelte:document on:keydown|capture={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} on:pointermove={pz.handleMove} on:pointerup={pz.handleUp} />
 
 <!-- Set of actions -->
-<div class="absolute flex flex-col justify-center items-end z-40 bottom-4 right-4 bg-slate-600/50 shadow-lg">
-	<div class="flex flex-col px-3 py-4 space-y-4">
-		<button on:click={() => (toggleArea = !toggleArea)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{toggleArea ? 'Show' : 'Hide'} Area</button>
-		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
-		<button on:click={() => (isNeoActive = !isNeoActive)} class=" px-4 py-2 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
-		<button on:click={pz.reset()} class="px-4 py-2 rounded-md shadow-md hover:bg-sky-400 bg-sky-300">Reset</button>
+<div class="absolute z-40 -right-0 bottom-1/2 transition-all w-8 hover:w-32 bg-sky-400 py overflow-hidden rounded-l-lg shadow-lg">
+	<div class="flex flex-col px-3 py-4 space-y-4 text-xxs">
+		<button on:click={() => (toggleArea = !toggleArea)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{toggleArea ? 'Show' : 'Hide'} Area</button>
+		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
+		<button on:click={() => (isNeoActive = !isNeoActive)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
+		<button on:click={pz.reset()} class="px-4 py-2 w-24 rounded-md shadow-md hover:bg-sky-400 bg-sky-300">Reset View</button>
 	</div>
-	<div class="w-full flex justify-center items-center py-4 bg-slate-100">
-		<button class="font-bold">X</button>
-	</div>
+</div>
+
+<div class="absolute space-y-2 z-40 right-4 bottom-4 bg-slate-700 opacity-30 hover:opacity-80 transition-opacity ease-out select-none rounded hover:shadow-lg px-4 py-3">
+	<p class="text-xs text-white font-semibold">Scroll to zoom</p>
+	<p class="text-xs text-white font-semibold">Click + Drag to move Map</p>
+	<p class="text-xs text-white font-semibold">Shift + Drag to move Engine</p>
+	<p class="text-xs text-white font-semibold">Alt + Click to zoom to target</p>
 </div>
 
 <!-- Map -->
@@ -257,7 +258,7 @@
 		<!-- engineTile consist location data from 'engine_location' or null -->
 		<!-- at first render, if location is null set the default position else use the location position -->
 		{#each $engineTile as engine, index (engine.id)}
-			<svelte:component this={Engine} defaultPosition={CommonSets.defaultPosition + index} {engine} />
+			<svelte:component this={Engine} defaultPosition={CommonSets.defaultPosition + index} {engine} on:click={(e) => showEngineDetail(e, engine)} />
 		{/each}
 	</div>
 </div>
