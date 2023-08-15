@@ -23,5 +23,5 @@
 }
 
 .list-row-content {
-	@apply flex-initial break-words text-right;
+	@apply flex-initial break-words rounded-md px-3 py-2 text-right;
 }

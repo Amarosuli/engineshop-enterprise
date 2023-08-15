@@ -3,7 +3,7 @@
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
 	import { _row, modal$ } from '$lib/utils/Stores';
-	import { Modal, Search, Select, Table, Form, Text, Switch, TextArea, Btn } from '$lib/components';
+	import { Modal, Search, Select, Table, Form, File, Text, Switch, TextArea, Btn, Date } from '$lib/components';
 
 	export let data;
 
@@ -28,6 +28,11 @@
 
 	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
 	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
+	const durationOptions = [
+		{ value: 90, title: '90 Days' },
+		{ value: 180, title: '180 Days' },
+		{ value: 360, title: '360 Days' }
+	];
 
 	const tableData = engineList.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
 	console.log(tableData);
@@ -56,11 +61,19 @@
 		},
 		{
 			header: 'Serviceability',
-			accessor: 'isServiceable'
+			accessor: 'isServiceable',
+			cell: ({ row }) => {
+				if (row.original.isServiceable) return 'Serviceable';
+				return 'Unserviceable';
+			}
 		},
 		{
 			header: 'Preserve',
-			accessor: 'isPreservable'
+			accessor: 'isPreservable',
+			cell: ({ row }) => {
+				if (row.original.isPreservable) return 'Controlled';
+				return 'Uncontrolled';
+			}
 		},
 		{
 			header: 'Preserve Detail',
@@ -103,7 +116,7 @@
 	$: $isUpdate ? setUpdate(1) : '';
 
 	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $isCreate ? setUpdate(0) : '';
+	$: $isCreate ? setUpdate(1) : '';
 
 	/**
 	 * this is for handling the stored data where the superform rely on it
@@ -155,16 +168,16 @@
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
+				{#if Object.keys($_row?.original?.preserveDetail).length === 0 && $_row?.original?.preserveDetail.constructor === Object}
+					<Btn title="Create" color="warning" on:click={() => modal$.show('create')} />
+				{:else}
+					<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
+				{/if}
 			</div>
 			<div class="list-content">
 				<div class="list-row">
 					<span class="list-row-title">Engine Serial Number: </span>
 					<span class="list-row-content">{$_row?.original?.esn}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Configuration: </span>
-					<span class="list-row-content">{$_row?.original?.config}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Model Name: </span>
@@ -174,13 +187,15 @@
 					<span class="list-row-title">Customer Name: </span>
 					<span class="list-row-content">{$_row?.original?.customer}</span>
 				</div>
-				<div class="list-row">
-					<span class="list-row-title">Engine In Shop: </span>
-					<span class="list-row-content">{$_row?.original?.isAvailable}</span>
+				<div class="list-row relative">
+					<span class="list-row-title">Serviceability: </span>
+					<span class="list-row-content peer select-none" class:bg-sky-300={$_row?.original?.isServiceable} class:bg-red-300={!$_row?.original?.isServiceable}>{$_row?.original?.isServiceable ? 'Serviceable' : 'Unserviceable'} </span>
+					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg">Change this on manage/engine-list</span>
 				</div>
-				<div class="list-row">
+				<div class="list-row relative">
 					<span class="list-row-title">Preservation: </span>
-					<span class="list-row-content">{$_row?.original?.isPreservable}</span>
+					<span class="list-row-content peer select-none" class:bg-sky-300={$_row?.original?.isPreservable} class:bg-red-300={!$_row?.original?.isPreservable}>{$_row?.original?.isPreservable ? 'Controlled' : 'Uncontrolled'}</span>
+					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg">Change this on manage/engine-list</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Notes: </span>
@@ -195,13 +210,11 @@
 	<Modal id="update" position="right">
 		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
 			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
-			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
-			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
-			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<Switch id="isAvailable" name="isAvailable" label="Engine InShop" bind:value={$form.isAvailable} />
-			<Switch id="excludePreservation" name="excludePreservation" label="Preservation" bind:value={$form.isPreservable} />
-			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
+			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} disabled />
+			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
+			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
+			<File id="tag" name="tag" label="Preserve Tag" />
+			<TextArea id="material" name="material" label="Material" bind:value={$form.material} />
 		</Form>
 	</Modal>
 {/if}
@@ -210,13 +223,13 @@
 	<Modal id="create" position="right">
 		<!-- <SuperDebug data={$form} /> -->
 		<Form id="create" action="?/create" title="Create" method="POST" {enhance}>
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
-			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
-			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
-			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<Switch id="isAvailable" name="isAvailable" label="Engine InShop" bind:value={$form.isAvailable} />
-			<Switch id="excludePreservation" name="excludePreservation" label="Preservation" bind:value={$form.excludePreservation} />
-			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
+			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
+			<Text id="engine_id" name="engine_id" bind:value={$_row.original.id} hidden />
+			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} disabled />
+			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
+			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
+			<File id="tag" name="tag" label="Preserve Tag" />
+			<TextArea id="material" name="material" label="Material" bind:value={$form.material} />
 		</Form>
 	</Modal>
 {/if}
@@ -275,7 +288,7 @@
 			</div>
 			<div class="manage-r-action">
 				<div class="btn-group">
-					<Btn title="Create" on:click={() => modal$.show('create')} />
+					<!-- <Btn title="Create" on:click={() => modal$.show('create')} /> -->
 					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>

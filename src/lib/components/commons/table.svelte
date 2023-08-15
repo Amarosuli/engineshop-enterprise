@@ -1,6 +1,6 @@
 <script>
 	import { readable } from 'svelte/store';
-	import { modal$, _rowSet, _setSelectedRows } from '$lib/utils/Stores';
+	import { modal$, row$, _rowSet } from '$lib/utils/Stores';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 

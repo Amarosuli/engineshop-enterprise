@@ -26,24 +26,15 @@ export const modal$ = ModalStore()
 export const _row = writable({})
 export const _rowSet = (obj) => { _row.set(obj) }
 export const _rowRem = () => { _row.set({}) }
-// TABLE STORE - SELECT
-export const _selectedRows = writable({})
-export const _setSelectedRows = (obj) => { _selectedRows.set(obj) }
-export const _resSelectedRows = _row.set({})
 
-// function TableStore() {
-//    const rowStore = writable({})
-//    const selectStore = writable({})
+function RowTableStore() {
+   const { set, subscribe, update } = writable({})
 
-//    return {
-//       subscribe,
-//       set: (obj) => { set(obj) },
-//       rem: set({}),
-//       select: (obj) =>
-//    }
-// }
+   return {
+      subscribe,
+      onClick: (obj) => { set(obj) },
+      reset: () => { set({}) }
+   }
+}
 
-// export const table = TableStore()
-
-
-export const realtimeEngineLocation = writable({})
+export const row$ = RowTableStore()

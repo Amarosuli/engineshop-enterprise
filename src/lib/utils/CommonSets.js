@@ -1,4 +1,4 @@
-import { randomHexColor } from '$lib/utils/func'
+import { CommonHelpers } from '$lib/utils/CommonHelpers'
 
 export class CommonSets {
    /** 
