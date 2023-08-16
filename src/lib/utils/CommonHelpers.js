@@ -78,6 +78,14 @@ export class CommonHelpers {
       isInShop: z.boolean().default(true)
    })
 
+   static enginePreservationSchema = z.object({
+      engine_id: z.string().min(1, { message: 'Engine Id cannot be empty' }),
+      duration: z.string().min(1, { message: 'Duration cannot be empty' }),
+      date_performed: z.date().default(new Date()),
+      tag: z.any().optional(),
+      material: z.string().optional()
+   })
+
 
    /** Pocketbase Schemas @GET */
    static getFileUrl = (collectionId, recordId, fileName, thumb = '0x0') => {

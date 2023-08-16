@@ -20,7 +20,7 @@ export const load = async ({ locals }) => {
       return result
    }
    return {
-      form: await superValidate(CommonHelpers.engineListSchema),
+      form: await superValidate(CommonHelpers.enginePreservationSchema),
       preservationList: await CommonHelpers.getPreservationList(locals),
       engineList: await engineList(),
       engineModels: await CommonHelpers.getEngineModels(locals),
@@ -31,27 +31,15 @@ export const load = async ({ locals }) => {
 
 export const actions = {
    create: async ({ request, locals }) => {
-      const form = await superValidate(request, CommonHelpers.engineListSchema)
+      const form = await superValidate(request, CommonHelpers.enginePreservationSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form })
       }
 
-      /**
-       * create actions of engine-list have two task
-       * 1. create data to engine_list
-       * 2. create data to engine_availability (assumed new engine is engine incoming)
-       * if data in engine_list deleted, data in engine_availability also removed
-       */
       try {
-         // 1. create data to engine_list, then get the id from result
-         // let { id } = await locals.pb.collection('engine_list').create(form.data)
-         let { id } = await CommonHelpers.createData(locals, 'engine_list', form.data)
-         // 2. create new object for create data to engine_availability
-         let engineAvailabilityData = { "engine_id": id, "date_in": new Date(), "isInShop": true }
-         // await locals.pb.collection('engine_availability').create(engineAvailabilityData)
-         await CommonHelpers.createData(locals, 'engine_availability', engineAvailabilityData)
+         await CommonHelpers.createData(locals, 'preservation_list', form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -69,7 +57,7 @@ export const actions = {
        * then formData pass into superValidate to validate what necessary
        */
       const formData = await request.formData()
-      const form = await superValidate(formData, CommonHelpers.engineListSchema)
+      const form = await superValidate(formData, CommonHelpers.enginePreservationSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
@@ -96,26 +84,6 @@ export const actions = {
    delete: async ({ request, locals }) => {
       const form = Object.fromEntries(await request.formData())
       const keys = Object.keys(form)
-      console.log(keys.length);
-
-      keys.forEach(async (k, index) => {
-         // NOTE: Postpone, redirect, goto, standard headers are not working to reload page.
-
-         let id = form[k]
-         console.log(id);
-         // try {
-         //    let result = await locals.pb.collection('engine_families').delete(id)
-         //    console.log('result-', result, id);
-         // } catch (error) {
-         //    console.log('ERROR : ', error);
-         // }
-
-         if (index === keys.length - 1) {
-            // return {
-            //    headers: { Location: '/manage/engine-family' },
-            //    status: 302
-            // }
-         }
-      })
+      console.log(form);
    }
 };

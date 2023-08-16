@@ -1,9 +1,15 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
+	import isBetween from 'dayjs/plugin/isBetween';
 
 	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Select, Table, Form, File, Text, Switch, TextArea, Btn, Date } from '$lib/components';
+
+	dayjs.extend(relativeTime);
+	dayjs.extend(isBetween);
 
 	export let data;
 
@@ -26,8 +32,6 @@
 	 */
 	const { engineList, engineModels, customers, preservationList } = data;
 
-	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
-	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
 	const durationOptions = [
 		{ value: 90, title: '90 Days' },
 		{ value: 180, title: '180 Days' },
@@ -35,7 +39,6 @@
 	];
 
 	const tableData = engineList.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
-	console.log(tableData);
 	/**
 	 * destructure of modal costum store
 	 * make using method more simpler
@@ -126,13 +129,14 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form.esn = $_row?.original?.esn;
-			$form.config = $_row?.original?.config;
-			$form.model_id = $_row?.original?.model_id;
-			$form.customer_id = $_row?.original?.customer_id;
-			$form.isAvailable = $_row?.original?.isAvailable;
-			$form.excludePreservation = $_row?.original?.excludePreservation;
-			$form.notes = $_row?.original?.notes;
+			$form = { ...$_row?.original?.preserveDetail, esn: $_row?.original?.esn };
+			// $form.esn = $_row?.original?.esn;
+			// $form.config = $_row?.original?.config;
+			// $form.model_id = $_row?.original?.model_id;
+			// $form.customer_id = $_row?.original?.customer_id;
+			// $form.isAvailable = $_row?.original?.isAvailable;
+			// $form.excludePreservation = $_row?.original?.excludePreservation;
+			// $form.notes = $_row?.original?.notes;
 		} else {
 			$form.esn = '';
 			$form.config = '';
@@ -202,13 +206,52 @@
 					<span class="list-row-content">{$_row?.original?.notes}</span>
 				</div>
 			</div>
+			<div class="list-header">
+				<h1 class="list-title">Preservation Data</h1>
+			</div>
+			<div class="list-content">
+				{#if Object.keys($_row.original.preserveDetail).length !== 0}
+					{@const isExpired = dayjs().isAfter(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'))}
+					{@const isGood = dayjs().isBefore(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'))}
+					<!-- why -->
+					{@const isReady = dayjs().isBetween(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration - 14, 'day'), dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'), 'day')}
+					<div class="list-row">
+						<span class="list-row-title">Last Performed: </span>
+						<span class="list-row-content">{$_row?.original?.preserveDetail?.date_performed && dayjs($_row?.original?.preserveDetail?.date_performed).format('DD / MMM / YYYY')}</span>
+					</div>
+					<div class="list-row">
+						<span class="list-row-title">Renewal Duration: </span>
+						<span class="list-row-content">{$_row?.original?.preserveDetail?.duration && $_row?.original?.preserveDetail?.duration} Days</span>
+					</div>
+					<div class="list-row">
+						<span class="list-row-title">Expired Date: </span>
+						<span class="list-row-content">{$_row?.original?.preserveDetail?.date_performed && dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day').format('DD / MMM / YYYY')}</span>
+					</div>
+					<div class="list-row">
+						<span class="list-row-title">Status: </span>
+						<div class="flex justify-center items-center">
+							<span class="list-row-content text-xxs" class:bg-yellow-400={isReady} class:bg-green-400={isGood} class:bg-red-400={isExpired}> {isGood ? 'Good' : ''} {isReady ? 'and Ready to Preserve' : ''}{isExpired ? 'Expired since' : ''}</span>
+							<span class="list-row-content">{dayjs().to(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'))}</span>
+						</div>
+					</div>
+					<div class="list-row">
+						<span class="list-row-title">Material: </span>
+						<span class="list-row-content">{$_row?.original?.preserveDetail?.date_performed && $_row?.original?.preserveDetail?.material}</span>
+					</div>
+				{:else}
+					<div class="list-row">
+						<span class="list-row-title">No Data</span>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</Modal>
 {/if}
 
 {#if $isUpdate}
 	<Modal id="update" position="right">
-		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
+		<SuperDebug data={$form} />
+		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
 			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
 			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} disabled />
 			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
@@ -221,8 +264,8 @@
 
 {#if $isCreate}
 	<Modal id="create" position="right">
-		<!-- <SuperDebug data={$form} /> -->
-		<Form id="create" action="?/create" title="Create" method="POST" {enhance}>
+		<SuperDebug data={$form} />
+		<Form id="create" action="?/create" title="Create" method="POST" enctype="multipart/form-data" {enhance}>
 			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
 			<Text id="engine_id" name="engine_id" bind:value={$_row.original.id} hidden />
 			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} disabled />
