@@ -3,7 +3,7 @@
 
 	import { _row, modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Modal, Form, Search, File, Table, Text, Btn, Img } from '$lib/components';
+	import { Modal, Form, Search, File, Table, Text, Btn, Img, Menu, Switch } from '$lib/components';
 
 	export let data;
 
@@ -63,6 +63,7 @@
 	let selectedRows = [];
 	let search = '';
 	let exportJSON;
+	let hiddenColumns = [];
 
 	/**
 	 * this is for reseting the selected table rows
@@ -117,6 +118,22 @@
 		console.log(exportJSON);
 
 		// TODO: export to excel or pdf
+	}
+
+	function toggleColumn() {
+		let toggleElements = document.querySelectorAll('.toggle-column');
+		let arrTemplate = [];
+		toggleElements.forEach((e) => {
+			!e.checked && arrTemplate.push(e.id);
+		});
+
+		hiddenColumns = arrTemplate;
+		// let allColumn = dataCol.map((v) => ({
+		// 	[v.accessor]: true
+		// }));
+		// console.log(Object.values(allColumn));
+
+		// hiddenColumns = allColumn;
 	}
 </script>
 
@@ -235,16 +252,22 @@
 				<span class="title">Customers</span>
 				<Search bind:value={search} />
 			</div>
-			<div class="manage-r-action">
+			<div class="manage-r-action relative">
 				<div class="btn-group">
-					<Btn title="Create" on:click={() => modal$.show('create')} />
+					<Btn title="Create" color="info" on:click={() => modal$.show('create')} />
+					<!-- <Btn title="Column" on:click={() => modal$.show('create')} /> -->
+					<Menu title="Column">
+						{#each dataCol as { accessor }}
+							<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
+						{/each}
+					</Menu>
 					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={customers} {dataCol} {search} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} dataTable={customers} {dataCol} {search} bind:selectedRows bind:exportJSON bind:hiddenColumns />
 		</div>
 	</div>
 </div>

@@ -14,6 +14,7 @@
 	export let search = '';
 	export let selectedRows = [];
 	export let exportJSON = '';
+	export let hiddenColumns = [];
 
 	const { isDelete, show } = modal$;
 	const data = readable(dataTable);
@@ -112,10 +113,12 @@
 	const { sortKeys } = table.plugin.sort; // currently not used
 	const { filterValue } = table.plugin.tableFilter;
 	const { exportedData } = table.plugin.export;
+	const { hiddenColumnIds } = table.plugin.hidden;
 	let { selectedDataIds, allRowsSelected, someRowsSelected } = table.plugin.select;
 
 	$: exportJSON = $exportedData;
 	$: $filterValue = search; // binding with the search value
+	$: $hiddenColumnIds = hiddenColumns;
 	$: selectedRows = $Br.filter((value, index) => {
 		if ($selectedDataIds[index]) {
 			// return if only id is true
@@ -168,6 +171,7 @@
    Cp -- Col Props
    Ca -- Col Attributes
  -->
+
 <table {...$T}>
 	<thead>
 		{#each $Hr as row (row.id)}

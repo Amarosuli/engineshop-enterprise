@@ -1,5 +1,6 @@
 <script>
 	export let id = Math.random().toString();
+	export let className = '';
 	export let name = 'text';
 	export let error = '';
 	export let label = 'label.text';
@@ -12,10 +13,9 @@
 
 <div class="field-container">
 	<label for={id} class="relative inline-flex cursor-pointer items-center">
-		<input class="peer sr-only" type="checkbox" {id} {name} {placeholder} {required} {autocomplete} bind:checked={value} />
+		<input class="peer sr-only {className}" type="checkbox" {id} {name} {placeholder} {required} {autocomplete} bind:checked={value} on:change />
 		<div
 			class="h-8 w-[3.7rem] rounded-full bg-slate-200
-
          after:absolute
          after:left-[3px]
          after:top-[2px]
