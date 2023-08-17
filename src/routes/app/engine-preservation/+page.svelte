@@ -6,6 +6,7 @@
 	import isBetween from 'dayjs/plugin/isBetween';
 
 	import { _row, modal$ } from '$lib/utils/Stores';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Search, Select, Table, Form, File, Text, Switch, TextArea, Btn, Date } from '$lib/components';
 
 	dayjs.extend(relativeTime);
@@ -129,22 +130,9 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form = { ...$_row?.original?.preserveDetail, esn: $_row?.original?.esn };
-			// $form.esn = $_row?.original?.esn;
-			// $form.config = $_row?.original?.config;
-			// $form.model_id = $_row?.original?.model_id;
-			// $form.customer_id = $_row?.original?.customer_id;
-			// $form.isAvailable = $_row?.original?.isAvailable;
-			// $form.excludePreservation = $_row?.original?.excludePreservation;
-			// $form.notes = $_row?.original?.notes;
+			CommonHelpers.mergeObject($form, $_row?.original);
 		} else {
-			$form.esn = '';
-			$form.config = '';
-			$form.model_id = '';
-			$form.customer_id = '';
-			// $form.isAvailable = ''; already have a default value
-			// $form.excludePreservation = ''; already have a default value
-			$form.notes = '';
+			CommonHelpers.resetObject($form);
 		}
 	}
 

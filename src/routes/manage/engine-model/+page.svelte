@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Form, Btn, Select, Table, Text } from '$lib/components';
 
@@ -93,13 +94,9 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form.name = $_row?.original?.name;
-			$form.description = $_row?.original?.description;
-			$form.family_id = $_row?.original?.family_id;
+			CommonHelpers.mergeObject($form, $_row?.original);
 		} else {
-			$form.name = '';
-			$form.description = '';
-			$form.family_id = '';
+			CommonHelpers.resetObject($form);
 		}
 	}
 

@@ -34,6 +34,19 @@ export class CommonHelpers {
       }
    };
 
+   static mergeObject = (objTarget, objSource) => {
+      Object.keys(objTarget).forEach(key => {
+         objTarget[key] = objSource[key] || ""
+      })
+   }
+
+   static resetObject = (obj, options = { exclude: [] }) => {
+      Object.keys(obj).forEach(key => {
+         if (options && options.exclude.length && options.exclude.includes(key)) return
+         obj[key] = ""
+      })
+   }
+
 
 
 

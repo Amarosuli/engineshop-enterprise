@@ -94,15 +94,9 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form.name = $_row?.original?.name;
-			$form.description = $_row?.original?.description;
-			$form.code_IATA = $_row?.original?.code_IATA;
-			$form.code_ICAO = $_row?.original?.code_ICAO;
+			CommonHelpers.mergeObject($form, $_row?.original);
 		} else {
-			$form.name = '';
-			$form.description = '';
-			$form.code_IATA = '';
-			$form.code_ICAO = '';
+			CommonHelpers.resetObject($form);
 		}
 	}
 
@@ -128,12 +122,6 @@
 		});
 
 		hiddenColumns = arrTemplate;
-		// let allColumn = dataCol.map((v) => ({
-		// 	[v.accessor]: true
-		// }));
-		// console.log(Object.values(allColumn));
-
-		// hiddenColumns = allColumn;
 	}
 </script>
 

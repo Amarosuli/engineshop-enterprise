@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Select, Table, Form, Text, Switch, TextArea, Btn } from '$lib/components';
 
@@ -107,21 +108,11 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form.esn = $_row?.original?.esn;
-			$form.config = $_row?.original?.config;
-			$form.model_id = $_row?.original?.model_id;
-			$form.customer_id = $_row?.original?.customer_id;
-			$form.isAvailable = $_row?.original?.isAvailable;
-			$form.excludePreservation = $_row?.original?.excludePreservation;
-			$form.notes = $_row?.original?.notes;
+			CommonHelpers.mergeObject($form, $_row?.original);
 		} else {
-			$form.esn = '';
-			$form.config = '';
-			$form.model_id = '';
-			$form.customer_id = '';
-			// $form.isAvailable = ''; already have a default value
-			// $form.excludePreservation = ''; already have a default value
-			$form.notes = '';
+			// use this function will remove default value from zodSchema.
+			// even exclude is defined, $form object will follow the latest opened modal update value
+			CommonHelpers.resetObject($form, { exclude: ['isAvailable', 'isPreservable', 'isServiceable'] });
 		}
 	}
 

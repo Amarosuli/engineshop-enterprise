@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import { _row, modal$ } from '$lib/utils/Stores';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Search, Table, Text, Btn, Form } from '$lib/components';
 
 	export let data;
@@ -75,11 +76,9 @@
 	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			$form.name = $_row?.original?.name;
-			$form.description = $_row?.original?.description;
+			CommonHelpers.mergeObject($form, $_row?.original);
 		} else {
-			$form.name = '';
-			$form.description = '';
+			CommonHelpers.resetObject($form);
 		}
 	}
 
