@@ -1,5 +1,6 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
+	import { invalidateAll } from '$app/navigation';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -15,12 +16,14 @@
 		applyAction: false,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
-				window.location = '/manage/engine-family';
+				invalidateAll();
+				modal$.reset();
 			}
 		}
 	});
 
-	const { engineFamily } = data;
+	let dataTable;
+	$: dataTable = data.engineFamily;
 
 	/**
 	 * destructure of modal costum store
@@ -194,7 +197,7 @@
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={engineFamily} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
 		</div>
 	</div>
 </div>

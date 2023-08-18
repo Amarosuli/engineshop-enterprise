@@ -4,6 +4,7 @@
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import isBetween from 'dayjs/plugin/isBetween';
+	import { invalidateAll } from '$app/navigation';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -22,7 +23,8 @@
 		applyAction: false,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
-				window.location = '/manage/engine-list';
+				invalidateAll();
+				modal$.reset();
 			}
 		}
 	});
@@ -39,7 +41,8 @@
 		{ value: '360', title: '360 Days' }
 	];
 
-	const tableData = engineList.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
+	let dataTable;
+	$: dataTable = data.engineList.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
 	/**
 	 * destructure of modal costum store
 	 * make using method more simpler
@@ -327,7 +330,7 @@
 			</div>
 		</div>
 		<div class="manage-r-content">
-			<svelte:component this={Table} dataTable={tableData} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
 		</div>
 	</div>
 </div>

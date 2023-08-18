@@ -1,6 +1,7 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -12,12 +13,15 @@
 		applyAction: false,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
-				window.location = '/manage/engine-list';
+				invalidateAll();
+				modal$.reset();
 			}
 		}
 	});
 
-	const { engineList, engineModels, customers } = data;
+	const { engineModels, customers } = data;
+	let dataTable;
+	$: dataTable = data.engineList;
 	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
 	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
 	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
@@ -222,7 +226,7 @@
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={engineList} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
 		</div>
 	</div>
 </div>

@@ -1,5 +1,6 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
+	import { invalidateAll } from '$app/navigation';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -15,12 +16,15 @@
 		applyAction: false,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
-				window.location = '/manage/customer';
+				invalidateAll();
+				modal$.reset();
 			}
 		}
 	});
 
-	const { customers } = data;
+	let dataTable;
+	// let { customers } = data; DESCTRUCTURING MAKES INVALIDATEALL NOT WORKING
+	$: dataTable = data.customers;
 
 	/**
 	 * destructure of modal costum store
@@ -250,7 +254,7 @@
 			<div class="manage-r-action relative">
 				<div class="btn-group">
 					<Btn title="Create" color="info" on:click={() => modal$.show('create')} />
-					<!-- <Btn title="Column" on:click={() => modal$.show('create')} /> -->
+					<Btn title="Refreesh" on:click={() => invalidateAll()} />
 					<Menu title="Column">
 						{#each dataCol as { accessor }}
 							<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
@@ -262,7 +266,7 @@
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={customers} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns />
 		</div>
 	</div>
 </div>

@@ -1,6 +1,6 @@
 <script>
 	import { modal$ } from '$lib/utils/Stores';
-	import { readable } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
@@ -18,11 +18,11 @@
 	export let hiddenColumns = [];
 
 	const { isDelete, show } = modal$;
-	const data = readable(dataTable);
 	const dispatch = createEventDispatcher();
 
 	class SuperTable {
 		cols = [];
+		rowNumber = 0;
 
 		constructor(data, colArray) {
 			this.table = createTable(data, {
@@ -64,12 +64,15 @@
 			 * define order column, i'm sure there's feature to do this
 			 * but i cant find it so i only knew this way (the sort plugin works).
 			 */
-			let a = 0;
+
 			const ColOrder = {
 				id: 'order',
 				header: 'No',
+				cell: ({ row }) => {
+					return parseInt(row.id) + 1;
+				},
 				accessor: () => {
-					return (a += 1);
+					return (this.rowNumber += 1);
 				},
 				plugins: {
 					sort: { invert: true }
@@ -107,16 +110,20 @@
 			 */
 			this.cols.unshift(this.table.column(ColOrder));
 			this.cols.unshift(this.table.display(ColSelect));
+			this.rowNumber = 0;
 		};
 	}
 
-	const table = new SuperTable(data, dataCol);
-	const { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B } = table.init;
-	const { sortKeys } = table.plugin.sort; // currently not used
-	const { filterValue } = table.plugin.tableFilter;
-	const { exportedData } = table.plugin.export;
-	const { hiddenColumnIds } = table.plugin.hidden;
-	let { selectedDataIds, allRowsSelected, someRowsSelected } = table.plugin.select;
+	let data$ = writable([]);
+	$: $data$ = dataTable;
+
+	const table = new SuperTable(data$, dataCol);
+	let { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B, pluginStates: Ps } = table.init;
+	let { sortKeys } = Ps.sort; // currently not used
+	let { filterValue } = Ps.tableFilter;
+	let { exportedData } = Ps.export;
+	let { hiddenColumnIds } = Ps.hidden;
+	let { selectedDataIds, allRowsSelected, someRowsSelected } = Ps.select;
 
 	$: exportJSON = $exportedData;
 	$: $filterValue = search; // binding with the search value
@@ -154,10 +161,12 @@
 
 	$: lengthOfRow = $Br.length === 0;
 
-	function rowClickEvent(e) {
-		dispatch('rowClick', {
-			rowData: e
-		});
+	function rowClickEvent(e, rowData) {
+		if (e.target.getAttribute('data-row')) {
+			dispatch('rowClick', {
+				rowData
+			});
+		}
 	}
 </script>
 
@@ -200,7 +209,7 @@
 		{#each $Br as row (row.id)}
 			<Subscribe Ra={row.attrs()} Rp={row.props()} let:Ra let:Rp>
 				<!-- on:click={(e) => handleClick(e, row)} OLD -->
-				<tr {...Ra} on:click={() => rowClickEvent(row)} class:selected={Rp.select.selected}>
+				<tr {...Ra} on:click={(e) => rowClickEvent(e, row)} class:selected={Rp.select.selected}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} let:Ca>
 							<td {...Ca} data-row={true} class="col-checkbox">
