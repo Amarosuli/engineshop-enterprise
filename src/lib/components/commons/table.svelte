@@ -1,9 +1,10 @@
 <script>
+	import { modal$ } from '$lib/utils/Stores';
 	import { readable } from 'svelte/store';
-	import { modal$, row$, _rowSet } from '$lib/utils/Stores';
 	import { Render, Subscribe, createTable, createRender } from 'svelte-headless-table';
 	import { addSortBy, addTableFilter, addSelectedRows, addHiddenColumns, addDataExport } from 'svelte-headless-table/plugins';
 
+	import { createEventDispatcher } from 'svelte';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 
 	import SelectCell from './selectCell.svelte';
@@ -18,6 +19,7 @@
 
 	const { isDelete, show } = modal$;
 	const data = readable(dataTable);
+	const dispatch = createEventDispatcher();
 
 	class SuperTable {
 		cols = [];
@@ -129,13 +131,6 @@
 	// NOTE: need to make reset selected rows from parent, from state of someRowsSelected
 	// RESOLVE: someRowsSelected is Readable not Writable. Cant use this
 
-	const handleClick = (event, row) => {
-		if (event.target.getAttribute('data-row')) {
-			_rowSet(row); // set data from clicked row
-			modal$.show('detail'); // show modal detail
-		}
-	};
-
 	function escHandler(e) {
 		if (!e) {
 			return;
@@ -158,6 +153,12 @@
 	$: Object.keys($selectedDataIds).length !== 0 ? modal$.show('delete') : modal$.hide('delete');
 
 	$: lengthOfRow = $Br.length === 0;
+
+	function rowClickEvent(e) {
+		dispatch('rowClick', {
+			rowData: e
+		});
+	}
 </script>
 
 <svelte:window on:keydown={escHandler} />
@@ -179,7 +180,14 @@
 				<tr {...Ra}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} Cp={col.props()} let:Ca let:Cp>
-							<th {...Ca} on:click={Cp.sort.toggle} class="col-sort" class:col-checkbox={col.id === 'selected'} class:sort-active={Cp.sort.order !== undefined} class:sort-asc={Cp.sort.order === 'asc'} class:sort-desc={Cp.sort.order === 'desc'}>
+							<th
+								{...Ca}
+								on:click={Cp.sort.toggle}
+								class="col-sort"
+								class:col-checkbox={col.id === 'selected'}
+								class:sort-active={Cp.sort.order !== undefined}
+								class:sort-asc={Cp.sort.order === 'asc'}
+								class:sort-desc={Cp.sort.order === 'desc'}>
 								<Render of={col.render()} />
 							</th>
 						</Subscribe>
@@ -191,7 +199,8 @@
 	<tbody {...$B}>
 		{#each $Br as row (row.id)}
 			<Subscribe Ra={row.attrs()} Rp={row.props()} let:Ra let:Rp>
-				<tr {...Ra} on:click={(e) => handleClick(e, row)} class:selected={Rp.select.selected}>
+				<!-- on:click={(e) => handleClick(e, row)} OLD -->
+				<tr {...Ra} on:click={() => rowClickEvent(row)} class:selected={Rp.select.selected}>
 					{#each row.cells as col (col.id)}
 						<Subscribe Ca={col.attrs()} let:Ca>
 							<td {...Ca} data-row={true} class="col-checkbox">

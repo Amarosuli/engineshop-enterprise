@@ -2,7 +2,7 @@
 	"useTabs": true,
 	"singleQuote": true,
 	"trailingComma": "none",
-	"printWidth": 300,
+	"printWidth": 200,
 	"bracketSameLine": true,
 	"plugins": ["prettier-plugin-tailwindcss"],
 	"pluginSearchDirs": ["."],

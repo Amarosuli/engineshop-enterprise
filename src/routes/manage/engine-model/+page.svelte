@@ -3,15 +3,11 @@
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { _row, modal$ } from '$lib/utils/Stores';
+	import { modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Form, Btn, Select, Table, Text } from '$lib/components';
 
 	export let data;
 
-	/**
-	 * Superform: applyAction set to false so we can handle onResult.
-	 * onResult void success, reload page using window.location. goto method not work
-	 */
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		onResult: async ({ result }) => {
@@ -24,28 +20,9 @@
 		}
 	});
 
-	/**
-	 * destructure of data from page.server.js
-	 * make using of specific data more simpler for Table Components props and other needs
-	 */
 	const { engineModels, engineFamilies } = data;
-
-	/**
-	 * recreate the array to fit the select component props
-	 * options = [{calue, title}]
-	 */
-	const familyOptions = engineFamilies.map(({ id, name }) => ({ value: id, title: name }));
-
-	/**
-	 * destructure of modal costum store
-	 * make using method more simpler
-	 */
 	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
-
-	/**
-	 * define the table column
-	 * data from page.server.js need to shape as fit as the defined columns
-	 */
+	const familyOptions = engineFamilies.map(({ id, name }) => ({ value: id, title: name }));
 	const dataCol = [
 		{
 			header: 'Name',
@@ -65,54 +42,30 @@
 	let search = '';
 	let exportJSON;
 
-	/**
-	 * this is for reseting the selected table rows
-	 * manually get the table checked box input
-	 * then trigger click event to unchecked all checked input
-	 */
 	function handleReset() {
 		let elements = document.querySelectorAll('[data-isChecked]');
 		elements.forEach((el) => {
-			// el.getAttribute('dataset-isChecked') === 'true' -- old
 			if (el.dataset.ischecked === 'true') {
 				el.click();
 			}
 		});
 	}
 
-	// check if data in _row store exist and id of modal update is exist (modal update open)
-	$: $isUpdate ? setUpdate(1) : '';
-
-	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $isCreate ? setUpdate(0) : '';
-
-	/**
-	 * this is for handling the stored data where the superform rely on it
-	 * for case the update form, form data (superform) need to override with
-	 * the rows data store. which is used for display the detail form.
-	 * but for create form , the form data need to reset as an empty.
-	 */
-	function setUpdate(isTrue) {
-		if (isTrue) {
-			CommonHelpers.mergeObject($form, $_row?.original);
-		} else {
-			CommonHelpers.resetObject($form);
-		}
-	}
-
-	/**
-	 * @TODO
-	 * this is for handling export
-	 * will have two format file on export (xlsx and pdf)
-	 * both will use library that capable to use template
-	 * for pdf file will be use the pdfme library
-	 * for excel file will be use the js-excel-template
-	 */
 	function handleExport() {
 		console.log(exportJSON);
-
-		// TODO: export to excel or pdf
 	}
+
+	function handleRowClick(e) {
+		let rowData = e.detail.rowData.original;
+		modal$.show('detail', rowData);
+	}
+
+	function setUpdate(isTrue) {
+		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.resetObject($form);
+	}
+
+	$: $isUpdate ? setUpdate(1) : '';
+	$: $isCreate ? setUpdate(0) : '';
 </script>
 
 <svelte:head>
@@ -124,20 +77,20 @@
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
+				<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
 			</div>
 			<div class="list-content">
 				<div class="list-row">
 					<span class="list-row-title">Model Name: </span>
-					<span class="list-row-content">{$_row?.original?.name}</span>
+					<span class="list-row-content">{$isDetail?.data?.name}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Description: </span>
-					<span class="list-row-content">{$_row?.original?.description}</span>
+					<span class="list-row-content">{$isDetail?.data?.description}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Family: </span>
-					<span class="list-row-content">{$_row?.original?.family}</span>
+					<span class="list-row-content">{$isDetail?.data?.family}</span>
 				</div>
 			</div>
 		</div>
@@ -147,7 +100,7 @@
 {#if $isUpdate}
 	<Modal id="update" position="right">
 		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
-			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
+			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
 			<Text id="name" name="name" label="Model Name" bind:value={$form.name} error={$errors.name} />
 			<Text id="description" name="description" label="Model Description" bind:value={$form.description} error={$errors.description} />
 			<Select id="family_id" name="family_id" label="Family" options={familyOptions} bind:value={$form.family_id} error={$errors.family_id} />
@@ -227,7 +180,7 @@
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={engineModels} {dataCol} {search} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} dataTable={engineModels} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
 		</div>
 	</div>
 </div>

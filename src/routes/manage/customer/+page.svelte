@@ -1,7 +1,7 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 
-	import { _row, modal$ } from '$lib/utils/Stores';
+	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Form, Search, File, Table, Text, Btn, Img, Menu, Switch } from '$lib/components';
 
@@ -20,10 +20,6 @@
 		}
 	});
 
-	/**
-	 * destructure of data from page.server.js
-	 * make using of specific data more simpler for Table Components props and other needs
-	 */
 	const { customers } = data;
 
 	/**
@@ -80,26 +76,6 @@
 		});
 	}
 
-	// check if data in _row store exist and id of modal update is exist (modal update open)
-	$: $isUpdate ? setUpdate(1) : '';
-
-	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $isCreate ? setUpdate(0) : '';
-
-	/**
-	 * this is for handling the stored data where the superform rely on it
-	 * for case the update form, form data (superform) need to override with
-	 * the rows data store. which is used for display the detail form.
-	 * but for create form , the form data need to reset as an empty.
-	 */
-	function setUpdate(isTrue) {
-		if (isTrue) {
-			CommonHelpers.mergeObject($form, $_row?.original);
-		} else {
-			CommonHelpers.resetObject($form);
-		}
-	}
-
 	/**
 	 * @TODO
 	 * this is for handling export
@@ -123,6 +99,27 @@
 
 		hiddenColumns = arrTemplate;
 	}
+
+	function handleRowClick(e) {
+		let rowData = e.detail.rowData.original;
+		modal$.show('detail', rowData);
+	}
+
+	/**
+	 * this is for handling the stored data where the superform rely on it
+	 * for case the update form, form data (superform) need to override with
+	 * the rows data store. which is used for display the detail form.
+	 * but for create form , the form data need to reset as an empty.
+	 */
+	function setUpdate(isTrue) {
+		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.resetObject($form);
+	}
+
+	// check if data in _row store exist and id of modal update is exist (modal update open)
+	$: $isUpdate ? setUpdate(1) : '';
+
+	// reset _row store only when modal create open (so we will get the data for page.server)
+	$: $isCreate ? setUpdate(0) : '';
 </script>
 
 <svelte:head>
@@ -134,28 +131,34 @@
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
+				<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
 			</div>
 			<div class="list-content">
 				<div class="list-row">
 					<span class="list-row-title">Customer Name: </span>
-					<span class="list-row-content">{$_row?.original?.name}</span>
+					<span class="list-row-content">{$isDetail?.data?.name}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Description: </span>
-					<span class="list-row-content">{$_row?.original?.description}</span>
+					<span class="list-row-content">{$isDetail?.data?.description}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Logo: </span>
-					<span class="list-row-content"><Img className="object-scale-down h-10" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" /></span>
+					<span class="list-row-content">
+						<Img
+							className="object-scale-down h-10"
+							src={$isDetail?.data?.logo ? CommonHelpers.getFileUrl($isDetail?.data?.collectionId, $isDetail?.data?.id, $isDetail?.data?.logo) : '/'}
+							alt={$isDetail?.data?.logo}
+							crossorigin="anonymous" />
+					</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">IATA Code: </span>
-					<span class="list-row-content">{$_row?.original?.code_IATA}</span>
+					<span class="list-row-content">{$isDetail?.data?.code_IATA}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">ICAO Code: </span>
-					<span class="list-row-content">{$_row?.original?.code_ICAO}</span>
+					<span class="list-row-content">{$isDetail?.data?.code_ICAO}</span>
 				</div>
 			</div>
 		</div>
@@ -165,10 +168,14 @@
 {#if $isUpdate}
 	<Modal id="update" position="right">
 		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
+			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
 			<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
 			<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-			<Img className="w-max object-contain" src={$_row?.original?.logo ? CommonHelpers.getFileUrl($_row?.original?.collectionId, $_row?.original?.id, $_row?.original?.logo) : '/'} alt={$_row?.original?.logo} crossorigin="anonymous" />
+			<Img
+				className="w-max object-contain"
+				src={$isUpdate?.data?.logo ? CommonHelpers.getFileUrl($isUpdate?.data?.collectionId, $isUpdate?.data?.id, $isUpdate?.data?.logo) : '/'}
+				alt={$isUpdate?.data?.logo}
+				crossorigin="anonymous" />
 			<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
 			<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
 			<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
@@ -255,7 +262,7 @@
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={customers} {dataCol} {search} bind:selectedRows bind:exportJSON bind:hiddenColumns />
+			<svelte:component this={Table} dataTable={customers} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns />
 		</div>
 	</div>
 </div>

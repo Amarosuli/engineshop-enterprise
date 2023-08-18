@@ -2,16 +2,12 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
+	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Select, Table, Form, Text, Switch, TextArea, Btn } from '$lib/components';
 
 	export let data;
 
-	/**
-	 * Superform: applyAction set to false so we can handle onResult.
-	 * onResult void success, reload page using window.location. goto method not work
-	 */
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		onResult: async ({ result }) => {
@@ -21,25 +17,10 @@
 		}
 	});
 
-	/**
-	 * destructure of data from page.server.js
-	 * make using of specific data more simpler for Table Components props and other needs
-	 */
 	const { engineList, engineModels, customers } = data;
-
 	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
 	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
-
-	/**
-	 * destructure of modal costum store
-	 * make using method more simpler
-	 */
 	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
-
-	/**
-	 * define the table column
-	 * data from page.server.js need to shape as fit as the defined columns
-	 */
 	const dataCol = [
 		{
 			header: 'ESN',
@@ -79,56 +60,30 @@
 	let search = '';
 	let exportJSON;
 
-	/**
-	 * this is for reseting the selected table rows
-	 * manually get the table checked box input
-	 * then trigger click event to unchecked all checked input
-	 */
 	function handleReset() {
 		let elements = document.querySelectorAll('[data-isChecked]');
 		elements.forEach((el) => {
-			// el.getAttribute('dataset-isChecked') === 'true' -- old
 			if (el.dataset.ischecked === 'true') {
 				el.click();
 			}
 		});
 	}
 
-	// check if data in _row store exist and id of modal update is exist (modal update open)
-	$: $isUpdate ? setUpdate(1) : '';
-
-	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $isCreate ? setUpdate(0) : '';
-
-	/**
-	 * this is for handling the stored data where the superform rely on it
-	 * for case the update form, form data (superform) need to override with
-	 * the rows data store. which is used for display the detail form.
-	 * but for create form , the form data need to reset as an empty.
-	 */
-	function setUpdate(isTrue) {
-		if (isTrue) {
-			CommonHelpers.mergeObject($form, $_row?.original);
-		} else {
-			// use this function will remove default value from zodSchema.
-			// even exclude is defined, $form object will follow the latest opened modal update value
-			CommonHelpers.resetObject($form, { exclude: ['isAvailable', 'isPreservable', 'isServiceable'] });
-		}
-	}
-
-	/**
-	 * @TODO
-	 * this is for handling export
-	 * will have two format file on export (xlsx and pdf)
-	 * both will use library that capable to use template
-	 * for pdf file will be use the pdfme library
-	 * for excel file will be use the js-excel-template
-	 */
 	function handleExport() {
 		console.log(exportJSON);
-
-		// TODO: export to excel or pdf
 	}
+
+	function handleRowClick(e) {
+		let rowData = e.detail.rowData.original;
+		modal$.show('detail', rowData);
+	}
+
+	function setUpdate(isTrue) {
+		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.resetObject($form, { exclude: ['isAvailable', 'isPreservable', 'isServiceable'] });
+	}
+
+	$: $isUpdate ? setUpdate(1) : '';
+	$: $isCreate ? setUpdate(0) : '';
 </script>
 
 <svelte:head>
@@ -140,36 +95,36 @@
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
+				<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
 			</div>
 			<div class="list-content">
 				<div class="list-row">
 					<span class="list-row-title">Engine Serial Number: </span>
-					<span class="list-row-content">{$_row?.original?.esn}</span>
+					<span class="list-row-content">{$isDetail?.data?.esn}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Configuration: </span>
-					<span class="list-row-content">{$_row?.original?.config}</span>
+					<span class="list-row-content">{$isDetail?.data?.config}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Model Name: </span>
-					<span class="list-row-content">{$_row?.original?.model}</span>
+					<span class="list-row-content">{$isDetail?.data?.model}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Customer Name: </span>
-					<span class="list-row-content">{$_row?.original?.customer}</span>
+					<span class="list-row-content">{$isDetail?.data?.customer}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Engine In Shop: </span>
-					<span class="list-row-content">{$_row?.original?.isAvailable}</span>
+					<span class="list-row-content">{$isDetail?.data?.isAvailable}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Preservation: </span>
-					<span class="list-row-content">{$_row?.original?.isPreservable}</span>
+					<span class="list-row-content">{$isDetail?.data?.isPreservable}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Notes: </span>
-					<span class="list-row-content">{$_row?.original?.notes}</span>
+					<span class="list-row-content">{$isDetail?.data?.notes}</span>
 				</div>
 			</div>
 		</div>
@@ -179,7 +134,7 @@
 {#if $isUpdate}
 	<Modal id="update" position="right">
 		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
-			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
+			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
 			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
 			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
@@ -267,7 +222,7 @@
 		</div>
 		<div class="manage-r-content">
 			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={engineList} {dataCol} {search} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} dataTable={engineList} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
 		</div>
 	</div>
 </div>

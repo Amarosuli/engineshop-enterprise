@@ -5,7 +5,7 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import isBetween from 'dayjs/plugin/isBetween';
 
-	import { _row, modal$ } from '$lib/utils/Stores';
+	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Search, Select, Table, Form, File, Text, Switch, TextArea, Btn, Date } from '$lib/components';
 
@@ -34,9 +34,9 @@
 	const { engineList, engineModels, customers, preservationList } = data;
 
 	const durationOptions = [
-		{ value: 90, title: '90 Days' },
-		{ value: 180, title: '180 Days' },
-		{ value: 360, title: '360 Days' }
+		{ value: '90', title: '90 Days' },
+		{ value: '180', title: '180 Days' },
+		{ value: '360', title: '360 Days' }
 	];
 
 	const tableData = engineList.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
@@ -101,11 +101,6 @@
 	let search = '';
 	let exportJSON;
 
-	/**
-	 * this is for reseting the selected table rows
-	 * manually get the table checked box input
-	 * then trigger click event to unchecked all checked input
-	 */
 	function handleReset() {
 		let elements = document.querySelectorAll('[data-isChecked]');
 		elements.forEach((el) => {
@@ -116,39 +111,35 @@
 		});
 	}
 
-	// check if data in _row store exist and id of modal update is exist (modal update open)
-	$: $isUpdate ? setUpdate(1) : '';
+	function handleExport() {
+		console.log(exportJSON);
+	}
 
-	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $isCreate ? setUpdate(1) : '';
+	function handleRowClick(e) {
+		let rowData = e.detail.rowData.original;
+		modal$.show('detail', rowData);
+	}
 
-	/**
-	 * this is for handling the stored data where the superform rely on it
-	 * for case the update form, form data (superform) need to override with
-	 * the rows data store. which is used for display the detail form.
-	 * but for create form , the form data need to reset as an empty.
-	 */
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			CommonHelpers.mergeObject($form, $_row?.original);
+			CommonHelpers.mergeObject($form, $isDetail.data.preserveDetail); // next add options = {set = {key: '', value: ''}} to specific merge value
 		} else {
-			CommonHelpers.resetObject($form);
+			CommonHelpers.resetObject($form); // next add options = {set = {key: '', value: ''}} to specific merge value
+			$form.engine_id = $isDetail.data.id; // curently use this scenario
 		}
 	}
 
-	/**
-	 * @TODO
-	 * this is for handling export
-	 * will have two format file on export (xlsx and pdf)
-	 * both will use library that capable to use template
-	 * for pdf file will be use the pdfme library
-	 * for excel file will be use the js-excel-template
-	 */
-	function handleExport() {
-		console.log(exportJSON);
+	$: $isUpdate ? setUpdate(1) : '';
+	$: $isCreate ? setUpdate(0) : '';
 
-		// TODO: export to excel or pdf
-	}
+	/**
+	 * @TODO FOR THIS PAGE
+	 * 1. handle create ( redirect still going to the wrong path)
+	 * 2. handle update
+	 * 3. delete is happen via pocketbase ( follow it parent id (engine_id) if deleted )
+	 * 4. simplified the functions, like impelementation of dayjs in modal detail
+	 * 5. create card ( left side ) for notification dashboard
+	 */
 </script>
 
 <svelte:head>
@@ -160,71 +151,83 @@
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
-				{#if Object.keys($_row?.original?.preserveDetail).length === 0 && $_row?.original?.preserveDetail.constructor === Object}
-					<Btn title="Create" color="warning" on:click={() => modal$.show('create')} />
+				{#if Object.keys($isDetail?.data?.preserveDetail).length === 0 && $isDetail?.data?.preserveDetail.constructor === Object}
+					<Btn title="Create" color="warning" on:click={() => modal$.show('create', $isDetail?.data)} />
 				{:else}
-					<Btn title="Update" color="warning" on:click={() => modal$.show('update')} />
+					<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
 				{/if}
 			</div>
 			<div class="list-content">
 				<div class="list-row">
 					<span class="list-row-title">Engine Serial Number: </span>
-					<span class="list-row-content">{$_row?.original?.esn}</span>
+					<span class="list-row-content">{$isDetail?.data?.esn}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Model Name: </span>
-					<span class="list-row-content">{$_row?.original?.model}</span>
+					<span class="list-row-content">{$isDetail?.data?.model}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Customer Name: </span>
-					<span class="list-row-content">{$_row?.original?.customer}</span>
+					<span class="list-row-content">{$isDetail?.data?.customer}</span>
 				</div>
 				<div class="list-row relative">
 					<span class="list-row-title">Serviceability: </span>
-					<span class="list-row-content peer select-none" class:bg-sky-300={$_row?.original?.isServiceable} class:bg-red-300={!$_row?.original?.isServiceable}>{$_row?.original?.isServiceable ? 'Serviceable' : 'Unserviceable'} </span>
-					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg">Change this on manage/engine-list</span>
+					<span class="list-row-content peer select-none" class:bg-sky-300={$isDetail?.data?.isServiceable} class:bg-red-300={!$isDetail?.data?.isServiceable}
+						>{$isDetail?.data?.isServiceable ? 'Serviceable' : 'Unserviceable'}
+					</span>
+					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
+						>Change this on manage/engine-list</span>
 				</div>
 				<div class="list-row relative">
 					<span class="list-row-title">Preservation: </span>
-					<span class="list-row-content peer select-none" class:bg-sky-300={$_row?.original?.isPreservable} class:bg-red-300={!$_row?.original?.isPreservable}>{$_row?.original?.isPreservable ? 'Controlled' : 'Uncontrolled'}</span>
-					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg">Change this on manage/engine-list</span>
+					<span class="list-row-content peer select-none" class:bg-sky-300={$isDetail?.data?.isPreservable} class:bg-red-300={!$isDetail?.data?.isPreservable}
+						>{$isDetail?.data?.isPreservable ? 'Controlled' : 'Uncontrolled'}</span>
+					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
+						>Change this on manage/engine-list</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Notes: </span>
-					<span class="list-row-content">{$_row?.original?.notes}</span>
+					<span class="list-row-content">{$isDetail?.data?.notes}</span>
 				</div>
 			</div>
 			<div class="list-header">
 				<h1 class="list-title">Preservation Data</h1>
 			</div>
 			<div class="list-content">
-				{#if Object.keys($_row.original.preserveDetail).length !== 0}
-					{@const isExpired = dayjs().isAfter(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'))}
-					{@const isGood = dayjs().isBefore(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'))}
+				{#if Object.keys($isDetail?.data?.preserveDetail).length !== 0}
+					{@const isExpired = dayjs().isAfter(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}
+					{@const isGood = dayjs().isBefore(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}
 					<!-- why -->
-					{@const isReady = dayjs().isBetween(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration - 14, 'day'), dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'), 'day')}
+					{@const isReady = dayjs().isBetween(
+						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration - 14, 'day'),
+						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'),
+						'day'
+					)}
 					<div class="list-row">
 						<span class="list-row-title">Last Performed: </span>
-						<span class="list-row-content">{$_row?.original?.preserveDetail?.date_performed && dayjs($_row?.original?.preserveDetail?.date_performed).format('DD / MMM / YYYY')}</span>
+						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && dayjs($isDetail?.data?.preserveDetail?.date_performed).format('DD / MMM / YYYY')}</span>
 					</div>
 					<div class="list-row">
 						<span class="list-row-title">Renewal Duration: </span>
-						<span class="list-row-content">{$_row?.original?.preserveDetail?.duration && $_row?.original?.preserveDetail?.duration} Days</span>
+						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.duration && $isDetail?.data?.preserveDetail?.duration} Days</span>
 					</div>
 					<div class="list-row">
 						<span class="list-row-title">Expired Date: </span>
-						<span class="list-row-content">{$_row?.original?.preserveDetail?.date_performed && dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day').format('DD / MMM / YYYY')}</span>
+						<span class="list-row-content"
+							>{$isDetail?.data?.preserveDetail?.date_performed &&
+								dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day').format('DD / MMM / YYYY')}</span>
 					</div>
 					<div class="list-row">
 						<span class="list-row-title">Status: </span>
 						<div class="flex justify-center items-center">
-							<span class="list-row-content text-xxs" class:bg-yellow-400={isReady} class:bg-green-400={isGood} class:bg-red-400={isExpired}> {isGood ? 'Good' : ''} {isReady ? 'and Ready to Preserve' : ''}{isExpired ? 'Expired since' : ''}</span>
-							<span class="list-row-content">{dayjs().to(dayjs($_row?.original?.preserveDetail?.date_performed).add($_row?.original?.preserveDetail?.duration, 'day'))}</span>
+							<span class="list-row-content text-xxs" class:bg-yellow-400={isReady} class:bg-green-400={isGood} class:bg-red-400={isExpired}>
+								{isGood ? 'Good' : ''} {isReady ? 'and Ready to Preserve' : ''}{isExpired ? 'Expired since' : ''}</span>
+							<span class="list-row-content">{dayjs().to(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}</span>
 						</div>
 					</div>
 					<div class="list-row">
 						<span class="list-row-title">Material: </span>
-						<span class="list-row-content">{$_row?.original?.preserveDetail?.date_performed && $_row?.original?.preserveDetail?.material}</span>
+						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && $isDetail?.data?.preserveDetail?.material}</span>
 					</div>
 				{:else}
 					<div class="list-row">
@@ -240,8 +243,8 @@
 	<Modal id="update" position="right">
 		<SuperDebug data={$form} />
 		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} disabled />
+			<Text id="id" name="id" bind:value={$isUpdate.data.preserveDetail.id} hidden />
+			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isUpdate.data.esn} disabled />
 			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
 			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
 			<File id="tag" name="tag" label="Preserve Tag" />
@@ -254,9 +257,8 @@
 	<Modal id="create" position="right">
 		<SuperDebug data={$form} />
 		<Form id="create" action="?/create" title="Create" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="id" name="id" bind:value={$_row.original.id} hidden />
-			<Text id="engine_id" name="engine_id" bind:value={$_row.original.id} hidden />
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} disabled />
+			<Text id="engine_id" name="engine_id" bind:value={$form.engine_id} hidden />
+			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isCreate.data.esn} disabled />
 			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
 			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
 			<File id="tag" name="tag" label="Preserve Tag" />
@@ -325,8 +327,7 @@
 			</div>
 		</div>
 		<div class="manage-r-content">
-			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} dataTable={tableData} {dataCol} {search} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} dataTable={tableData} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
 		</div>
 	</div>
 </div>
