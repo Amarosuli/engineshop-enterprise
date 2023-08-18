@@ -4,7 +4,7 @@
 }
 
 .btn-group {
-	@apply flex flex-col gap-3 lg:flex-row;
+	@apply flex flex-row gap-3;
 }
 
 .btn {

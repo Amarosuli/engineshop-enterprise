@@ -13,7 +13,7 @@
 }
 
 .manage-r-header {
-	@apply flex h-fit flex-nowrap justify-between gap-4 bg-slate-200 px-6 py-4;
+	@apply flex h-fit flex-col flex-nowrap justify-between gap-4 bg-slate-200 px-6 py-4 xl:flex-row;
 }
 
 .manage-r-title {
@@ -29,5 +29,5 @@
 }
 
 .manage-r-content {
-	@apply relative overflow-y-auto bg-red-200;
+	@apply relative overflow-y-auto;
 }

@@ -22,5 +22,13 @@
 	}
 </script>
 
-<button {type} {form} class:mx-auto={center} class:ml-auto={right} class:mr-auto={left} class:w-fit={size === 'compact'} class:w-full={size === 'full'} class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}" on:click
-	>{title}</button>
+<button
+	{type}
+	{form}
+	class:mx-auto={center}
+	class:ml-auto={right}
+	class:mr-auto={left}
+	class:w-fit={size === 'compact'}
+	class:w-full={size === 'full'}
+	class="{CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}"
+	on:click>{title}<slot /></button>

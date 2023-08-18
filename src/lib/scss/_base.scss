@@ -3,9 +3,9 @@ html {
 }
 
 button[type='submit'] {
-	@apply select-none border-none px-4 py-2 align-middle text-sm;
+	@apply select-none border-none px-4 py-2 align-middle text-xxs lg:text-sm;
 }
 
 button[type='button'] {
-	@apply select-none border-none px-4 py-2 align-middle text-sm;
+	@apply flex select-none items-center justify-center gap-2 border-none px-4 py-2 align-middle text-xxs lg:text-sm;
 }
