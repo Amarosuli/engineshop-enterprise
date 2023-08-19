@@ -13,7 +13,8 @@
 		<Text id="esn" name="esn" label="ESN" bind:value={inputCheck} disabled />
 		<Date id="date_in" name="date_in" label="Incoming Date" bind:value={selectedData.date_in} />
 		<Date id="date_out" name="date_out" label="Outgoing Date" bind:value={selectedData.date_out} />
-		<Switch id="isInShop" name="isInShop" label="Is Engine In Shop" bind:value={selectedData.isInShop} />
+		<!-- isInShop should default to false in Outgoing form -->
+		<Switch id="isInShop" name="isInShop" label="Is Engine In Shop" value={false} />
 		<Btn type="submit" title="Release Engine" color="danger" right />
 	</form>
 </div>

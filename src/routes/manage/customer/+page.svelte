@@ -14,6 +14,7 @@
 	 */
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
+		taintedMessage: null,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
 				invalidateAll();
@@ -113,7 +114,8 @@
 	 * this is for handling the stored data where the superform rely on it
 	 * for case the update form, form data (superform) need to override with
 	 * the rows data store. which is used for display the detail form.
-	 * but for create form , the form data need to reset as an empty.
+	 * but for create form , the form data need to reset back to the default base on it schema.
+	 * for this page, merge back to default value not necessary because the scehma doesnt contain any default value
 	 */
 	function setUpdate(isTrue) {
 		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.resetObject($form);

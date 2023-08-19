@@ -17,6 +17,7 @@
 
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
+		taintedMessage: null,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
 				window.location = '/manage/engine-in-out';

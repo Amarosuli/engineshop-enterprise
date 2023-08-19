@@ -1,5 +1,5 @@
 <script>
-	import { superForm } from 'sveltekit-superforms/client';
+	import { superForm, defaultValues } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { invalidateAll } from '$app/navigation';
 
@@ -11,6 +11,7 @@
 
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
+		taintedMessage: null,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
 				invalidateAll();
@@ -18,6 +19,7 @@
 			}
 		}
 	});
+	const formDefault = defaultValues(CommonHelpers.engineListSchema);
 
 	const { engineModels, customers } = data;
 	let dataTable;
@@ -83,7 +85,8 @@
 	}
 
 	function setUpdate(isTrue) {
-		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.resetObject($form, { exclude: ['isAvailable', 'isPreservable', 'isServiceable'] });
+		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.mergeObject($form, formDefault);
+		console.log(formDefault);
 	}
 
 	$: $isUpdate ? setUpdate(1) : '';
