@@ -5,6 +5,7 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import isBetween from 'dayjs/plugin/isBetween';
 	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -102,8 +103,10 @@
 	];
 
 	let selectedRows = [];
-	let search = '';
+	let search = $page.url.searchParams.get('esn') || '';
 	let exportJSON;
+
+	// $: search = $page.url.searchParams.get('esn');
 
 	function handleReset() {
 		let elements = document.querySelectorAll('[data-isChecked]');

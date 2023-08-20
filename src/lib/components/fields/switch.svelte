@@ -9,12 +9,14 @@
 	export let autocomplete = 'off';
 	export let value = '';
 	export let hidden = false;
+	export let disabled = false;
 </script>
 
 <div class="field-container">
 	<label for={id} class="relative inline-flex cursor-pointer items-center">
-		<input class="peer sr-only {className}" type="checkbox" {id} {name} {placeholder} {required} {autocomplete} bind:checked={value} on:change />
+		<input class="peer sr-only {className}" type="checkbox" {id} {name} {placeholder} {required} {autocomplete} bind:checked={value} on:change {disabled} />
 		<div
+			class:peer-checked:bg-slate-500={disabled}
 			class="h-8 w-[3.7rem] rounded-full bg-slate-200
          after:absolute
          after:left-[3px]

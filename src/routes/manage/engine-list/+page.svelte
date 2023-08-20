@@ -2,10 +2,11 @@
 	import { superForm, defaultValues } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Modal, Search, Select, Table, Form, Text, Switch, TextArea, Btn } from '$lib/components';
+	import { Modal, Search, Select, Table, Form, Text, Switch, Link, TextArea, Btn } from '$lib/components';
 
 	export let data;
 
@@ -46,15 +47,27 @@
 		},
 		{
 			header: 'Availability',
-			accessor: 'isAvailable'
+			accessor: 'isAvailable',
+			cell: ({ row }) => {
+				if (row.original.isAvailable) return 'Available';
+				return 'Not Available';
+			}
 		},
 		{
 			header: 'Serviceability',
-			accessor: 'isServiceable'
+			accessor: 'isServiceable',
+			cell: ({ row }) => {
+				if (row.original.isServiceable) return 'Serviceable';
+				return 'Unserviceable';
+			}
 		},
 		{
 			header: 'Preserve',
-			accessor: 'isPreservable'
+			accessor: 'isPreservable',
+			cell: ({ row }) => {
+				if (row.original.isPreservable) return 'Controlled';
+				return 'Uncontrolled';
+			}
 		},
 		{
 			header: 'Notes',
@@ -63,7 +76,7 @@
 	];
 
 	let selectedRows = [];
-	let search = '';
+	let search = $page.url.searchParams.get('esn') || '';
 	let exportJSON;
 
 	function handleReset() {
@@ -121,13 +134,24 @@
 					<span class="list-row-title">Customer Name: </span>
 					<span class="list-row-content">{$isDetail?.data?.customer}</span>
 				</div>
+				<div class="list-row relative">
+					<span class="list-row-title">Availability: </span>
+					<Link href="/app/engine-preservation/?esn={$isDetail?.data?.esn}" title="Edit" />
+					<span class="list-row-content text-xxs font-semibold peer" class:bg-green-300={$isDetail?.data?.isAvailable} class:bg-yellow-300={!$isDetail?.data?.isAvailable}
+						>{$isDetail?.data?.isAvailable ? 'Available in shop' : 'Not available'}</span>
+
+					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
+						>Change this on app/engine-preservation</span>
+				</div>
 				<div class="list-row">
-					<span class="list-row-title">Engine In Shop: </span>
-					<span class="list-row-content">{$isDetail?.data?.isAvailable}</span>
+					<span class="list-row-title">Serviceability: </span>
+					<span class="list-row-content text-xxs font-semibold" class:bg-green-300={$isDetail?.data?.isServiceable} class:bg-yellow-300={!$isDetail?.data?.isServiceable}
+						>{$isDetail?.data?.isServiceable ? 'Serviceble' : 'Unserviceable'}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Preservation: </span>
-					<span class="list-row-content">{$isDetail?.data?.isPreservable}</span>
+					<span class="list-row-content text-xxs font-semibold" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
+						>{$isDetail?.data?.isPreservable ? 'Preservation maintained' : 'Preservation not maintained'}</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Notes: </span>
@@ -146,8 +170,9 @@
 			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
 			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<Switch id="isAvailable" name="isAvailable" label="Engine InShop" bind:value={$form.isAvailable} />
-			<Switch id="excludePreservation" name="excludePreservation" label="Preservation" bind:value={$form.isPreservable} />
+			<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} /> CHANGE THIS ONLY AT APP/ENGINE-PRESERVATION -->
+			<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
+			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
 		</Form>
 	</Modal>
@@ -161,8 +186,9 @@
 			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
 			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<Switch id="isAvailable" name="isAvailable" label="Engine InShop" bind:value={$form.isAvailable} />
-			<Switch id="excludePreservation" name="excludePreservation" label="Preservation" bind:value={$form.excludePreservation} />
+			<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} disabled /> is always true when create -->
+			<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
+			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
 		</Form>
 	</Modal>
