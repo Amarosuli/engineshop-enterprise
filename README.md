@@ -1,6 +1,6 @@
 # Engineshop Enterprise
 
-Everything you might wonder about this project, go to [`Coding Journey`](https://youtube.com/playlist?list=PLTACq48s0qNoHXsfwrp3VMvhfItaiPh6B&si=rwKu44dMEXhcEyJr).
+Everything you might wonder about this project, go to [`Coding Journey | Engineshop Enterprise`](https://youtube.com/playlist?list=PLTACq48s0qNoHXsfwrp3VMvhfItaiPh6B&si=rwKu44dMEXhcEyJr).
 
 ## Tech
 
