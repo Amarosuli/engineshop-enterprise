@@ -6,7 +6,7 @@ Everything you might wonder about this project, go to [`Coding Journey | Engines
 
 Here some technologies that i used in this project.
 
-1. [`SvelteKit`](https://kit.svelte.dev/) v4.0.0
+1. Framework [`SvelteKit`](https://kit.svelte.dev/) v4.0.0
 2. Database ([`Pocketbase`](https://pocketbase.io/))
 3. Styling ([`TailwindCSS`](https://tailwindcss.com/))
 4. Transition ([`Svelte Transition Classes`](https://github.com/rmarscher/svelte-transition-classes))
