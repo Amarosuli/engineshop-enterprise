@@ -9,19 +9,21 @@ import { CommonHelpers } from '$lib/utils/CommonHelpers'
  * Engine with no data preservation is valued by "No Data"
  */
 export const load = async ({ locals }) => {
+
    let engineList = async () => {
       /**
        * add 'model' and 'customer key to array
        * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
        */
+      let preservationList = await CommonHelpers.getPreservationList(locals)
       let raw = await CommonHelpers.getEngineList(locals)
       let filterAvailability = raw.filter(({ isAvailable }) => isAvailable)
-      let result = filterAvailability.map(value => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name }))
-      return result
+      let addModelandCustomer = filterAvailability.map(value => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name }))
+      let addPreserveDetail = addModelandCustomer.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
+      return addPreserveDetail
    }
    return {
       form: await superValidate(CommonHelpers.enginePreservationSchema),
-      preservationList: await CommonHelpers.getPreservationList(locals),
       engineList: await engineList(),
       engineModels: await CommonHelpers.getEngineModels(locals),
       customers: await CommonHelpers.getCustomers(locals)
@@ -71,7 +73,7 @@ export const actions = {
           * it feels wasting time to check form data is equal to curent data.
           *  will remove this or find the new better way
           */
-         await CommonHelpers.updateData(locals, 'engine_list', id, form.data)
+         await CommonHelpers.updateData(locals, 'preservation_list', id, form.data)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -80,10 +82,5 @@ export const actions = {
       }
 
       return { form }
-   },
-   delete: async ({ request, locals }) => {
-      const form = Object.fromEntries(await request.formData())
-      const keys = Object.keys(form)
-      console.log(form);
    }
 };

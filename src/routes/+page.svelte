@@ -9,7 +9,7 @@
 	<title>Dashboard</title>
 </svelte:head>
 
-<div class="p-6 w-full mx-auto flex flex-col justify-start items-start space-y-3">
+<div class="p-6 w-full mx-auto flex flex-col justify-start items-start space-y-3 font-nunito">
 	<strong>Apps</strong>
 	<div class="menuContainer">
 		{#each AppsMenu as { title, href, icon }, i}

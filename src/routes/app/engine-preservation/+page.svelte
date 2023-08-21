@@ -35,7 +35,7 @@
 	 * destructure of data from page.server.js
 	 * make using of specific data more simpler for Table Components props and other needs
 	 */
-	const { engineList, engineModels, customers, preservationList } = data;
+	const { engineList, engineModels, customers } = data;
 
 	const durationOptions = [
 		{ value: '90', title: '90 Days' },
@@ -44,7 +44,7 @@
 	];
 
 	let dataTable;
-	$: dataTable = data.engineList.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
+	$: dataTable = data.engineList;
 	/**
 	 * destructure of modal costum store
 	 * make using method more simpler
@@ -124,6 +124,10 @@
 
 	function handleRowClick(e) {
 		let rowData = e.detail.rowData.original;
+		if (Object.keys(rowData.preserveDetail).length) {
+			rowData.preserveDetail.date_performed = rowData.preserveDetail.date_performed.split(' ')[0];
+		}
+
 		modal$.show('detail', rowData);
 	}
 
@@ -251,6 +255,7 @@
 		<SuperDebug data={$form} />
 		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
 			<Text id="id" name="id" bind:value={$isUpdate.data.preserveDetail.id} hidden />
+			<Text id="engine_id" name="engine_id" bind:value={$isUpdate.data.preserveDetail.engine_id} hidden />
 			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isUpdate.data.esn} disabled />
 			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
 			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />

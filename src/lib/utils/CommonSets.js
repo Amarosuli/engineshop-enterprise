@@ -116,11 +116,11 @@ export class CommonSets {
          href: '/auth/logout',
          color: 'danger'
       },
-      {
-         title: 'Register',
-         href: '/auth/register',
-         color: 'info'
-      }
+      // {
+      //    title: 'Register',
+      //    href: '/auth/register',
+      //    color: 'info'
+      // }
    ];
 
    /**

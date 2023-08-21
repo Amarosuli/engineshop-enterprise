@@ -1,8 +1,6 @@
 <script>
 	export let data;
 	const { user, unit } = data;
-
-	// console.log(user, unit);
 </script>
 
 <div class="flex w-full justify-center items-start mt-8">

@@ -14,7 +14,14 @@ const config = {
          '3xl': ['48px', '64px'],
          '4xl': ['82px', '120px'],
       },
-      extend: {}
+      extend: {
+         fontFamily: {
+            montserrat: ['Montserrat', 'sans-serif'],
+            nunito: ['Nunito', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+            roboto: ['Roboto', 'sans-serif'],
+         }
+      }
    },
 
    plugins: []
