@@ -1,0 +1,7 @@
+export { default as Root } from './Modal.svelte'
+export { default as Header } from './ModalHeader.svelte'
+export { default as Body } from './ModalBody.svelte'
+export { default as Footer } from './ModalFooter.svelte'
+export { default as Close } from './ModalClose.svelte'
+export { default as Title } from './ModalTitle.svelte'
+export { default as Action } from './ModalAction.svelte'

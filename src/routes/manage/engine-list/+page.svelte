@@ -136,12 +136,12 @@
 				</div>
 				<div class="list-row relative">
 					<span class="list-row-title">Availability: </span>
-					<Link href="/app/engine-preservation/?esn={$isDetail?.data?.esn}" title="Edit" />
+					<Link href="/app/engine-in-out/?esn={$isDetail?.data?.esn}" title="Edit" />
 					<span class="list-row-content text-xxs font-semibold peer" class:bg-green-300={$isDetail?.data?.isAvailable} class:bg-yellow-300={!$isDetail?.data?.isAvailable}
 						>{$isDetail?.data?.isAvailable ? 'Available in shop' : 'Not available'}</span>
 
 					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
-						>Change this on app/engine-preservation</span>
+						>Change this on app/engine-in-out</span>
 				</div>
 				<div class="list-row">
 					<span class="list-row-title">Serviceability: </span>
@@ -186,7 +186,7 @@
 			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
 			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} disabled /> is always true when create -->
+			<Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} disabled />
 			<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
 			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />

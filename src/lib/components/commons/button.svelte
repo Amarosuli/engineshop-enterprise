@@ -10,6 +10,7 @@
 	export let left = false;
 	export let form = null;
 	export let disabled = false;
+	export let hidden = false;
 
 	/**
 	 * Checking @color is valid name ref to @ColorName
@@ -27,6 +28,7 @@
 	{type}
 	{form}
 	{disabled}
+	class:!hidden={hidden}
 	class:mx-auto={center}
 	class:ml-auto={right}
 	class:mr-auto={left}

@@ -54,6 +54,31 @@ export const actions = {
 
       return { form }
    },
+   outgoing: async ({ request, locals }) => {
+      const formData = await request.formData()
+      const { id } = Object.fromEntries(formData)
+      const form = await superValidate(formData, CommonHelpers.engineAvailabilitySchema)
+
+      if (!form.valid) {
+         console.log('NOT VALID: ', form);
+         return fail(400, { form })
+      }
+
+      try {
+         // create engine_availability, then set availability in engine_list to true
+         let engineAvailabilityData = { "date_out": form.data.date_out, "isInShop": false }
+         await locals.pb.collection('engine_availability').update(id, engineAvailabilityData)
+         await locals.pb.collection('engine_list').update(form.data.engine_id, { isAvailable: false })
+      } catch (error) {
+         form.errors = {
+            pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
+         }
+         return fail(error.status, { form })
+      }
+      // console.log('VALID: ', form);
+
+      return { form }
+   },
    update: async ({ request, locals }) => {
       /**
        * grab raw form data into formData variable,

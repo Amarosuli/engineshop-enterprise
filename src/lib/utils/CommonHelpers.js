@@ -104,6 +104,7 @@ export class CommonHelpers {
    })
 
    static engineAvailabilitySchema = z.object({
+      engine_id: z.string().min(1, { message: 'Engine Id cannot be empty' }),
       date_in: z.date(),
       date_out: z.date().optional(),
       isInShop: z.boolean().default(true)

@@ -98,6 +98,12 @@ export class CommonSets {
             icon: 'https://ui-avatars.com/api/?name=Customer&background=random&size=30&bold=true&uppercase=false'
             // icon: 'ri:article-line'
          },
+         {
+            title: 'Test',
+            href: '/test',
+            icon: 'https://ui-avatars.com/api/?name=Test&background=random&size=30&bold=true&uppercase=false'
+            // icon: 'ri:article-line'
+         },
       ]
    };
 

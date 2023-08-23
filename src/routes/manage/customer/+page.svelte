@@ -8,8 +8,6 @@
 
 	export let data;
 
-	$: console.log(data.user);
-
 	/**
 	 * Superform: applyAction set to false so we can handle onResult.
 	 * onResult void success, reload page using window.location. goto method not work
@@ -128,6 +126,8 @@
 
 	// reset _row store only when modal create open (so we will get the data for page.server)
 	$: $isCreate ? setUpdate(0) : '';
+
+	// $: console.log(Object.keys($isDetail?.data));
 </script>
 
 <svelte:head>
@@ -139,7 +139,7 @@
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" disabled={data.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
+				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
 			</div>
 			<div class="list-content">
 				<div class="list-row">
@@ -257,7 +257,7 @@
 			</div>
 			<div class="manage-r-action relative">
 				<div class="btn-group">
-					<Btn title="Create" color="info" on:click={() => modal$.show('create')} disabled={data.user !== null ? false : true} />
+					<Btn title="Create" color="info" on:click={() => modal$.show('create')} hidden={data.user !== null ? false : true} />
 					<Btn title="Refresh" on:click={() => invalidateAll()}>
 						<i class="ri-refresh-line ri-1x text-white" />
 					</Btn>

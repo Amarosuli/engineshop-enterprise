@@ -1,0 +1,157 @@
+# Form
+Form.Root {method, enctype, enhance, action, id, eventHandler}
+   Form.Title
+   Form.Error
+   Form.Item
+      <slot ...Field />
+   Form.Item
+   Form.Submit
+Form.Root
+
+# Field (input text)
+Field.Root {hidden}
+   Field.Label {id, text}
+
+   (common)
+   Field.Text {id, name, required, placeholder, autocomplete, value, onChange, onEnter, disabled }
+   Field.Number {id, name, required, placeholder, autocomplete, value, onChange, onEnter, disabled }
+   Field.Password {id, name, required, placeholder, autocomplete, value, onChange, onEnter, disabled }
+   Field.Date 
+   Field.TextArea {id, name, required, placeholder, autocomplete, value, onChange, onEnter, disabled }
+   Field.Email {id, name, required, placeholder, autocomplete, value, onChange, onEnter, disabled }
+   
+   (special)
+   Field.File (all type)
+   Field.Image (image only, with preview)
+   Field.Document (document only)
+   Field.Audio (audio only, with replay)
+   Field.Video (video only, with replay)
+   Field.Search {id, name, required, placeholder, autocomplete, value, onChange, onEnter, disabled}
+   Field.Switch
+   Field.Check
+   Field.Select {id, name, required, autocomplete, value, options[], onChange, disabled}
+   Field.Find (search with select option)
+   Field.Tag (like tag in email input cc address)
+   Field.Range
+   Field.Radio
+
+   Field.Error {error}
+Field.Root
+
+# Layout
+Layout.Root a.k.a Base
+   Layout.Container
+      Layout.Header
+      Layout.Body
+         <slot />
+      Layout.Body
+      Layout.Footer
+   Layout.Container
+Layout.Root
+
+# Content
+Content.Root {right, left}
+   <slot />
+Content.Root
+
+
+# Pages
+Page.Root {right, left}
+   <slot />
+Page.Root
+
+# Modal
+Modal.Close [*]
+Modal.Cancel [*]
+Modal.Root
+   Modal.Header
+      Modal.Title {value}
+      Modal.Action
+         <slot />
+      Modal.Action
+   Modal.Header
+   Modal.Body
+      <slot />
+   Modal.Body
+   Modal.Footer
+      Modal.Action
+      <slot />
+      Modal.Action
+   Modal.Footer
+Modal.Root
+
+# Button
+Button.Root
+   Button.Submit {title, eventHandler, callback}
+   Button.Event {title, eventHandler, callback}
+   Button.Reset {title, eventHandler, callback}
+Button.Root
+
+# Link
+Link.Root
+   Link.Main {title, eventHandler}
+Link.Root
+
+# Dropdown
+Dropdown.Root
+   Dropdown.Trigger
+   Dropdown.Item
+      <slot />
+   Dropdown.Item
+Dropdown.Root
+
+# Display
+Display.Root
+   Display.Header
+      Display.Title
+   Display.Header
+   Display.Content
+      Display.Image
+      Display.Audio
+      Display.Video
+      Display.Document
+   Display.Content
+   Display.Footer
+      <slot />
+   Display.Footer
+Display.Root
+
+# Table
+Table.Root
+   Table.Caption {top, bottom}
+   Table.Header
+      Table.Title
+      Table.Action {refresh, columnToggle, export}
+         <slot />
+      Table.Action
+   Table.Header
+   Table.Content
+   Table.Footer
+Table.Root
+
+# Card
+Card.Root
+   Card.Header
+      Card.Title
+      Card.Description [*]
+   Card.Header
+   Card.Body
+      <slot />
+   Card.Body
+   Card.Footer
+      <slot />
+   Card.Footer
+Card.Root
+
+# List
+List.Root
+   List.Header
+      List.Title
+   List.Header
+   List.Item
+      List.Content
+      <slot />
+   List.Item
+List.Root
+
+# 

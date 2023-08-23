@@ -1,7 +1,10 @@
 <script>
+	/**
+	 * @IMPORTANT NEED BULK CHANGES, TABLE DESIGN WILL USE THE SCHEMA HISTORICAL { id, engine_id, type: in | out, date }
+	 **/
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
-
+	import { page } from '$app/stores';
 	import { _row, modal$ } from '$lib/utils/Stores';
 	import { Modal, Search, Menu, Select, Link, Btn, Table, Text, Form, Date, Switch, TextArea } from '$lib/components';
 
@@ -40,7 +43,7 @@
 	let formDisplay = 'incoming';
 
 	let isEngineExist = false;
-	let inputCheck = '';
+	let inputCheck = $page.url.searchParams.get('esn') || '';
 	let inputCheckError = '';
 	let selectedData = {};
 	let curentEngine = {};
@@ -78,6 +81,8 @@
 						// 2b1. if curent formDisplay is "outgoing"
 						if (formDisplay === 'outgoing') {
 							isEngineExist = true;
+							val.date_in = val?.date_in.split(' ')[0];
+							console.log(val);
 							selectedData = val;
 						} else {
 							// show notification
@@ -193,7 +198,7 @@
 			<div class="w-full h-max bg-slate-200 mt-4 px-6 pt-4 pb-6">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine <span class="text-orange-600 underline capitalize">{formDisplay}</span> Form</span>
 				<form action="" class="flex justify-center items-center gap-3 w-fit mt-4">
-					<Search id="check" name="check" label="Check ESN" error={inputCheckError} required on:Enter={handleCheck} />
+					<Search id="check" name="check" label="Check ESN" error={inputCheckError} bind:value={inputCheck} required on:Enter={handleCheck} />
 					<!-- <Text id="check" name="check" label="Check ESN" bind:value={inputCheck} error={inputCheckError} required />
 					<Btn title="Check" type="submit" color="warning" on:click={handleCheck} left /> -->
 				</form>
