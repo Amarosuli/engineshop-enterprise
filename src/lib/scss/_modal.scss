@@ -1,10 +1,11 @@
 // MODAL CREATE, DETAIL, EDIT
-.modal-backdrop {
+.modal_backdrop {
+	@apply absolute z-20 m-0 flex h-full w-full overflow-hidden p-0;
 	@apply absolute z-20 m-0 flex h-full w-full overflow-hidden p-0;
 }
-.modal-container {
+.modal_container {
 	@apply absolute z-30 flex flex-col justify-between bg-slate-100 lg:m-0;
 }
-.modal-content {
+.modal_content {
 	@apply h-max w-full overflow-y-auto;
 }

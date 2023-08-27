@@ -13,7 +13,9 @@ function ModalStore() {
       isUpdate: derived(store, $store => $store.find(v => v.id === 'update')),
       isCreate: derived(store, $store => $store.find(v => v.id === 'create')),
       isDetail: derived(store, $store => $store.find(v => v.id === 'detail')),
-      show: (id, data) => { update(v => v = [...v, { id, data: data || null }]) },
+      show: (id, data) => {
+         update(v => v = [...v, { id, data: data || null }])
+      },
       hide: (id) => { update(v => v = v.filter(x => x.id !== id)) },
       reset: () => set([])
    }

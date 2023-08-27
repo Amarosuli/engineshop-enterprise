@@ -8,10 +8,10 @@
 	@apply border-b border-dashed border-slate-700 py-2 text-xl font-extrabold;
 }
 .form-content {
-	@apply mx-2 mt-4 flex w-full flex-col;
+	@apply relative flex w-full flex-col items-center justify-center;
 }
 .form-body {
-	@apply mx-2 space-y-3;
+	@apply w-full;
 }
 .form-error {
 	@apply bg-yellow-200 py-2 text-center text-xs italic;

@@ -2,6 +2,7 @@
 	import { modal$ } from '$lib/utils/Stores';
 
 	import * as Modal from '$lib/components/commons/Modal';
+	import * as List from '$lib/components/commons/List';
 	import { Btn } from '$lib/components';
 
 	let { isDetail } = modal$;
@@ -17,9 +18,13 @@
 			</Modal.Action>
 		</Modal.Header>
 		<Modal.Body>
-			<span>Test Modal</span>
+			<List.Item>
+				<span>Item Description</span>
+			</List.Item>
 		</Modal.Body>
-		<Modal.Footer />
+		<Modal.Footer>
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
 	</Modal.Root>
 {/if}
 

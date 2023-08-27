@@ -2,6 +2,11 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { invalidateAll } from '$app/navigation';
 
+	import * as M from '$lib/components/commons/Modal';
+	import * as List from '$lib/components/commons/List';
+	import * as F from '$lib/components/commons/Form';
+	import * as Button from '$lib/components/commons/Button';
+
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Modal, Form, Search, File, Table, Text, Btn, Img, Menu, Switch } from '$lib/components';
@@ -128,6 +133,8 @@
 	$: $isCreate ? setUpdate(0) : '';
 
 	// $: console.log(Object.keys($isDetail?.data));
+
+	$: console.log($modal$);
 </script>
 
 <svelte:head>
@@ -135,72 +142,106 @@
 </svelte:head>
 
 {#if $isDetail}
-	<Modal id="detail" position="right">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Detail Form</h1>
+	<M.Root let:id id="detail" position="right">
+		<M.Header>
+			<M.Title title="Detail Form" />
+			<M.Action>
 				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
-			</div>
-			<div class="list-content">
-				<div class="list-row">
-					<span class="list-row-title">Customer Name: </span>
-					<span class="list-row-content">{$isDetail?.data?.name}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Description: </span>
-					<span class="list-row-content">{$isDetail?.data?.description}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Logo: </span>
-					<span class="list-row-content">
-						<Img
-							className="object-scale-down h-10"
-							src={$isDetail?.data?.logo ? CommonHelpers.getFileUrl($isDetail?.data?.collectionId, $isDetail?.data?.id, $isDetail?.data?.logo) : '/'}
-							alt={$isDetail?.data?.logo}
-							crossorigin="anonymous" />
-					</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">IATA Code: </span>
-					<span class="list-row-content">{$isDetail?.data?.code_IATA}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">ICAO Code: </span>
-					<span class="list-row-content">{$isDetail?.data?.code_ICAO}</span>
-				</div>
-			</div>
-		</div>
-	</Modal>
+				<M.Close on:Close={() => modal$.hide(id)} />
+			</M.Action>
+		</M.Header>
+		<M.Body>
+			<List.Item>
+				<span>Logo</span>
+				<span class="w-full flex justify-end">
+					<Img
+						className="object-scale-down h-10 "
+						src={$isDetail?.data?.logo ? CommonHelpers.getFileUrl($isDetail?.data?.collectionId, $isDetail?.data?.id, $isDetail?.data?.logo) : '/'}
+						alt={$isDetail?.data?.logo}
+						crossorigin="anonymous" />
+				</span>
+			</List.Item>
+			<List.Item>
+				<span>Customer Name</span>
+				<span class="font-bold text-right">{$isDetail.data?.name}</span>
+			</List.Item>
+			<List.Item>
+				<span>Description</span>
+				<span class="font-bold text-right">{$isDetail.data?.description}</span>
+			</List.Item>
+			<List.Item>
+				<span>IATA Code</span>
+				<span class="font-bold text-right">{$isDetail.data?.code_IATA}</span>
+			</List.Item>
+			<List.Item>
+				<span>ICAO Code</span>
+				<span class="font-bold text-right">{$isDetail.data?.code_ICAO}</span>
+			</List.Item>
+		</M.Body>
+		<M.Footer>
+			<M.Cancel on:Cancel={() => modal$.hide(id)} />
+		</M.Footer>
+	</M.Root>
 {/if}
 
 {#if $isUpdate}
-	<Modal id="update" position="right">
-		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
-			<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
-			<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
-			<Img
-				className="w-max object-contain"
-				src={$isUpdate?.data?.logo ? CommonHelpers.getFileUrl($isUpdate?.data?.collectionId, $isUpdate?.data?.id, $isUpdate?.data?.logo) : '/'}
-				alt={$isUpdate?.data?.logo}
-				crossorigin="anonymous" />
-			<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
-			<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
-			<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
-		</Form>
-	</Modal>
+	<M.Root let:id id="update" position="right">
+		<M.Header>
+			<M.Title title="Update Form" />
+			<M.Action>
+				<M.Close on:Close={() => modal$.hide(id)} />
+			</M.Action>
+		</M.Header>
+		<M.Body>
+			<F.Root {id} action="?/update" method="POST" enctype="multipart/form-data" {enhance}>
+				<F.Item>
+					<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
+					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
+					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
+					<Img
+						className="w-max object-contain"
+						src={$isUpdate?.data?.logo ? CommonHelpers.getFileUrl($isUpdate?.data?.collectionId, $isUpdate?.data?.id, $isUpdate?.data?.logo) : '/'}
+						alt={$isUpdate?.data?.logo}
+						crossorigin="anonymous" />
+					<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
+					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
+					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
+				</F.Item>
+				<F.Error />
+			</F.Root>
+		</M.Body>
+		<M.Footer>
+			<Button.Submit formId={id} />
+			<M.Cancel on:Cancel={() => modal$.hide(id)} />
+		</M.Footer>
+	</M.Root>
 {/if}
 
 {#if $isCreate}
-	<Modal id="create" position="right">
-		<Form id="create" action="?/create" title="Create" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors?.name} />
-			<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors?.description} />
-			<File id="logo" name="logo" label="Customer Logo" />
-			<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors?.code_IATA} />
-			<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors?.code_ICAO} />
-		</Form>
-	</Modal>
+	<M.Root let:id id="create" position="right">
+		<M.Header>
+			<M.Title title="Create Form" />
+			<M.Action>
+				<M.Close on:Close={() => modal$.hide(id)} />
+			</M.Action>
+		</M.Header>
+		<M.Body>
+			<F.Root {id} action="?/create" method="POST" enctype="multipart/form-data" {enhance}>
+				<F.Item>
+					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors?.name} />
+					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors?.description} />
+					<File id="logo" name="logo" label="Customer Logo" />
+					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors?.code_IATA} />
+					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors?.code_ICAO} />
+				</F.Item>
+				<F.Error error={$errors?.pocketbaseErrors} />
+			</F.Root>
+		</M.Body>
+		<M.Footer>
+			<Button.Submit formId={id} />
+			<M.Cancel on:Cancel={() => modal$.hide(id)} />
+		</M.Footer>
+	</M.Root>
 {/if}
 
 {#if $isDelete}
@@ -213,32 +254,18 @@
 {/if}
 
 {#if $isConfirm}
-	<Modal id="confirm" position="mid">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Are you sure ?</h1>
-			</div>
-			<div class="w-full pt-3">
-				{#each selectedRows as { original }, index}
-					<div class="flex flex-row items-center justify-between py-3 px-3 border-y text-xs font-semibold text-red-500">
-						<span>{index + 1}</span>
-						<span>{original.id}</span>
-						<span>{original.name}</span>
-						<span>{original.description}</span>
-					</div>
-				{/each}
-			</div>
-			<div>
-				<form action="?/delete" method="POST">
-					{#each selectedRows as { original }, index}
-						<Text id={`id_${index}`} name={`name_${index}`} value={original.id} hidden />
-					{/each}
-					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Delete</button>
-				</form>
-			</div>
-			<div class="modal-content" />
-		</div>
-	</Modal>
+	<M.Root let:id id="confirm" position="mid">
+		<M.Header>
+			<M.Title title="Delete Confirmation" />
+			<M.Action>
+				<M.Close on:Close={() => modal$.hide(id)} />
+			</M.Action>
+		</M.Header>
+		<M.Body />
+		<M.Footer>
+			<M.Cancel on:Cancel={() => modal$.hide(id)} />
+		</M.Footer>
+	</M.Root>
 {/if}
 
 <div class="manage-container">
@@ -257,7 +284,7 @@
 			</div>
 			<div class="manage-r-action relative">
 				<div class="btn-group">
-					<Btn title="Create" color="info" on:click={() => modal$.show('create')} hidden={data.user !== null ? false : true} />
+					<Btn title="Create" color="info" on:click={() => modal$.show('create', null)} hidden={data.user !== null ? false : true} />
 					<Btn title="Refresh" on:click={() => invalidateAll()}>
 						<i class="ri-refresh-line ri-1x text-white" />
 					</Btn>

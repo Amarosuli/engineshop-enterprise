@@ -149,14 +149,18 @@ export class CommonSets {
       blurIn: {
          duration: 200,
          base: 'transition-all ease-out duration-200',
-         from: 'backdrop-blur-none bg-slate-700/0',
-         to: 'backdrop-blur-sm bg-slate-700/70'
+         from: 'bg-slate-700/0',
+         // from: 'backdrop-blur-none bg-slate-700/0',
+         to: 'bg-slate-700/70'
+         // to: 'backdrop-blur-sm bg-slate-700/70'
       },
       blurOut: {
          duration: 200,
          base: 'transition-all ease-in duration-200',
-         from: 'backdrop-blur-sm bg-slate-700/70',
-         to: 'backdrop-blur-none bg-slate-700/0'
+         from: 'bg-slate-700/70',
+         // from: 'backdrop-blur-sm bg-slate-700/70',
+         to: 'bg-slate-700/0'
+         // to: 'backdrop-blur-none bg-slate-700/0'
       },
 
       slideRightIn: {

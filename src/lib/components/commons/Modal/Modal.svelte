@@ -1,8 +1,9 @@
 <script>
-	import classes from 'svelte-transition-classes';
-	import { blurIn, blurOut, popIn, popOut, slideRightIn, slideRightOut, slideLeftIn, slideLeftOut } from '$lib/utils/TransitionSets';
-	import { _rowRem, modal$ } from '$lib/utils/Stores';
 	import { onDestroy } from 'svelte';
+	import classes from 'svelte-transition-classes';
+
+	import { modal$ } from '$lib/utils/Stores';
+	import { CommonSets } from '$lib/utils/CommonSets';
 
 	export let id = '';
 	export let position = 'mid';
@@ -11,13 +12,13 @@
 	let IN = (node) => {
 		switch (position) {
 			case 'mid':
-				return classes(node, popIn);
+				return classes(node, CommonSets.TransitionSet.popIn);
 				break;
 			case 'left':
-				return classes(node, slideLeftIn);
+				return classes(node, CommonSets.TransitionSet.slideLeftIn);
 				break;
 			case 'right':
-				return classes(node, slideRightIn);
+				return classes(node, CommonSets.TransitionSet.slideRightIn);
 				break;
 			default:
 				break;
@@ -27,13 +28,13 @@
 	let OUT = (node) => {
 		switch (position) {
 			case 'mid':
-				return classes(node, popOut);
+				return classes(node, CommonSets.TransitionSet.popOut);
 				break;
 			case 'left':
-				return classes(node, slideLeftOut);
+				return classes(node, CommonSets.TransitionSet.slideLeftOut);
 				break;
 			case 'right':
-				return classes(node, slideRightOut);
+				return classes(node, CommonSets.TransitionSet.slideRightOut);
 				break;
 			default:
 				break;
@@ -50,15 +51,14 @@
 	};
 
 	const ContentSize = {
-		mid: 'h-[15rem] w-full xl:w-[500px] xl:h-[300px]',
+		mid: 'h-1/2 w-full xl:w-[500px] xl:h-[300px]',
 		left: 'h-full w-1/3',
 		right: 'h-full w-full md:w-1/2 xl:w-1/3',
 		mobile: 'h-full w-full'
 	};
 
 	const backDropOnClik = (e) => {
-		// console.log(e.target.id);
-		if (e.target.getAttribute('data-backDrop')) {
+		if (e.target.getAttribute('data_backDrop')) {
 			hideOnClick ? modal$.hide(id) : '';
 		}
 	};
@@ -70,8 +70,15 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<dialog {id} data-backDrop={true} class="modal-backdrop {ModalPosition[position]}" {open} in:classes={blurIn} out:classes={blurOut} on:click|stopPropagation={backDropOnClik}>
-	<div class="modal-container {ContentSize[position]}" in:IN|local out:OUT|local>
+<dialog
+	{id}
+	data-backDrop={true}
+	class="modal_backdrop {ModalPosition[position]}"
+	{open}
+	in:classes={CommonSets.TransitionSet.blurIn}
+	out:classes={CommonSets.TransitionSet.blurOut}
+	on:click|stopPropagation={backDropOnClik}>
+	<div class="modal_container {ContentSize[position]}" in:IN|local out:OUT|local>
 		<slot {id} />
 	</div>
 </dialog>

@@ -81,7 +81,7 @@ Modal.Root
 Modal.Root
 
 # Button
-Button.Root
+Button.Root // root is grouper
    Button.Submit {title, eventHandler, callback}
    Button.Event {title, eventHandler, callback}
    Button.Reset {title, eventHandler, callback}
