@@ -28,3 +28,7 @@ export { default as List } from './commons/list.svelte'
 export { default as Menu } from './commons/menu.svelte'
 export { default as Modal } from './commons/modal.svelte'
 export { default as Table } from './commons/table.svelte'
+
+// NEW
+export * as Stat from './commons/Stat'
+export * as Button from '$lib/components/commons/Button';

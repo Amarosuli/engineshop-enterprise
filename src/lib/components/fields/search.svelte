@@ -1,13 +1,12 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 
-	import 'iconify-icon';
 	export let id = Math.random().toString();
 	export let name = 'text';
 	export let error = '';
 	export let label = '';
 	export let required = false;
-	export let placeholder = 'type something..';
+	export let placeholder = 'Type Something..';
 	export let autocomplete = 'off';
 	export let value = '';
 
@@ -41,8 +40,7 @@
 		<span>{label}</span>
 	</label>
 	<div class="group marker:relative justify-center">
-		<!-- <iconify-icon class="absolute ml-3 mt-1" color="" rotate="1" icon="bi:search" /> -->
-		<i class="ri-search-2-line ri-xl group:focus:text-sky-600 absolute ml-2 mt-1" />
+		<i class="ri-search-2-line ri-xl group:focus:text-sky-600 absolute ml-2 mt-1 text-sky-600" />
 		<input type="text peer" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value on:keydown={onEnter} />
 	</div>
 	{#if error}

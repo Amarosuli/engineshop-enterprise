@@ -5,11 +5,10 @@
 	import * as M from '$lib/components/commons/Modal';
 	import * as List from '$lib/components/commons/List';
 	import * as F from '$lib/components/commons/Form';
-	import * as Button from '$lib/components/commons/Button';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Modal, Form, Search, File, Table, Text, Btn, Img, Menu, Switch } from '$lib/components';
+	import { Search, File, Table, Text, Btn, Button, Img, Menu, Switch, Stat } from '$lib/components';
 
 	export let data;
 
@@ -135,6 +134,8 @@
 	// $: console.log(Object.keys($isDetail?.data));
 
 	$: console.log($modal$);
+
+	let totalCustomers = data.customers.length;
 </script>
 
 <svelte:head>
@@ -270,18 +271,24 @@
 
 <div class="manage-container">
 	<div class="manage-l">
-		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
-			<h1 class="text-xl text-slate-700 font-extrabold">Total Customer</h1>
-			<p class="text-base font-semibold">15 Customers</p>
-			<p class="text-slate-600">Engine Models are categorize by it's varian.</p>
-		</div>
+		<Stat.Root>
+			<Stat.Title title="Total Customers" />
+			<Stat.Value value="{totalCustomers} EA" />
+			<Stat.Desc desc="Engine Models are categorize by it's varian." />
+		</Stat.Root>
 	</div>
 	<div class="manage-r">
 		<div class="manage-r-header">
 			<div class="manage-r-title">
-				<span class="title">Customers</span>
-				<Search bind:value={search} />
+				<div class="flex flex-col">
+					<span class="title">Customers</span>
+					<span class="text-xs">Customers that exist in the history of project</span>
+				</div>
+				<div class="w-max">
+					<Search bind:value={search} />
+				</div>
 			</div>
+
 			<div class="manage-r-action relative">
 				<div class="btn-group">
 					<Btn title="Create" color="info" on:click={() => modal$.show('create', null)} hidden={data.user !== null ? false : true} />
