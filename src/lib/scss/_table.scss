@@ -15,7 +15,7 @@ table {
 		}
 	}
 	th {
-		@apply h-14 select-none bg-slate-300 pl-4 font-bold  hover:bg-slate-400 md:text-sm;
+		@apply h-14 select-none bg-slate-300 pl-4 transition-colors ease-out hover:bg-slate-400/60 md:text-sm;
 	}
 	td {
 		@apply h-14 break-words;
@@ -66,7 +66,7 @@ table {
 			@apply sticky top-0 z-10;
 		}
 		tr {
-			@apply text-slate-700 outline-none;
+			@apply h-16 font-bold text-slate-600 outline-none;
 		}
 	}
 

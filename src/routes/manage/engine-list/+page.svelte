@@ -4,9 +4,13 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
+	import * as Modal from '$lib/components/commons/Modal';
+	import * as List from '$lib/components/commons/List';
+	import * as Form from '$lib/components/commons/Form';
+
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Modal, Search, Select, Table, Form, Text, Switch, Link, TextArea, Btn } from '$lib/components';
+	import { Search, Select, Table, Text, Menu, Switch, Stat, Button, TextArea, Btn } from '$lib/components';
 
 	export let data;
 
@@ -17,17 +21,26 @@
 			if (result.type === 'success') {
 				invalidateAll();
 				modal$.reset();
+				loadingRefresh = true;
 			}
 		}
 	});
+
 	const formDefault = defaultValues(CommonHelpers.engineListSchema);
 
 	const { engineModels, customers } = data;
+
 	let dataTable;
-	$: dataTable = data.engineList;
+	let loadingRefresh = false;
+	let totalEngine = data.engineList.length;
+
+	$: (dataTable = data.engineList), (loadingRefresh = false);
+
 	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
 	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
+
 	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
+
 	const dataCol = [
 		{
 			header: 'ESN',
@@ -76,6 +89,7 @@
 	];
 
 	let selectedRows = [];
+	let hiddenColumns = [];
 	let search = $page.url.searchParams.get('esn') || '';
 	let exportJSON;
 
@@ -90,6 +104,16 @@
 
 	function handleExport() {
 		console.log(exportJSON);
+	}
+
+	function toggleColumn() {
+		let toggleElements = document.querySelectorAll('.toggle-column');
+		let arrTemplate = [];
+		toggleElements.forEach((e) => {
+			!e.checked && arrTemplate.push(e.id);
+		});
+
+		hiddenColumns = arrTemplate;
 	}
 
 	function handleRowClick(e) {
@@ -111,7 +135,74 @@
 </svelte:head>
 
 {#if $isDetail}
-	<Modal id="detail" position="right">
+	<Modal.Root let:id id="detail" position="right">
+		<Modal.Header>
+			<Modal.Title title="Detail Form" />
+			<Modal.Action>
+				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<List.Item>
+				<span>Engine Serial Number</span>
+				<span class="font-bold text-right">{$isDetail.data?.esn}</span>
+			</List.Item>
+			<List.Item>
+				<span>Configuration</span>
+				<span class="font-bold text-right">{$isDetail.data?.config}</span>
+			</List.Item>
+			<List.Item>
+				<span>Model</span>
+				<span class="font-bold text-right">{$isDetail.data?.model}</span>
+			</List.Item>
+			<List.Item>
+				<span>Customer</span>
+				<span class="font-bold text-right">{$isDetail.data?.customer}</span>
+			</List.Item>
+			<List.Item>
+				<span>Availability</span>
+				<div class="flex justify-end items-center gap-2">
+					<span class="text-right text-xxs font-semibold">
+						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable} class:bg-yellow-300={!$isDetail?.data?.isAvailable}
+							>{$isDetail?.data?.isAvailable ? 'Available in shop' : 'Not available'}</span>
+					</span>
+					<a class="text-xxs font-semibold py-1 px-3 rounded-full bg-orange-400 hover:bg-orange-500" href="/app/engine-in-out/?esn={$isDetail?.data?.esn}">Edit</a>
+				</div>
+			</List.Item>
+			<List.Item>
+				<span>Serviceability</span>
+				<div class="flex justify-end items-center gap-2">
+					<span class="text-right text-xxs font-semibold">
+						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isServiceable} class:bg-yellow-300={!$isDetail?.data?.isServiceable}
+							>{$isDetail?.data?.isServiceable ? 'Serviceble' : 'Unserviceable'}</span>
+					</span>
+				</div>
+			</List.Item>
+			<List.Item>
+				<span>Preserveability</span>
+				<div class="flex justify-end items-center gap-2">
+					<span class="text-right text-xxs font-semibold">
+						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
+							>{$isDetail?.data?.isPreservable ? 'Preservation maintained' : 'Preservation not maintained'}</span>
+					</span>
+				</div>
+			</List.Item>
+			<List.Item>
+				<span>Notes</span>
+				<span class="font-bold text-right">{$isDetail.data?.notes}</span>
+			</List.Item>
+			<List.Item>
+				<span>History</span>
+				<span class="font-bold text-right">In and Out</span>
+			</List.Item>
+		</Modal.Body>
+		<Modal.Footer>
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
+
+	<!-- <Modal id="detail" position="right">
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">Detail Form</h1>
@@ -159,28 +250,84 @@
 				</div>
 			</div>
 		</div>
-	</Modal>
+	</Modal> -->
 {/if}
 
 {#if $isUpdate}
-	<Modal id="update" position="right">
+	<Modal.Root let:id id="update" position="right">
+		<Modal.Header>
+			<Modal.Title title="Update Form" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/update" method="POST" {enhance}>
+				<Form.Item>
+					<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
+					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
+					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
+					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
+					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
+					<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} /> CHANGE THIS ONLY AT APP/ENGINE-PRESERVATION -->
+					<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
+					<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
+					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
+				</Form.Item>
+				<Form.Error />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button.Submit formId={id} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
+	<!-- <Modal id="update" position="right">
 		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
 			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
 			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
 			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
-			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} /> CHANGE THIS ONLY AT APP/ENGINE-PRESERVATION -->
-			<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
+			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} /> -->
+	<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} /> CHANGE THIS ONLY AT APP/ENGINE-PRESERVATION -->
+	<!-- <Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
 			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
 		</Form>
-	</Modal>
+	</Modal> -->
 {/if}
 
 {#if $isCreate}
-	<Modal id="create" position="right">
-		<!-- <SuperDebug data={$form} /> -->
+	<Modal.Root let:id id="create" position="right">
+		<Modal.Header>
+			<Modal.Title title="Create Form" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/create" method="POST" {enhance}>
+				<Form.Item>
+					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
+					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
+					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
+					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
+					<Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} disabled />
+					<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
+					<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
+					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
+				</Form.Item>
+				<Form.Error error={$errors?.pocketbaseErrors} />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button.Submit formId={id} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
+
+	<!-- <Modal id="create" position="right">
+		<SuperDebug data={$form} />
 		<Form id="create" action="?/create" title="Create" method="POST" {enhance}>
 			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
 			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
@@ -191,71 +338,57 @@
 			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
 		</Form>
-	</Modal>
-{/if}
-
-{#if $isDelete}
-	<!-- <Modal id="delete" position="mid">Content</Modal> -->
-	<div class="absolute flex right-0 bottom-10 justify-center items-center mx-auto z-20 h-max bg-orange-200 shadow w-max py-3 pl-6 pr-3 space-x-3">
-		<span>Delete {selectedRows.length} selected data?</span>
-		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
-		<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
-	</div>
-{/if}
-
-{#if $isConfirm}
-	<Modal id="confirm">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Are you sure ?</h1>
-			</div>
-			<div class="w-full pt-3">
-				{#each selectedRows as { original }, index}
-					<div class="flex flex-row items-center justify-between py-3 px-3 border-y text-xs font-semibold text-red-500">
-						<span>{index + 1}</span>
-						<span>{original.id}</span>
-						<span>{original.name}</span>
-						<span>{original.description}</span>
-					</div>
-				{/each}
-			</div>
-			<div>
-				<form action="?/delete" method="POST">
-					{#each selectedRows as { original }, index}
-						<Text id={`id_${index}`} name={`name_${index}`} value={original.id} hidden />
-					{/each}
-					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Delete</button>
-				</form>
-			</div>
-			<div class="list-content" />
-		</div>
-	</Modal>
+	</Modal> -->
 {/if}
 
 <div class="manage-container">
 	<div class="manage-l">
-		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
-			<h1 class="text-xl text-slate-700 font-extrabold">Total Customer</h1>
-			<p class="text-base font-semibold">15 engineList</p>
-			<p class="text-slate-600">Engine Models are categorize by it's varian.</p>
-		</div>
+		<Stat.Root>
+			<Stat.Title title="Total Engine" />
+			<Stat.Value value="{totalEngine} EA" />
+			<Stat.Desc desc="Engine are ..   ." />
+		</Stat.Root>
 	</div>
 	<div class="manage-r">
-		<div class="manage-r-header">
+		<div class="manage-r-header relative">
+			{#if $isDelete}
+				<div class="absolute flex left-0 bottom-0 justify-center items-center mx-auto z-10 h-full bg-slate-100/80 backdrop-blur-sm shadow w-full py-7 px-7 space-x-3">
+					<span>Delete {selectedRows.length} selected data?</span>
+					<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
+					<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
+				</div>
+			{/if}
 			<div class="manage-r-title">
-				<span class="title">Engine List</span>
-				<Search bind:value={search} />
+				<div class="flex flex-col">
+					<span class="title">Engine List</span>
+					<span class="text-xs">Engine List are...</span>
+				</div>
+				<div class="w-max">
+					<Search bind:value={search} />
+				</div>
 			</div>
 			<div class="manage-r-action">
 				<div class="btn-group">
-					<Btn title="Create" on:click={() => modal$.show('create')} />
+					<Btn title="Create" color="info" on:click={() => modal$.show('create', null)} hidden={data.user !== null ? false : true} />
+					<Btn
+						title="Refresh"
+						on:click={() => {
+							invalidateAll();
+							loadingRefresh = true;
+						}}>
+						<i class="ri-refresh-line ri-1x text-white" />
+					</Btn>
+					<Menu title="Column">
+						{#each dataCol as { accessor }}
+							<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
+						{/each}
+					</Menu>
 					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>
 		</div>
 		<div class="manage-r-content">
-			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns bind:isRefresh={loadingRefresh} />
 		</div>
 	</div>
 </div>

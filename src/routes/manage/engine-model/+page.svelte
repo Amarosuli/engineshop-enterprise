@@ -3,9 +3,13 @@
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { invalidateAll } from '$app/navigation';
 
-	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { modal$ } from '$lib/utils/Stores';
-	import { Modal, Search, Form, Btn, Select, Table, Text } from '$lib/components';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+	import { Search, Table, Text, Btn, Button, Menu, Switch, Stat, Select } from '$lib/components';
+
+	import * as Modal from '$lib/components/commons/Modal';
+	import * as List from '$lib/components/commons/List';
+	import * as Form from '$lib/components/commons/Form';
 
 	export let data;
 
@@ -16,6 +20,7 @@
 			if (result.type === 'success') {
 				invalidateAll();
 				modal$.reset();
+				loadingRefresh = true;
 			}
 		},
 		onError: async (a) => {
@@ -24,8 +29,13 @@
 	});
 
 	const { engineFamilies } = data;
+
 	let dataTable;
-	$: dataTable = data.engineModels;
+	let loadingRefresh = false;
+	let totalModels = data.engineModels.length;
+
+	$: (dataTable = data.engineModels), (loadingRefresh = false);
+
 	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
 	const familyOptions = engineFamilies.map(({ id, name }) => ({ value: id, title: name }));
 	const dataCol = [
@@ -44,6 +54,7 @@
 	];
 
 	let selectedRows = [];
+	let hiddenColumns = [];
 	let search = '';
 	let exportJSON;
 
@@ -58,6 +69,16 @@
 
 	function handleExport() {
 		console.log(exportJSON);
+	}
+
+	function toggleColumn() {
+		let toggleElements = document.querySelectorAll('.toggle-column');
+		let arrTemplate = [];
+		toggleElements.forEach((e) => {
+			!e.checked && arrTemplate.push(e.id);
+		});
+
+		hiddenColumns = arrTemplate;
 	}
 
 	function handleRowClick(e) {
@@ -78,114 +99,133 @@
 </svelte:head>
 
 {#if $isDetail}
-	<Modal id="detail" position="right">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
-			</div>
-			<div class="list-content">
-				<div class="list-row">
-					<span class="list-row-title">Model Name: </span>
-					<span class="list-row-content">{$isDetail?.data?.name}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Description: </span>
-					<span class="list-row-content">{$isDetail?.data?.description}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Family: </span>
-					<span class="list-row-content">{$isDetail?.data?.family}</span>
-				</div>
-			</div>
-		</div>
-	</Modal>
+	<Modal.Root let:id id="detail" position="right">
+		<Modal.Header>
+			<Modal.Title title="Detail Form" />
+			<Modal.Action>
+				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<List.Item>
+				<span>Model Name</span>
+				<span class="font-bold text-right">{$isDetail.data?.name}</span>
+			</List.Item>
+			<List.Item>
+				<span>Description</span>
+				<span class="font-bold text-right">{$isDetail.data?.description}</span>
+			</List.Item>
+			<List.Item>
+				<span>Family</span>
+				<span class="font-bold text-right">{$isDetail.data?.family}</span>
+			</List.Item>
+		</Modal.Body>
+		<Modal.Footer>
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 {#if $isUpdate}
-	<Modal id="update" position="right">
-		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
-			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
-			<Text id="name" name="name" label="Model Name" bind:value={$form.name} error={$errors.name} />
-			<Text id="description" name="description" label="Model Description" bind:value={$form.description} error={$errors.description} />
-			<Select id="family_id" name="family_id" label="Family" options={familyOptions} bind:value={$form.family_id} error={$errors.family_id} />
-		</Form>
-	</Modal>
+	<Modal.Root let:id id="update" position="right">
+		<Modal.Header>
+			<Modal.Title title="Update Form" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/update" method="POST" {enhance}>
+				<Form.Item>
+					<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
+					<Text id="name" name="name" label="Modal Name" bind:value={$form.name} error={$errors.name} />
+					<Text id="description" name="description" label="Modal Description" bind:value={$form.description} error={$errors.description} />
+					<Select id="family_id" name="family_id" label="Family" options={familyOptions} bind:value={$form.family_id} error={$errors.family_id} />
+				</Form.Item>
+				<Form.Error />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button.Submit formId={id} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 {#if $isCreate}
-	<Modal id="create" position="right">
-		<SuperDebug data={$form} />
-		<Form id="create" action="?/create" title="Create" method="POST" {enhance}>
-			<Text id="name" name="name" label="Model Name" bind:value={$form.name} error={$errors.name} />
-			<Text id="description" name="description" label="Model Description" bind:value={$form.description} error={$errors.description} />
-			<Select id="family_id" name="family_id" label="Family" options={familyOptions} bind:value={$form.family_id} error={$errors.family_id} />
-		</Form>
-	</Modal>
-{/if}
-
-{#if $isDelete}
-	<!-- <Modal id="delete" position="mid">Content</Modal> -->
-	<div class="absolute flex right-0 bottom-10 justify-center items-center mx-auto z-20 h-max bg-orange-200 shadow w-max py-3 pl-6 pr-3 space-x-3">
-		<span>Delete {selectedRows.length} selected data?</span>
-		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
-		<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
-	</div>
-{/if}
-
-{#if $isConfirm}
-	<Modal id="confirm">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Are you sure ?</h1>
-			</div>
-			<div class="w-full pt-3">
-				{#each selectedRows as { original }, index}
-					<div class="flex flex-row items-center justify-between py-3 px-3 border-y text-xs font-semibold text-red-500">
-						<span>{index + 1}</span>
-						<span>{original.id}</span>
-						<span>{original.name}</span>
-						<span>{original.description}</span>
-					</div>
-				{/each}
-			</div>
-			<div>
-				<form action="?/delete" method="POST">
-					{#each selectedRows as { original }, index}
-						<Text id={`id_${index}`} name={`name_${index}`} value={original.id} hidden />
-					{/each}
-					<button type="submit" class="flex mx-auto px-3 py-2 bg-orange-400">Delete</button>
-				</form>
-			</div>
-			<div class="list-content" />
-		</div>
-	</Modal>
+	<Modal.Root let:id id="create" position="right">
+		<Modal.Header>
+			<Modal.Title title="Create Form" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/create" method="POST" {enhance}>
+				<Form.Item>
+					<Text id="name" name="name" label="Family Name" bind:value={$form.name} error={$errors?.name} />
+					<Text id="description" name="description" label="Family Description" bind:value={$form.description} error={$errors?.description} />
+					<Select id="family_id" name="family_id" label="Family" options={familyOptions} bind:value={$form.family_id} error={$errors.family_id} />
+				</Form.Item>
+				<Form.Error error={$errors?.pocketbaseErrors} />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button.Submit formId={id} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 <div class="manage-container">
 	<div class="manage-l">
-		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
-			<h1 class="text-xl text-slate-700 font-extrabold">Total Models</h1>
-			<p class="text-base font-semibold">15 Families</p>
-			<p class="text-slate-600">Engine Models are categorize by it's varian.</p>
-		</div>
+		<Stat.Root>
+			<Stat.Title title="Total Models" />
+			<Stat.Value value="{totalModels} EA" />
+			<Stat.Desc desc="Engine Models are categorize by it's Generation." />
+		</Stat.Root>
 	</div>
 	<div class="manage-r">
-		<div class="manage-r-header">
+		<div class="manage-r-header relative">
+			{#if $isDelete}
+				<div class="absolute flex left-0 bottom-0 justify-center items-center mx-auto z-10 h-full bg-slate-100/80 backdrop-blur-sm shadow w-full py-7 px-7 space-x-3">
+					<span>Delete {selectedRows.length} selected data?</span>
+					<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
+					<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
+				</div>
+			{/if}
 			<div class="manage-r-title">
-				<span class="title">Engine Models</span>
-				<Search bind:value={search} />
+				<div class="flex flex-col">
+					<span class="title">Engine Models</span>
+					<span class="text-xs">Engine Models that categorized by it's generation</span>
+				</div>
+				<div class="w-max">
+					<Search bind:value={search} />
+				</div>
 			</div>
 			<div class="manage-r-action">
 				<div class="btn-group">
-					<Btn title="Create" on:click={() => modal$.show('create')} />
+					<Btn title="Create" color="info" on:click={() => modal$.show('create', null)} hidden={data.user !== null ? false : true} />
+					<Btn
+						title="Refresh"
+						on:click={() => {
+							invalidateAll();
+							loadingRefresh = true;
+						}}>
+						<i class="ri-refresh-line ri-1x text-white" />
+					</Btn>
+					<Menu title="Column">
+						{#each dataCol as { accessor }}
+							<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
+						{/each}
+					</Menu>
 					<Btn title="Export" color="success" on:click={() => handleExport()} />
 				</div>
 			</div>
 		</div>
 		<div class="manage-r-content">
-			<!-- <Table dataTable={engineFamily} {dataCol} {search} bind:selectedRows /> -->
-			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns bind:isRefresh={loadingRefresh} />
 		</div>
 	</div>
 </div>

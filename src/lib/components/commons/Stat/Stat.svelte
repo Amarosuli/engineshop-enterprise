@@ -2,5 +2,5 @@
 	<div class="flex flex-col flex-1">
 		<slot />
 	</div>
-	<i class="p-3 ri-service-fill ri-3x text-indigo-600" />
+	<i class="hidden lg:block p-3 ri-service-fill ri-3x text-indigo-600" />
 </div>

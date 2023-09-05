@@ -2,9 +2,9 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import { invalidateAll } from '$app/navigation';
 
-	import * as M from '$lib/components/commons/Modal';
+	import * as Modal from '$lib/components/commons/Modal';
 	import * as List from '$lib/components/commons/List';
-	import * as F from '$lib/components/commons/Form';
+	import * as Form from '$lib/components/commons/Form';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -23,14 +23,15 @@
 			if (result.type === 'success') {
 				invalidateAll();
 				modal$.reset();
+				loadingRefresh = true;
 			}
 		}
 	});
 
 	let dataTable;
+	let loadingRefresh = false;
 	// let { customers } = data; DESCTRUCTURING MAKES INVALIDATEALL NOT WORKING
-	$: dataTable = data.customers;
-
+	$: (dataTable = data.customers), (loadingRefresh = false);
 	/**
 	 * destructure of modal costum store
 	 * make using method more simpler
@@ -143,15 +144,15 @@
 </svelte:head>
 
 {#if $isDetail}
-	<M.Root let:id id="detail" position="right">
-		<M.Header>
-			<M.Title title="Detail Form" />
-			<M.Action>
+	<Modal.Root let:id id="detail" position="right">
+		<Modal.Header>
+			<Modal.Title title="Detail Form" />
+			<Modal.Action>
 				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
-				<M.Close on:Close={() => modal$.hide(id)} />
-			</M.Action>
-		</M.Header>
-		<M.Body>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
 			<List.Item>
 				<span>Logo</span>
 				<span class="w-full flex justify-end">
@@ -178,24 +179,24 @@
 				<span>ICAO Code</span>
 				<span class="font-bold text-right">{$isDetail.data?.code_ICAO}</span>
 			</List.Item>
-		</M.Body>
-		<M.Footer>
-			<M.Cancel on:Cancel={() => modal$.hide(id)} />
-		</M.Footer>
-	</M.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 {#if $isUpdate}
-	<M.Root let:id id="update" position="right">
-		<M.Header>
-			<M.Title title="Update Form" />
-			<M.Action>
-				<M.Close on:Close={() => modal$.hide(id)} />
-			</M.Action>
-		</M.Header>
-		<M.Body>
-			<F.Root {id} action="?/update" method="POST" enctype="multipart/form-data" {enhance}>
-				<F.Item>
+	<Modal.Root let:id id="update" position="right">
+		<Modal.Header>
+			<Modal.Title title="Update Form" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/update" method="POST" enctype="multipart/form-data" {enhance}>
+				<Form.Item>
 					<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
 					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors.name} />
 					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors.description} />
@@ -207,66 +208,58 @@
 					<File id="logo" name="logo" label="Customer Logo" error={$errors.logo} accept="image/png, image/jpeg, image/svg+xml, image/webp" />
 					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors.code_IATA} />
 					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors.code_ICAO} />
-				</F.Item>
-				<F.Error />
-			</F.Root>
-		</M.Body>
-		<M.Footer>
+				</Form.Item>
+				<Form.Error />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
 			<Button.Submit formId={id} />
-			<M.Cancel on:Cancel={() => modal$.hide(id)} />
-		</M.Footer>
-	</M.Root>
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 {#if $isCreate}
-	<M.Root let:id id="create" position="right">
-		<M.Header>
-			<M.Title title="Create Form" />
-			<M.Action>
-				<M.Close on:Close={() => modal$.hide(id)} />
-			</M.Action>
-		</M.Header>
-		<M.Body>
-			<F.Root {id} action="?/create" method="POST" enctype="multipart/form-data" {enhance}>
-				<F.Item>
+	<Modal.Root let:id id="create" position="right">
+		<Modal.Header>
+			<Modal.Title title="Create Form" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/create" method="POST" enctype="multipart/form-data" {enhance}>
+				<Form.Item>
 					<Text id="name" name="name" label="Customer Name" bind:value={$form.name} error={$errors?.name} />
 					<Text id="description" name="description" label="Customer Description" bind:value={$form.description} error={$errors?.description} />
 					<File id="logo" name="logo" label="Customer Logo" />
 					<Text id="code_IATA" name="code_IATA" label="IATA Code" bind:value={$form.code_IATA} error={$errors?.code_IATA} />
 					<Text id="code_ICAO" name="code_ICAO" label="ICAO Code" bind:value={$form.code_ICAO} error={$errors?.code_ICAO} />
-				</F.Item>
-				<F.Error error={$errors?.pocketbaseErrors} />
-			</F.Root>
-		</M.Body>
-		<M.Footer>
+				</Form.Item>
+				<Form.Error error={$errors?.pocketbaseErrors} />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
 			<Button.Submit formId={id} />
-			<M.Cancel on:Cancel={() => modal$.hide(id)} />
-		</M.Footer>
-	</M.Root>
-{/if}
-
-{#if $isDelete}
-	<!-- <Modal id="delete" position="mid">Content</Modal> -->
-	<div class="absolute flex right-0 bottom-10 justify-center items-center mx-auto z-20 h-max bg-orange-200 shadow w-max py-3 pl-6 pr-3 space-x-3">
-		<span>Delete {selectedRows.length} selected data?</span>
-		<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
-		<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
-	</div>
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 {#if $isConfirm}
-	<M.Root let:id id="confirm" position="mid">
-		<M.Header>
-			<M.Title title="Delete Confirmation" />
-			<M.Action>
-				<M.Close on:Close={() => modal$.hide(id)} />
-			</M.Action>
-		</M.Header>
-		<M.Body />
-		<M.Footer>
-			<M.Cancel on:Cancel={() => modal$.hide(id)} />
-		</M.Footer>
-	</M.Root>
+	<Modal.Root let:id id="confirm" position="mid">
+		<Modal.Header>
+			<Modal.Title title="Are you sure?" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body />
+		<Modal.Footer>
+			<Modal.Confirm on:Confirm={() => modal$.hide(id)} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
 {/if}
 
 <div class="manage-container">
@@ -278,7 +271,14 @@
 		</Stat.Root>
 	</div>
 	<div class="manage-r">
-		<div class="manage-r-header">
+		<div class="manage-r-header relative">
+			{#if $isDelete}
+				<div class="absolute flex left-0 bottom-0 justify-center items-center mx-auto z-10 h-full bg-slate-100/80 backdrop-blur-sm shadow w-full py-7 px-7 space-x-3">
+					<span>Delete {selectedRows.length} selected data?</span>
+					<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
+					<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
+				</div>
+			{/if}
 			<div class="manage-r-title">
 				<div class="flex flex-col">
 					<span class="title">Customers</span>
@@ -292,7 +292,12 @@
 			<div class="manage-r-action relative">
 				<div class="btn-group">
 					<Btn title="Create" color="info" on:click={() => modal$.show('create', null)} hidden={data.user !== null ? false : true} />
-					<Btn title="Refresh" on:click={() => invalidateAll()}>
+					<Btn
+						title="Refresh"
+						on:click={() => {
+							invalidateAll();
+							loadingRefresh = true;
+						}}>
 						<i class="ri-refresh-line ri-1x text-white" />
 					</Btn>
 					<Menu title="Column">
@@ -305,7 +310,7 @@
 			</div>
 		</div>
 		<div class="manage-r-content">
-			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns />
+			<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} bind:selectedRows bind:exportJSON bind:hiddenColumns bind:isRefresh={loadingRefresh} />
 		</div>
 	</div>
 </div>

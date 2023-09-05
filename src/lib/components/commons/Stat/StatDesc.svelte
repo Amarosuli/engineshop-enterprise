@@ -2,4 +2,4 @@
 	export let desc = '';
 </script>
 
-<p class="text-slate-600 text-xs -mt-4">{desc}</p>
+<p class="text-slate-600 text-xxs md:text-xs">{desc}</p>
