@@ -355,8 +355,9 @@
 		<Modal.Body>
 			<Form.Root {id} action="?/update" method="POST" enctype="multipart/form-data" {enhance}>
 				<Form.Item>
-					<Text id="engine_id" name="engine_id" bind:value={$form.engine_id} hidden />
-					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isCreate.data.esn} disabled />
+					<Text id="id" name="id" bind:value={$isUpdate.data.preserveDetail.id} hidden />
+					<Text id="engine_id" name="engine_id" bind:value={$isUpdate.data.preserveDetail.engine_id} hidden />
+					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isUpdate.data.esn} disabled />
 					<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
 					<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
 					<File id="tag" name="tag" label="Preserve Tag" />

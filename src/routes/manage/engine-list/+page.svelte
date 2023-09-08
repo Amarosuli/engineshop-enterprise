@@ -128,6 +128,10 @@
 
 	$: $isUpdate ? setUpdate(1) : '';
 	$: $isCreate ? setUpdate(0) : '';
+
+	function getEngineHistory() {
+		return {};
+	}
 </script>
 
 <svelte:head>
@@ -164,10 +168,13 @@
 				<span>Availability</span>
 				<div class="flex justify-end items-center gap-2">
 					<span class="text-right text-xxs font-semibold">
+						<!-- this status query from engine_availability by get latest data and check if status is INCOMING or OUTGOING -->
 						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable} class:bg-yellow-300={!$isDetail?.data?.isAvailable}
 							>{$isDetail?.data?.isAvailable ? 'Available in shop' : 'Not available'}</span>
 					</span>
-					<a class="text-xxs font-semibold py-1 px-3 rounded-full bg-orange-400 hover:bg-orange-500" href="/app/engine-in-out/?esn={$isDetail?.data?.esn}">Edit</a>
+					<Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('engine_history', getEngineHistory())} />
+
+					<!-- <a class="text-xxs font-semibold py-1 px-3 rounded-full bg-orange-400 hover:bg-orange-500" href="/app/engine-in-out/?esn={$isDetail?.data?.esn}">Show Historya> </a> -->
 				</div>
 			</List.Item>
 			<List.Item>
@@ -201,56 +208,6 @@
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
-
-	<!-- <Modal id="detail" position="right">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Detail Form</h1>
-				<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
-			</div>
-			<div class="list-content">
-				<div class="list-row">
-					<span class="list-row-title">Engine Serial Number: </span>
-					<span class="list-row-content">{$isDetail?.data?.esn}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Configuration: </span>
-					<span class="list-row-content">{$isDetail?.data?.config}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Model Name: </span>
-					<span class="list-row-content">{$isDetail?.data?.model}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Customer Name: </span>
-					<span class="list-row-content">{$isDetail?.data?.customer}</span>
-				</div>
-				<div class="list-row relative">
-					<span class="list-row-title">Availability: </span>
-					<Link href="/app/engine-in-out/?esn={$isDetail?.data?.esn}" title="Edit" />
-					<span class="list-row-content text-xxs font-semibold peer" class:bg-green-300={$isDetail?.data?.isAvailable} class:bg-yellow-300={!$isDetail?.data?.isAvailable}
-						>{$isDetail?.data?.isAvailable ? 'Available in shop' : 'Not available'}</span>
-
-					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
-						>Change this on app/engine-in-out</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Serviceability: </span>
-					<span class="list-row-content text-xxs font-semibold" class:bg-green-300={$isDetail?.data?.isServiceable} class:bg-yellow-300={!$isDetail?.data?.isServiceable}
-						>{$isDetail?.data?.isServiceable ? 'Serviceble' : 'Unserviceable'}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Preservation: </span>
-					<span class="list-row-content text-xxs font-semibold" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
-						>{$isDetail?.data?.isPreservable ? 'Preservation maintained' : 'Preservation not maintained'}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Notes: </span>
-					<span class="list-row-content">{$isDetail?.data?.notes}</span>
-				</div>
-			</div>
-		</div>
-	</Modal> -->
 {/if}
 
 {#if $isUpdate}
@@ -312,7 +269,7 @@
 					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
 					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-					<Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} disabled />
+					<Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} />
 					<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
 					<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
