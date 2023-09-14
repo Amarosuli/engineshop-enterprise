@@ -5,8 +5,13 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { page } from '$app/stores';
+
+	import * as Modal from '$lib/components/commons/Modal';
+	import * as List from '$lib/components/commons/List';
+	import * as Form from '$lib/components/commons/Form';
+
 	import { _row, modal$ } from '$lib/utils/Stores';
-	import { Modal, Search, Menu, Select, Link, Btn, Table, Text, Form, Date, Switch, TextArea } from '$lib/components';
+	import { Search, Menu, Select, Link, Btn, Table, Text, Date, Switch, TextArea } from '$lib/components';
 
 	import OutgoingForm from './OutgoingForm.svelte';
 	import IncomingForm from './IncomingForm.svelte';
@@ -49,11 +54,11 @@
 	let curentEngine = {};
 
 	function resetVars() {
-		isEngineExist = false;
 		inputCheckError = '';
 		inputCheck = '';
 		selectedData = {};
 		curentEngine = {};
+		isEngineExist = false;
 	}
 
 	function handleCheck(e) {
@@ -120,7 +125,26 @@
 </svelte:head>
 
 {#if $modal$.find((v) => v.id === 'confirmNotFound')}
-	<Modal id="confirmNotFound" position="mid">
+	<Modal.Root let:id id="confirmNotFound" position="mid">
+		<Modal.Header>
+			<Modal.Title title="Not Found" />
+			<Modal.Action>
+				<Modal.Close
+					on:Close={() => {
+						modal$.hide(id);
+						resetVars();
+					}} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<div class="flex flex-col justify-center items-center gap-2 w-full h-full px-2">
+				<p class="font-bold text-lg">ESN {inputCheck} doesn't exist in database</p>
+				<p>Go to <strong>engine-list</strong> to create new engine data</p>
+				<Link href="/manage/engine-list" title="Go To Engine List" color="warning" />
+			</div>
+		</Modal.Body>
+	</Modal.Root>
+	<!-- <Modal id="confirmNotFound" position="mid">
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">ESN {inputCheck} Not Exist</h1>
@@ -133,11 +157,12 @@
 
 			<div class="list-content" />
 		</div>
-	</Modal>
+	</Modal> -->
 {/if}
 
 {#if $modal$.find((v) => v.id === 'confirmOutgoingOnly')}
-	<Modal id="confirmOutgoingOnly" position="mid">
+	<p>a</p>
+	<!-- <Modal id="confirmOutgoingOnly" position="mid">
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">ESN {inputCheck} Exist</h1>
@@ -146,15 +171,16 @@
 				<p class="font-bold text-lg">But ESN {inputCheck} already inshop</p>
 				<p>Switch to <strong>outgoing </strong> to release engine</p>
 				<!-- <Link href="/manage/engine-list" title="Go To Engine List" color="warning" /> -->
-			</div>
+	<!-- </div>
 
 			<div class="list-content" />
 		</div>
-	</Modal>
+	</Modal> --> -->
 {/if}
 
 {#if $modal$.find((v) => v.id === 'confirmIncomingOnly')}
-	<Modal id="confirmIncomingOnly" position="mid">
+	<p>a</p>
+	<!-- <Modal id="confirmIncomingOnly" position="mid">
 		<div class="list-container">
 			<div class="list-header">
 				<h1 class="list-title">ESN {inputCheck} Exist</h1>
@@ -163,11 +189,11 @@
 				<p class="font-bold text-lg">But ESN {inputCheck} already released</p>
 				<p>Switch to <strong>incoming </strong> to register engine</p>
 				<!-- <Link href="/manage/engine-list" title="Go To Engine List" color="warning" /> -->
-			</div>
+	<!-- </div>
 
 			<div class="list-content" />
 		</div>
-	</Modal>
+	</Modal> --> -->
 {/if}
 
 <div class="absolute inset-0 flex">

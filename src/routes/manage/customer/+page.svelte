@@ -134,7 +134,7 @@
 
 	// $: console.log(Object.keys($isDetail?.data));
 
-	$: console.log($modal$);
+	// $: console.log($modal$);
 
 	let totalCustomers = data.customers.length;
 </script>

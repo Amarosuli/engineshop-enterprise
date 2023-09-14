@@ -29,7 +29,7 @@
 			<a {href} class="menuLink">
 				<div class="menuContent">
 					<div class="menuIcon">
-						<Img src={icon} alt="icon" crossorigin="anonymous" />
+						<Img src={icon} alt="icon" />
 						<!-- <img src={icon} alt="icon" crossorigin="anonymous" class="imgIcon" /> -->
 					</div>
 					<span class="menuTitle">{title}</span>

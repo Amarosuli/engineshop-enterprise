@@ -36,8 +36,7 @@
 		"@panzoom/panzoom": "^4.5.1",
 		"dayjs": "^1.11.9",
 		"eventsource": "^2.0.2",
-		"iconify-icon": "^1.0.8",
-		"pocketbase": "^0.15.3",
+		"pocketbase": "^0.18.0",
 		"svelte-transition-classes": "^0.1.1"
 	}
 }

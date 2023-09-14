@@ -344,7 +344,7 @@
 {/if}
 
 {#if $isUpdate}
-	<SuperDebug data={$form} />
+	<!-- <SuperDebug data={$form} /> -->
 	<Modal.Root let:id id="update" position="right">
 		<Modal.Header>
 			<Modal.Title title="Update Form" />

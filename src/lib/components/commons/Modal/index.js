@@ -4,6 +4,7 @@ export { default as Body } from './ModalBody.svelte';
 export { default as Footer } from './ModalFooter.svelte';
 export { default as Close } from './ModalClose.svelte';
 export { default as Cancel } from './ModalCancel.svelte';
+export { default as Back } from './ModalBack.svelte';
 export { default as Confirm } from './ModalConfirm.svelte';
 export { default as Title } from './ModalTitle.svelte';
 export { default as Action } from './ModalAction.svelte';

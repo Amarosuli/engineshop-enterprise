@@ -12,9 +12,9 @@ export class CommonHelpers {
     * Function to convert data from pocketbase api
     * to usable object format
     */
-   static CPOJOs = async (obj) => {
-      return await structuredClone(obj);
-   };
+   // static CPOJOs = async (obj) => {
+   //    return await structuredClone(obj);
+   // };
 
    /**
     * Function to generate random of hex color
@@ -95,7 +95,6 @@ export class CommonHelpers {
       config: z.string().optional(),
       model_id: z.string().min(1, { message: 'Model cannot be empty' }),
       customer_id: z.string().min(1, { message: 'Customer cannot be empty' }),
-      isAvailable: z.boolean().default(true),
       isServiceable: z.boolean().default(false),
       isPreservable: z.boolean().default(true),
       notes: z.string().optional()
@@ -128,7 +127,8 @@ export class CommonHelpers {
          ...options
       });
       // console.log(`RESULT OF GETFULLLIST (${collectionName}):`, result);
-      return this.CPOJOs(result);
+      // return this.CPOJOs(result);
+      return result
    };
 
    /**

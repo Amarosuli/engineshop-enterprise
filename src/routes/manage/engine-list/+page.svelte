@@ -4,6 +4,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
+	import ModalHistory from './ModalHistory.svelte';
 	import * as Modal from '$lib/components/commons/Modal';
 	import * as List from '$lib/components/commons/List';
 	import * as Form from '$lib/components/commons/Form';
@@ -62,7 +63,7 @@
 			header: 'Availability',
 			accessor: 'isAvailable',
 			cell: ({ row }) => {
-				if (row.original.isAvailable) return 'Available';
+				if (row.original.isAvailable && row.original.isAvailable.status == 'INCOMING') return 'Available';
 				return 'Not Available';
 			}
 		},
@@ -123,15 +124,12 @@
 
 	function setUpdate(isTrue) {
 		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.mergeObject($form, formDefault);
-		console.log(formDefault);
 	}
 
 	$: $isUpdate ? setUpdate(1) : '';
 	$: $isCreate ? setUpdate(0) : '';
 
-	function getEngineHistory() {
-		return {};
-	}
+	// $: console.log($modal$.find((v) => v.id === 'engine_history')?.data);
 </script>
 
 <svelte:head>
@@ -169,12 +167,11 @@
 				<div class="flex justify-end items-center gap-2">
 					<span class="text-right text-xxs font-semibold">
 						<!-- this status query from engine_availability by get latest data and check if status is INCOMING or OUTGOING -->
-						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable} class:bg-yellow-300={!$isDetail?.data?.isAvailable}
-							>{$isDetail?.data?.isAvailable ? 'Available in shop' : 'Not available'}</span>
+						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable?.status == 'INCOMING'} class:bg-yellow-300={$isDetail?.data?.isAvailable?.status == 'OUTGOING'}
+							>{$isDetail?.data?.isAvailable?.status == 'INCOMING' ? 'Available in shop' : 'Not available'}</span>
 					</span>
-					<Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('engine_history', getEngineHistory())} />
-
-					<!-- <a class="text-xxs font-semibold py-1 px-3 rounded-full bg-orange-400 hover:bg-orange-500" href="/app/engine-in-out/?esn={$isDetail?.data?.esn}">Show Historya> </a> -->
+					<!-- <Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={async () => modal$.show('engine_history', await getEngineHistory($isDetail.data?.id))} /> -->
+					<Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={async () => modal$.show('engine_history', $isDetail.data?.id)} />
 				</div>
 			</List.Item>
 			<List.Item>
@@ -199,15 +196,15 @@
 				<span>Notes</span>
 				<span class="font-bold text-right">{$isDetail.data?.notes}</span>
 			</List.Item>
-			<List.Item>
-				<span>History</span>
-				<span class="font-bold text-right">In and Out</span>
-			</List.Item>
 		</Modal.Body>
 		<Modal.Footer>
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
+{/if}
+
+{#if $modal$.find((v) => v.id === 'engine_history')}
+	<ModalHistory engineId={$isDetail.data?.id} />
 {/if}
 
 {#if $isUpdate}
@@ -226,7 +223,6 @@
 					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
 					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-					<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} /> CHANGE THIS ONLY AT APP/ENGINE-PRESERVATION -->
 					<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
 					<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
@@ -239,19 +235,6 @@
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
-	<!-- <Modal id="update" position="right">
-		<Form id="update" action="?/update" title="Update" method="POST" {enhance}>
-			<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
-			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
-			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
-			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} /> -->
-	<!-- <Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} /> CHANGE THIS ONLY AT APP/ENGINE-PRESERVATION -->
-	<!-- <Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
-			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
-			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
-		</Form>
-	</Modal> -->
 {/if}
 
 {#if $isCreate}
@@ -269,7 +252,6 @@
 					<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
 					<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
 					<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-					<Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} />
 					<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
 					<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
 					<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
@@ -282,20 +264,6 @@
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
-
-	<!-- <Modal id="create" position="right">
-		<SuperDebug data={$form} />
-		<Form id="create" action="?/create" title="Create" method="POST" {enhance}>
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$form.esn} error={$errors.esn} />
-			<Text id="config" name="config" label="Configuration" bind:value={$form.config} error={$errors.config} />
-			<Select id="model_id" name="model_id" label="Engine Model" bind:value={$form.model_id} options={modelOptions} />
-			<Select id="customer_id" name="customer_id" label="Customer" bind:value={$form.customer_id} options={customerOptions} />
-			<Switch id="isAvailable" name="isAvailable" label="Availability" bind:value={$form.isAvailable} disabled />
-			<Switch id="isServiceable" name="isServiceable" label="Serviceability" bind:value={$form.isServiceable} />
-			<Switch id="isPreservable" name="isPreservable" label="Preservation" bind:value={$form.isPreservable} />
-			<TextArea id="notes" name="notes" label="Notes" bind:value={$form.notes} error={$errors.notes} />
-		</Form>
-	</Modal> -->
 {/if}
 
 <div class="manage-container">

@@ -27,16 +27,16 @@ Here my costum query for checking if last engine status from engine_availability
 ```SQL
 -- FULL
 WITH EH AS (
-SELECT engine_availability.engine_id, engine_availability.date_performed, engine_availability.status, (ROW_NUMBER() OVER(partition BY engine_availability.engine_id ORDER BY engine_availability.created DESC)) AS HistoryNumber, (ROW_NUMBER() OVER()) AS id FROM engine_availability )
+SELECT engine_availability.id, engine_availability.engine_id, engine_availability.date_performed, engine_availability.status, (ROW_NUMBER() OVER(partition BY engine_availability.engine_id ORDER BY engine_availability.created DESC)) AS HistoryNumber FROM engine_availability )
 SELECT EH.engine_id, EH.status, (ROW_NUMBER() OVER()) AS id FROM EH WHERE HistoryNumber=1
 ```
 
 ```SQL
 -- QUERY PROCESS USE PB API HELPERS WITH FILTER HistoryNumber=1
-SELECT engine_availability.engine_id, engine_availability.date_performed, engine_availability.status, (ROW_NUMBER() OVER(partition BY engine_availability.engine_id ORDER BY engine_availability.created DESC)) AS HistoryNumber, (ROW_NUMBER() OVER()) AS id FROM engine_availability
+SELECT engine_availability.id, engine_availability.engine_id, engine_availability.date_performed, engine_availability.status, (ROW_NUMBER() OVER(partition BY engine_availability.engine_id ORDER BY engine_availability.created DESC)) AS HistoryNumber FROM engine_availability
 ```
 
 ```SQL
 -- SAMPLE WITH JOIN to engine_list collection (but it already covered by API HELPERS OPTION expand)
-SELECT engine_availability.engine_id, engine_availability.status, engine_availability.date_performed, engine_list.esn, (ROW_NUMBER() OVER(partition BY engine_availability.engine_id ORDER BY engine_availability.created DESC)) AS HistoryNumber, (ROW_NUMBER() OVER()) AS id FROM engine_availability LEFT JOIN engine_list ON engine_list.id = engine_availability.engine_id
+SELECT engine_availability.id, engine_availability.engine_id, engine_availability.status, engine_availability.date_performed, engine_list.esn, (ROW_NUMBER() OVER(partition BY engine_availability.engine_id ORDER BY engine_availability.created DESC)) AS HistoryNumber FROM engine_availability LEFT JOIN engine_list ON engine_list.id = engine_availability.engine_id
 ```
