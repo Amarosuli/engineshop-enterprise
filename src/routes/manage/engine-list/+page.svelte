@@ -4,7 +4,8 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	import ModalHistory from './ModalHistory.svelte';
+	import ModalEngineHistory from './ModalEngineHistory.svelte';
+	import ModalPreservationHistory from './ModalPreservationHistory.svelte';
 	import * as Modal from '$lib/components/commons/Modal';
 	import * as List from '$lib/components/commons/List';
 	import * as Form from '$lib/components/commons/Form';
@@ -190,6 +191,7 @@
 						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
 							>{$isDetail?.data?.isPreservable ? 'Preservation maintained' : 'Preservation not maintained'}</span>
 					</span>
+					<Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)} />
 				</div>
 			</List.Item>
 			<List.Item>
@@ -204,7 +206,11 @@
 {/if}
 
 {#if $modal$.find((v) => v.id === 'engine_history')}
-	<ModalHistory engineId={$isDetail.data?.id} />
+	<ModalEngineHistory engineId={$isDetail.data?.id} />
+{/if}
+
+{#if $modal$.find((v) => v.id === 'preservation_history')}
+	<ModalPreservationHistory engineId={$isDetail.data?.id} />
 {/if}
 
 {#if $isUpdate}
