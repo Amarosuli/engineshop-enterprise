@@ -12,6 +12,8 @@
 
 	let { engineList, engineLocation } = data;
 	let engineTile = writable([]); // extend function to remove by id and add new data (or use invalidate)
+
+	$: console.log(engineList);
 	$engineTile = engineList.map((value) => ({ ...value, _location: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
 
 	let pz,
@@ -222,7 +224,10 @@
 		{#each CommonSets.Base as row, rowIndex}
 			{#each row as col, colIndex}
 				{#if col !== '0'}
-					<svelte:element this="div" class="map-base" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;">
+					<svelte:element
+						this="div"
+						class="map-base"
+						style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;">
 						<!-- <span class="tile-text">{col}</span> -->
 					</svelte:element>
 				{/if}
@@ -249,7 +254,11 @@
 		{#each CommonSets.LocationTag as row, rowIndex}
 			{#each row as col, colIndex}
 				{#if col !== '0'}
-					<svelte:element this="div" id={col} class="location-tag" style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;" />
+					<svelte:element
+						this="div"
+						id={col}
+						class="location-tag"
+						style="margin-left: {CommonSets.tileSize * colIndex}px; margin-top: {CommonSets.tileSize * rowIndex}px; height: {CommonSets.tileSize}px; width: {CommonSets.tileSize}px;" />
 				{/if}
 			{/each}
 		{/each}
