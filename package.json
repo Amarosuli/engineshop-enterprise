@@ -36,6 +36,7 @@
 		"@panzoom/panzoom": "^4.5.1",
 		"dayjs": "^1.11.9",
 		"eventsource": "^2.0.2",
+		"express": "^4.18.2",
 		"pocketbase": "^0.18.0",
 		"svelte-transition-classes": "^0.1.1"
 	}
