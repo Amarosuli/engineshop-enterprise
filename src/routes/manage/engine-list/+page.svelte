@@ -164,15 +164,16 @@
 				<span class="font-bold text-right">{$isDetail.data?.customer}</span>
 			</List.Item>
 			<List.Item>
-				<span>Availability</span>
+				<Btn title="Availability" color="light" on:click={async () => modal$.show('engine_history', $isDetail.data?.id)}>
+					<span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
+				</Btn>
+
 				<div class="flex justify-end items-center gap-2">
 					<span class="text-right text-xxs font-semibold">
 						<!-- this status query from engine_availability by get latest data and check if status is INCOMING or OUTGOING -->
 						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable?.status == 'INCOMING'} class:bg-yellow-300={$isDetail?.data?.isAvailable?.status == 'OUTGOING'}
 							>{$isDetail?.data?.isAvailable?.status == 'INCOMING' ? 'Available in shop' : 'Not available'}</span>
 					</span>
-					<!-- <Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={async () => modal$.show('engine_history', await getEngineHistory($isDetail.data?.id))} /> -->
-					<Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={async () => modal$.show('engine_history', $isDetail.data?.id)} />
 				</div>
 			</List.Item>
 			<List.Item>
@@ -185,13 +186,14 @@
 				</div>
 			</List.Item>
 			<List.Item>
-				<span>Preserveability</span>
+				<Btn title="Preservability" color="light" on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)}>
+					<span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
+				</Btn>
 				<div class="flex justify-end items-center gap-2">
 					<span class="text-right text-xxs font-semibold">
 						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
 							>{$isDetail?.data?.isPreservable ? 'Preservation maintained' : 'Preservation not maintained'}</span>
 					</span>
-					<Btn title="Show History" color="base" hidden={data?.user !== null ? false : true} on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)} />
 				</div>
 			</List.Item>
 			<List.Item>

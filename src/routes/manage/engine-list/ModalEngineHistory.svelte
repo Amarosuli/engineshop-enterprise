@@ -46,14 +46,17 @@
 				<span class="text-slate-600 font-semibold text-sm">Loading . . .</span>
 			</div>
 		{:then result}
-			<p class="w-full text-center pb-3">-- New --</p>
+			<p class="p-12 m-8 shadow bg-blue-200 rounded text-justify font-poppins">
+				Engine History define as the event to identify the engine availability in the Engineshop. The event categorized as Incoming and Outgoing. The first row is the latest engine event.
+			</p>
+
 			{#each result.engineHistory as d}
 				<List.Item>
 					<span>{d.date_performed}</span>
 					<span class="font-bold text-right">{d.status}</span>
 				</List.Item>
 			{/each}
-			<p class="w-full text-center">-- Old --</p>
+			<p class="w-full text-center">-- End of row --</p>
 		{/await}
 	</Modal.Body>
 	<Modal.Footer>

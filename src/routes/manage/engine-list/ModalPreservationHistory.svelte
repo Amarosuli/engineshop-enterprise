@@ -48,15 +48,20 @@
 				<span class="text-slate-600 font-semibold text-sm">Loading . . .</span>
 			</div>
 		{:then result}
-			<p class="w-full text-center pb-3">-- New --</p>
+			<p class="p-12 m-8 shadow bg-blue-200 rounded text-justify font-poppins">
+				Preservation History are the historycal engine preservation events. The detail of preservation data available to access from Dashbord > manage:engine-preservation menu. The engine-preservation
+				page also handle the creating new data and monitoring the schedule for which engine near the outdated preservation.
+			</p>
+			{#if result.preservationHistory.length === 0}
+				<p class="text-center font-bold text-base mx-8 mb-2 p-2">No Preservation Data</p>
+			{/if}
 			{#each result.preservationHistory as d}
 				<List.Item>
 					<span>{d.date_performed.split(' ')[0]}</span>
 					<span class="font-bold text-right">{d.duration} Days</span>
-					<span class="font-bold text-right">{d.material}</span>
 				</List.Item>
 			{/each}
-			<p class="w-full text-center">-- Old --</p>
+			<p class="w-full text-center">-- End of row --</p>
 		{/await}
 	</Modal.Body>
 	<Modal.Footer>
