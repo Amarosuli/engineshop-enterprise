@@ -10,6 +10,7 @@
 	import * as Modal from '$lib/components/commons/Modal';
 	import * as List from '$lib/components/commons/List';
 	import * as Form from '$lib/components/commons/Form';
+	import ModalPreservationHistory from './ModalPreservationHistory.svelte';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -178,12 +179,6 @@
 		<Modal.Header>
 			<Modal.Title title="Detail Form" />
 			<Modal.Action>
-				{#if Object.keys($isDetail?.data?.preserveDetail).length === 0 && $isDetail?.data?.preserveDetail.constructor === Object}
-					<Btn title="Create" color="warning" on:click={() => modal$.show('create', $isDetail?.data)} />
-				{:else}
-					<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
-				{/if}
-				<!-- <Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} /> -->
 				<Modal.Close on:Close={() => modal$.hide(id)} />
 			</Modal.Action>
 		</Modal.Header>
@@ -200,9 +195,15 @@
 				<span>Customer</span>
 				<span class="font-bold text-right">{$isDetail.data?.customer}</span>
 			</List.Item>
-			<!-- xxxx -->
+
 			<div class="list-header">
-				<h1 class="list-title">Preservation Data</h1>
+				<Modal.Title title="Preservation Data" />
+				<Modal.Action>
+					<Btn title="New Data" color="info" on:click={() => modal$.show('create', $isDetail?.data)} />
+					<Btn title="Show History" color="light" on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)}
+						><span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
+					</Btn>
+				</Modal.Action>
 			</div>
 			<div class="list-content">
 				{#if Object.keys($isDetail?.data?.preserveDetail).length !== 0}
@@ -214,36 +215,36 @@
 						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'),
 						'day'
 					)}
-					<div class="list-row">
+					<List.Item>
 						<span class="list-row-title">Last Performed: </span>
 						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && dayjs($isDetail?.data?.preserveDetail?.date_performed).format('DD / MMM / YYYY')}</span>
-					</div>
-					<div class="list-row">
+					</List.Item>
+					<List.Item>
 						<span class="list-row-title">Renewal Duration: </span>
 						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.duration && $isDetail?.data?.preserveDetail?.duration} Days</span>
-					</div>
-					<div class="list-row">
+					</List.Item>
+					<List.Item>
 						<span class="list-row-title">Expired Date: </span>
 						<span class="list-row-content"
 							>{$isDetail?.data?.preserveDetail?.date_performed &&
 								dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day').format('DD / MMM / YYYY')}</span>
-					</div>
-					<div class="list-row">
+					</List.Item>
+					<List.Item>
 						<span class="list-row-title">Status: </span>
-						<div class="flex justify-center items-center">
+						<div class="flex justify-end items-center">
 							<span class="list-row-content text-xxs" class:bg-yellow-400={isReady} class:bg-green-400={isGood} class:bg-red-400={isExpired}>
 								{isGood ? 'Good' : ''} {isReady ? 'and Ready to Preserve' : ''}{isExpired ? 'Expired since' : ''}</span>
 							<span class="list-row-content">{dayjs().to(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}</span>
 						</div>
-					</div>
-					<div class="list-row">
+					</List.Item>
+					<List.Item>
 						<span class="list-row-title">Material: </span>
 						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && $isDetail?.data?.preserveDetail?.material}</span>
-					</div>
+					</List.Item>
 				{:else}
-					<div class="list-row">
+					<List.Item>
 						<span class="list-row-title">No Data</span>
-					</div>
+					</List.Item>
 				{/if}
 			</div>
 		</Modal.Body>
@@ -251,96 +252,10 @@
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
+{/if}
 
-	<!-- <Modal id="detail" position="right">
-		<div class="list-container">
-			<div class="list-header">
-				<h1 class="list-title">Detail Form</h1>
-				{#if Object.keys($isDetail?.data?.preserveDetail).length === 0 && $isDetail?.data?.preserveDetail.constructor === Object}
-					<Btn title="Create" color="warning" on:click={() => modal$.show('create', $isDetail?.data)} />
-				{:else}
-					<Btn title="Update" color="warning" on:click={() => modal$.show('update', $isDetail?.data)} />
-				{/if}
-			</div>
-			<div class="list-content">
-				<div class="list-row">
-					<span class="list-row-title">Engine Serial Number: </span>
-					<span class="list-row-content">{$isDetail?.data?.esn}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Model Name: </span>
-					<span class="list-row-content">{$isDetail?.data?.model}</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Customer Name: </span>
-					<span class="list-row-content">{$isDetail?.data?.customer}</span>
-				</div>
-				<div class="list-row relative">
-					<span class="list-row-title">Serviceability: </span>
-					<span class="list-row-content peer select-none" class:bg-sky-300={$isDetail?.data?.isServiceable} class:bg-red-300={!$isDetail?.data?.isServiceable}
-						>{$isDetail?.data?.isServiceable ? 'Serviceable' : 'Unserviceable'}
-					</span>
-					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
-						>Change this on manage/engine-list</span>
-				</div>
-				<div class="list-row relative">
-					<span class="list-row-title">Preservation: </span>
-					<span class="list-row-content peer select-none" class:bg-sky-300={$isDetail?.data?.isPreservable} class:bg-red-300={!$isDetail?.data?.isPreservable}
-						>{$isDetail?.data?.isPreservable ? 'Controlled' : 'Uncontrolled'}</span>
-					<span class="absolute z-40 text-xxs right-0 select-none -top-7 px-3 opacity-0 py-2 bg-slate-700 text-slate-50 peer-hover:opacity-100 transition-opacity ease-out rounded-lg"
-						>Change this on manage/engine-list</span>
-				</div>
-				<div class="list-row">
-					<span class="list-row-title">Notes: </span>
-					<span class="list-row-content">{$isDetail?.data?.notes}</span>
-				</div>
-			</div>
-			<div class="list-header">
-				<h1 class="list-title">Preservation Data</h1>
-			</div>
-			<div class="list-content">
-				{#if Object.keys($isDetail?.data?.preserveDetail).length !== 0}
-					{@const isExpired = dayjs().isAfter(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}
-					{@const isGood = dayjs().isBefore(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}
-					{@const isReady = dayjs().isBetween(
-						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration - 14, 'day'),
-						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'),
-						'day'
-					)}
-					<div class="list-row">
-						<span class="list-row-title">Last Performed: </span>
-						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && dayjs($isDetail?.data?.preserveDetail?.date_performed).format('DD / MMM / YYYY')}</span>
-					</div>
-					<div class="list-row">
-						<span class="list-row-title">Renewal Duration: </span>
-						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.duration && $isDetail?.data?.preserveDetail?.duration} Days</span>
-					</div>
-					<div class="list-row">
-						<span class="list-row-title">Expired Date: </span>
-						<span class="list-row-content"
-							>{$isDetail?.data?.preserveDetail?.date_performed &&
-								dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day').format('DD / MMM / YYYY')}</span>
-					</div>
-					<div class="list-row">
-						<span class="list-row-title">Status: </span>
-						<div class="flex justify-center items-center">
-							<span class="list-row-content text-xxs" class:bg-yellow-400={isReady} class:bg-green-400={isGood} class:bg-red-400={isExpired}>
-								{isGood ? 'Good' : ''} {isReady ? 'and Ready to Preserve' : ''}{isExpired ? 'Expired since' : ''}</span>
-							<span class="list-row-content">{dayjs().to(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}</span>
-						</div>
-					</div>
-					<div class="list-row">
-						<span class="list-row-title">Material: </span>
-						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && $isDetail?.data?.preserveDetail?.material}</span>
-					</div>
-				{:else}
-					<div class="list-row">
-						<span class="list-row-title">No Data</span>
-					</div>
-				{/if}
-			</div>
-		</div>
-	</Modal> -->
+{#if $modal$.find((v) => v.id === 'preservation_history')}
+	<ModalPreservationHistory engineId={$isDetail.data?.id} />
 {/if}
 
 {#if $isUpdate}
@@ -386,7 +301,7 @@
 {/if}
 
 {#if $isCreate}
-	<Modal.Root let:id id="update" position="right">
+	<Modal.Root let:id id="create" position="right">
 		<SuperDebug data={$form} />
 		<Modal.Header>
 			<Modal.Title title="Create Form" />

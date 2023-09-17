@@ -23,6 +23,6 @@
 
 <style>
 	.list_item {
-		@apply mb-2 grid h-14 w-full items-center bg-slate-50 px-4 text-sm shadow-sm;
+		@apply mb-2 grid h-14 max-h-max w-full items-center bg-slate-50 px-4 text-sm shadow-sm;
 	}
 </style>

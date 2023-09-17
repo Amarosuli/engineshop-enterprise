@@ -9,17 +9,16 @@ import { CommonHelpers } from '$lib/utils/CommonHelpers';
  * Engine with no data preservation is valued by "No Data"
  */
 export const load = async ({ locals }) => {
-   let preservationHistory = await locals.pb.collection('preservation_history').getFullList()
    let engineList = async () => {
       /**
        * add 'model' and 'customer key to array
        * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
        */
-      let preservationList = await CommonHelpers.getPreservationList(locals);
+      let preservationHistory = await locals.pb.collection('preservation_history').getFullList()
       let raw = await CommonHelpers.getEngineList(locals);
       // let filterAvailability = raw.filter(({ isAvailable }) => isAvailable);
       let addModelandCustomer = raw.map((value) => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name }));
-      let addPreserveDetail = addModelandCustomer.map((value) => ({ ...value, preserveDetail: preservationList.find(({ engine_id }) => engine_id === value.id) || {} }));
+      let addPreserveDetail = addModelandCustomer.map((value) => ({ ...value, preserveDetail: preservationHistory.find(({ engine_id, history_number }) => history_number === 1 && engine_id === value.id) || {} }));
       return addPreserveDetail;
    };
    return {
