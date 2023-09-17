@@ -5,7 +5,7 @@
 }
 
 .manage-l {
-	@apply hidden basis-1/4 md:block;
+	@apply hidden basis-1/4 flex-col flex-nowrap overflow-auto md:flex;
 }
 
 .manage-r {

@@ -184,6 +184,9 @@
 			<Stat.Title title="Total Models" />
 			<Stat.Value value="{totalModels} EA" />
 			<Stat.Desc desc="Engine Models are categorize by it's Generation." />
+			<svelte:fragment slot="icon">
+				<i class="hidden lg:block ri-spy-fill ri-3x text-indigo-600" />
+			</svelte:fragment>
 		</Stat.Root>
 	</div>
 	<div class="manage-r">

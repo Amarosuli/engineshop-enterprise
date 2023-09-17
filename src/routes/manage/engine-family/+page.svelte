@@ -170,6 +170,9 @@
 			<Stat.Title title="Total Family" />
 			<Stat.Value value="{totalFamily} EA" />
 			<Stat.Desc desc="Engine Family are categorize by it's Type." />
+			<svelte:fragment slot="icon">
+				<i class="hidden lg:block ri-parent-fill ri-3x text-indigo-600" />
+			</svelte:fragment>
 		</Stat.Root>
 	</div>
 	<div class="manage-r">

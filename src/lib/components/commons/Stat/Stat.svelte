@@ -1,6 +1,13 @@
-<div class="bg-white m-4 px-6 py-6 h-fit flex font-poppins justify-center items-start">
-	<div class="flex flex-col flex-1">
-		<slot />
+<div class="relative bg-white mx-4 mt-4 h-fit flex flex-col font-poppins justify-center items-start">
+	<div class="flex flex-row px-6 pt-6 pb-4 justify-between w-full h-fit">
+		<div class="flex flex-col flex-1">
+			<slot />
+		</div>
+		<slot name="icon">
+			<i class="hidden lg:block ri-service-fill ri-3x text-indigo-600" />
+		</slot>
 	</div>
-	<i class="hidden lg:block p-3 ri-service-fill ri-3x text-indigo-600" />
+	<div class="w-full">
+		<slot name="extend" />
+	</div>
 </div>

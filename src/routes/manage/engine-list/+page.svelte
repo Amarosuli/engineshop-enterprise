@@ -280,6 +280,9 @@
 			<Stat.Title title="Total Engine" />
 			<Stat.Value value="{totalEngine} EA" />
 			<Stat.Desc desc="Engine are ..   ." />
+			<svelte:fragment slot="icon">
+				<i class="hidden lg:block ri-home-6-fill ri-3x text-indigo-600" />
+			</svelte:fragment>
 		</Stat.Root>
 	</div>
 	<div class="manage-r">

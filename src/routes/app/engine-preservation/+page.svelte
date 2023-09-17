@@ -11,10 +11,11 @@
 	import * as List from '$lib/components/commons/List';
 	import * as Form from '$lib/components/commons/Form';
 	import ModalPreservationHistory from './ModalPreservationHistory.svelte';
+	import Board from './Board.svelte';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Search, Select, Table, File, Text, Switch, Button, TextArea, Menu, Btn, Date } from '$lib/components';
+	import { Search, Select, Table, File, Text, Stat, Switch, Button, TextArea, Menu, Btn, Date } from '$lib/components';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(isBetween);
@@ -101,10 +102,6 @@
 					return 'Data Available';
 				}
 			}
-		},
-		{
-			header: 'Notes',
-			accessor: 'notes'
 		}
 	];
 
@@ -286,18 +283,6 @@
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
-	<!-- <Modal id="update" position="right">
-		<SuperDebug data={$form} />
-		<Form id="update" action="?/update" title="Update" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="id" name="id" bind:value={$isUpdate.data.preserveDetail.id} hidden />
-			<Text id="engine_id" name="engine_id" bind:value={$isUpdate.data.preserveDetail.engine_id} hidden />
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isUpdate.data.esn} disabled />
-			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
-			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
-			<File id="tag" name="tag" label="Preserve Tag" />
-			<TextArea id="material" name="material" label="Material" bind:value={$form.material} />
-		</Form>
-	</Modal> -->
 {/if}
 
 {#if $isCreate}
@@ -342,12 +327,8 @@
 {/if}
 
 <div class="manage-container">
-	<div class="manage-l !hidden">
-		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
-			<h1 class="text-xl text-slate-700 font-extrabold">Total Customer</h1>
-			<p class="text-base font-semibold">15 engineList</p>
-			<p class="text-slate-600">Engine Models are categorize by it's varian.</p>
-		</div>
+	<div class="manage-l">
+		<svelte:component this={Board} data={engineList} />
 	</div>
 	<div class="manage-r">
 		<div class="manage-r-header relative">
