@@ -1,9 +1,6 @@
 <script>
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-	import isBetween from 'dayjs/plugin/isBetween';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
@@ -17,8 +14,7 @@
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { Search, Select, Table, File, Text, Stat, Switch, Button, TextArea, Menu, Btn, Date } from '$lib/components';
 
-	dayjs.extend(relativeTime);
-	dayjs.extend(isBetween);
+	import { Preservation } from '$lib/utils/Classes';
 
 	export let data;
 
@@ -156,15 +152,6 @@
 
 	$: $isUpdate ? setUpdate(1) : '';
 	$: $isCreate ? setUpdate(0) : '';
-
-	/**
-	 * @TODO FOR THIS PAGE
-	 * 1. handle create ( redirect still going to the wrong path)
-	 * 2. handle update
-	 * 3. delete is happen via pocketbase ( follow it parent id (engine_id) if deleted )
-	 * 4. simplified the functions, like impelementation of dayjs in modal detail
-	 * 5. create card ( left side ) for notification dashboard
-	 */
 </script>
 
 <svelte:head>
@@ -204,17 +191,11 @@
 			</div>
 			<div class="list-content">
 				{#if Object.keys($isDetail?.data?.preserveDetail).length !== 0}
-					{@const isExpired = dayjs().isAfter(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}
-					{@const isGood = dayjs().isBefore(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}
-					<!-- why -->
-					{@const isReady = dayjs().isBetween(
-						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration - 14, 'day'),
-						dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'),
-						'day'
-					)}
+					{@const _preservation = new Preservation($isDetail?.data?.preserveDetail?.date_performed, $isDetail?.data?.preserveDetail?.duration)}
+					{console.log(_preservation.isReady)}
 					<List.Item>
 						<span class="list-row-title">Last Performed: </span>
-						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && dayjs($isDetail?.data?.preserveDetail?.date_performed).format('DD / MMM / YYYY')}</span>
+						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && _preservation.format}</span>
 					</List.Item>
 					<List.Item>
 						<span class="list-row-title">Renewal Duration: </span>
@@ -222,16 +203,14 @@
 					</List.Item>
 					<List.Item>
 						<span class="list-row-title">Expired Date: </span>
-						<span class="list-row-content"
-							>{$isDetail?.data?.preserveDetail?.date_performed &&
-								dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day').format('DD / MMM / YYYY')}</span>
+						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && _preservation.expiredDate}</span>
 					</List.Item>
 					<List.Item>
 						<span class="list-row-title">Status: </span>
 						<div class="flex justify-end items-center">
-							<span class="list-row-content text-xxs" class:bg-yellow-400={isReady} class:bg-green-400={isGood} class:bg-red-400={isExpired}>
-								{isGood ? 'Good' : ''} {isReady ? 'and Ready to Preserve' : ''}{isExpired ? 'Expired since' : ''}</span>
-							<span class="list-row-content">{dayjs().to(dayjs($isDetail?.data?.preserveDetail?.date_performed).add($isDetail?.data?.preserveDetail?.duration, 'day'))}</span>
+							<span class="list-row-content text-xxs" class:bg-yellow-400={_preservation.isReady} class:bg-green-400={_preservation.isValid} class:bg-red-400={_preservation.isExpired}>
+								{_preservation.isValid ? 'Good' : ''} {_preservation.isReady ? 'and Ready to Preserve' : ''}{_preservation.isExpired ? 'Expired since' : ''}</span>
+							<span class="list-row-content">{_preservation.preservationTime}</span>
 						</div>
 					</List.Item>
 					<List.Item>

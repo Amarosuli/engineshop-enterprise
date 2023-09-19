@@ -10,7 +10,7 @@
 </svelte:head>
 
 <div class="p-6 w-full mx-auto flex flex-col justify-start items-start space-y-3 font-nunito">
-	<strong>Apps</strong>
+	<strong class="bg-slate-700/50 rounded-md px-3 py-1 text-slate-100">Apps</strong>
 	<div class="menuContainer">
 		{#each AppsMenu as { title, href, icon }, i}
 			<a {href} class="menuLink">
@@ -23,7 +23,7 @@
 			</a>
 		{/each}
 	</div>
-	<strong>Manages</strong>
+	<strong class="bg-slate-700/50 rounded-md px-3 py-1 text-slate-100">Manages</strong>
 	<div class="menuContainer">
 		{#each ManagesMenu as { title, href, icon }, i}
 			<a {href} class="menuLink">

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import PocketBase from 'pocketbase';
 import { PUBLIC_API_PB } from '$env/static/public';
 
+
 /**
  * CommonHelpers is someset of utility
  */
@@ -181,4 +182,6 @@ export class CommonHelpers {
    static updateData = async (pbClient, tableName, id, data) => {
       return await pbClient.pb.collection(tableName).update(id, data);
    };
+
+
 }

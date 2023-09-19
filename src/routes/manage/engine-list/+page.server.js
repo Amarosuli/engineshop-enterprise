@@ -4,14 +4,15 @@ import { fail } from '@sveltejs/kit';
 import { CommonHelpers } from '$lib/utils/CommonHelpers';
 
 export const load = async ({ locals }) => {
-   let engineHistory = await locals.pb.collection('engine_history').getFullList()
+   let engineHistory = async () => { return await locals.pb.collection('engine_history').getFullList() }
    let engineList = async () => {
       /**
        * add 'model' and 'customer key to array
        * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
        */
+      let history = await engineHistory()
       let raw = await CommonHelpers.getEngineList(locals);
-      let engineModels = raw.map((value) => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name, isAvailable: engineHistory.find(v => v.history_number == 1 && v.engine_id == value.id) }));
+      let engineModels = raw.map((value) => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name, isAvailable: history.find(v => v.history_number == 1 && v.engine_id == value.id) }));
       return engineModels;
    };
    return {

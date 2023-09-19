@@ -297,7 +297,7 @@
 			<div class="manage-r-title">
 				<div class="flex flex-col">
 					<span class="title">Engine List</span>
-					<span class="text-xs">Engine List are...</span>
+					<span class="text-xs">List of all engine.</span>
 				</div>
 				<div class="w-max">
 					<Search bind:value={search} />
