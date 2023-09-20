@@ -37,7 +37,7 @@
 	 * destructure of data from page.server.js
 	 * make using of specific data more simpler for Table Components props and other needs
 	 */
-	const { engineList, engineModels, customers } = data;
+	const { engineList, preservationHistory, engineModels, customers } = data;
 
 	const durationOptions = [
 		{ value: '90', title: '90 Days' },
@@ -307,7 +307,7 @@
 
 <div class="manage-container">
 	<div class="manage-l">
-		<svelte:component this={Board} data={engineList} />
+		<svelte:component this={Board} {preservationHistory} {engineList} />
 	</div>
 	<div class="manage-r">
 		<div class="manage-r-header relative">

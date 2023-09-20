@@ -26,7 +26,8 @@ export const load = async ({ locals }) => {
       form: await superValidate(CommonHelpers.enginePreservationSchema),
       engineList: await engineList(),
       engineModels: await CommonHelpers.getEngineModels(locals),
-      customers: await CommonHelpers.getCustomers(locals)
+      customers: await CommonHelpers.getCustomers(locals),
+      preservationHistory: await preservationHistory()
    };
 };
 
