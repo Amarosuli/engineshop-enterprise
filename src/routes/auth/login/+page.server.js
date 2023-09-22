@@ -30,6 +30,9 @@ export const actions = {
 
       try {
          const { username, password } = form.data;
+         /** @next
+          * check user existence first
+          */
          await locals.pb.collection('users').authWithPassword(username, password, { expand: 'unit' });
       } catch (error) {
          form.errors = {

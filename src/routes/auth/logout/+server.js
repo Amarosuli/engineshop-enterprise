@@ -1,12 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 
 export const GET = async ({ locals }) => {
-	if (!locals.pb.authStore.model) return;
-	try {
-		await locals.pb.authStore.clear();
-	} catch (error) {
-		// console.log('Error: ', error);
-	}
+   if (!locals.pb.authStore.model) return;
+   try {
+      await locals.pb.authStore.clear();
+   } catch (_) { }
 
-	throw redirect(303, '/');
+   throw redirect(303, '/');
 };

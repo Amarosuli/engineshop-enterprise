@@ -14,5 +14,5 @@
 	@apply w-full;
 }
 .form-error {
-	@apply bg-yellow-200 py-2 text-center text-xs italic;
+	@apply bg-orange-200 px-8 py-2 text-center text-xs font-bold italic text-slate-700;
 }

@@ -1,5 +1,5 @@
 <script>
-	import { Text, Password, Btn } from '$lib/components';
+	import { Text, Password, Button, Form } from '$lib/components';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	export let data;
@@ -14,17 +14,28 @@
 	});
 </script>
 
-<div class="absolute inset-0 flex flex-col justify-center items-center w-full lg:w-1/2 mx-auto">
-	<h1 class="text-2xl font-extrabold pb-3 border-b-2 border-dashed border-sky-700 text-sky-700">Login Form</h1>
-	<form method="POST" class="flex w-full flex-col gap-3 px-6 py-12 md:w-1/2" use:enhance>
-		<Text id="username" name="username" label="Employee ID" required={true} placeholder="your employee id" bind:value={$form.username} error={$errors.username} />
-		<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
-
-		<div class="mt-3 inline-flex">
-			<Btn type="submit" title="Login" color="base" center />
-		</div>
-		{#if $errors.pocketbaseErrors}
-			<span class="italic text-xs py-2 text-center bg-yellow-200">{$errors.pocketbaseErrors}</span>
-		{/if}
-	</form>
+<div class="login_root">
+	<h1 class="login_title">Login Form</h1>
+	<div class="login_body">
+		<Form.Root id="loginForm" method="POST" {enhance}>
+			<Form.Item>
+				<Text id="username" name="username" label="Employee ID" required={true} placeholder="your employee id" bind:value={$form.username} error={$errors.username} />
+				<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
+				<Button.Submit title="Login" />
+				<Form.Error error={$errors.pocketbaseErrors} />
+			</Form.Item>
+		</Form.Root>
+	</div>
 </div>
+
+<style>
+	.login_root {
+		@apply absolute inset-0 mx-auto flex w-full flex-col items-center justify-center xl:w-1/2;
+	}
+	.login_title {
+		@apply border-b-2 border-dashed border-sky-700 pb-3 text-2xl font-extrabold text-sky-700;
+	}
+	.login_body {
+		@apply flex w-full flex-col gap-3 px-6 py-12 md:w-1/2;
+	}
+</style>

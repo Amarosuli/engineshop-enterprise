@@ -8,9 +8,11 @@ export { default as Container } from './layouts/container.svelte';
 export { default as Notification } from './layouts/notification.svelte';
 
 // FIELD
+// export { default as Form } from './fields/form.svelte'; @deprecated
+export * as Form from './commons/Form'
+
 export { default as Text } from './fields/text.svelte';
 export { default as File } from './fields/file.svelte';
-export { default as Form } from './fields/form.svelte';
 export { default as Date } from './fields/date.svelte';
 export { default as Email } from './fields/email.svelte';
 export { default as Number } from './fields/number.svelte';
@@ -21,14 +23,15 @@ export { default as Password } from './fields/password.svelte';
 export { default as TextArea } from './fields/textarea.svelte';
 
 // COMMON
+// export { default as List } from './commons/list.svelte'; @deprecated
+// export { default as Modal } from './commons/modal.svelte'; @deprecated
+export * as List from './commons/List'
+export * as Stat from './commons/Stat';
+export * as Modal from './commons/Modal'
+export * as Button from '$lib/components/commons/Button';
+
 export { default as Img } from './commons/image.svelte';
 export { default as Btn } from './commons/button.svelte';
 export { default as Link } from './commons/link.svelte';
-export { default as List } from './commons/list.svelte';
 export { default as Menu } from './commons/menu.svelte';
-export { default as Modal } from './commons/modal.svelte';
 export { default as Table } from './commons/table.svelte';
-
-// NEW
-export * as Stat from './commons/Stat';
-export * as Button from '$lib/components/commons/Button';
