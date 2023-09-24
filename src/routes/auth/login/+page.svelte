@@ -1,14 +1,17 @@
 <script>
 	import { Text, Password, Button, Form } from '$lib/components';
 	import { superForm } from 'sveltekit-superforms/client';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	export let data;
 
+	const urlFrom = $page.url.searchParams.get('urlFrom');
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
-				window.location = '/'; // this working instead goto
+				goto(urlFrom, { invalidateAll: true });
 			}
 		}
 	});

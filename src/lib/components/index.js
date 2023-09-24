@@ -29,9 +29,9 @@ export * as List from './commons/List'
 export * as Stat from './commons/Stat';
 export * as Modal from './commons/Modal'
 export * as Button from '$lib/components/commons/Button';
-
 export { default as Img } from './commons/image.svelte';
 export { default as Btn } from './commons/button.svelte';
 export { default as Link } from './commons/link.svelte';
 export { default as Menu } from './commons/menu.svelte';
-export { default as Table } from './commons/table.svelte';
+export { default as Table } from './commons/Table';
+export { default as Collapsible } from './commons/Collapsible/Collapsible.svelte'

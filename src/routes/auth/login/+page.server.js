@@ -3,9 +3,10 @@ import { fail, redirect } from '@sveltejs/kit';
 
 import { CommonHelpers } from '$lib/utils/CommonHelpers';
 
-export const load = async ({ locals }) => {
+export const load = async ({ url, locals }) => {
    if (locals.pb.authStore.model) {
-      throw redirect(303, '/');
+      let urlFrom = url.searchParams.get('urlFrom') || '/';
+      throw redirect(303, urlFrom);
    }
 
    const form = await superValidate(CommonHelpers.LoginSchema);

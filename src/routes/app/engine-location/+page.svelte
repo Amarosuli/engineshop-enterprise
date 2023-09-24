@@ -13,7 +13,7 @@
 	let { engineList, engineLocation } = data;
 	let engineTile = writable([]); // extend function to remove by id and add new data (or use invalidate)
 
-	$: console.log(engineList);
+	// $: console.log(engineList);
 	$engineTile = engineList.map((value) => ({ ...value, _location: engineLocation.find(({ engine_id }) => engine_id === value.id) || null }));
 
 	let pz,

@@ -1,6 +1,7 @@
 <script>
 	import { Link } from '$lib/components';
 	import { CommonSets } from '$lib/utils/CommonSets';
+	import { page } from '$app/stores';
 
 	export let user;
 </script>
@@ -13,11 +14,12 @@
 
 	<div>
 		{#each CommonSets.HeaderLinks as { title, href, color }}
-			{#if !user && title !== 'Logout'}
-				<Link {href} {title} {color} />
-			{:else if user && title == 'Logout'}
+			{#if !user}
+				<Link href="{href}?urlFrom={$page.url.pathname}" {title} {color} />
+			{:else if user}
 				<Link href="/profile" title={user.name} />
-				<Link {href} {title} {color} />
+				<!-- @next I think logout should be a button which process request to logout api -->
+				<Link href="/auth/logout?urlFrom={$page.url.pathname}" title="logout" color="danger" />
 			{/if}
 		{/each}
 	</div>

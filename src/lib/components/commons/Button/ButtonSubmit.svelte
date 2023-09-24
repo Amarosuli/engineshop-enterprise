@@ -4,4 +4,4 @@
 	export let disabled = false;
 </script>
 
-<button type="submit" form={formId && `${formId}Form`} {disabled} class="btn btn_submit" on:click>{title}<slot /></button>
+<button type="submit" form={formId && `${formId}Form`} {disabled} class="btn btn_submit" on:click>{title} <slot /> </button>

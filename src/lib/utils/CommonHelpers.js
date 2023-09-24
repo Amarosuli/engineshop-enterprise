@@ -10,6 +10,7 @@ export class CommonHelpers {
    static pb = new PocketBase(PUBLIC_API_PB);
 
    /**
+    * @deprecated since the pocketbase change the return value
     * Function to convert data from pocketbase api
     * to usable object format
     */
