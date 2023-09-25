@@ -8,25 +8,25 @@ table {
 			@apply w-[1%] pl-[20px];
 		}
 		&:nth-child(2) {
-			@apply w-[1%] pl-[20px];
+			@apply w-[1%] pl-[16px];
 		}
 		&:last-child {
 			@apply pr-[20px];
 		}
 	}
 	th {
-		@apply h-14 select-none bg-slate-300 pl-4 transition-colors ease-out hover:bg-slate-400/60 md:text-sm;
+		@apply h-14 select-none bg-slate-300 pl-4 transition-colors ease-out hover:bg-slate-200 md:text-sm;
 	}
 	td {
 		@apply h-14 break-words;
 	}
 
 	.col-checkbox {
-		@apply px-[20px];
+		@apply px-[15px];
 	}
 
 	.col-checkbox > input {
-		@apply h-6 w-6 cursor-pointer accent-amber-200;
+		@apply h-5 w-5 cursor-pointer accent-amber-200;
 	}
 	.col-number {
 		@apply p-[20px];
@@ -66,7 +66,7 @@ table {
 			@apply sticky top-0 z-10;
 		}
 		tr {
-			@apply h-16 font-bold text-slate-600 outline-none;
+			@apply h-10 font-bold text-slate-600 outline-none;
 		}
 	}
 

@@ -35,7 +35,7 @@
 				@apply h-8 w-8;
 			}
 			span {
-				@apply hidden text-sm font-bold tracking-wider text-slate-700 transition-colors duration-100 ease-linear hover:text-teal-600 lg:block;
+				@apply hidden text-sm font-bold tracking-wider text-slate-700 transition-colors duration-100 ease-linear hover:text-slate-800 lg:block;
 			}
 		}
 
