@@ -3,6 +3,7 @@
 
 	export let title = 'Button';
 	export let disabled = false;
+	export let hidden = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -30,4 +31,4 @@
 ```
  -->
 
-<button type="button" {disabled} class="btn btn_event" on:click={handleClick}>{title}<slot /></button>
+<button type="button" class:!hidden={hidden} {disabled} class="btn btn_event" on:click|stopPropagation={handleClick}>{title}<slot /></button>

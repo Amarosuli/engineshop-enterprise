@@ -113,7 +113,7 @@
 
 	function setUpdate(isTrue) {
 		if (isTrue) {
-			CommonHelpers.mergeObject($form, $isDetail.data.preserveDetail); // next add options = {set = {key: '', value: ''}} to specific merge value
+			CommonHelpers.mergeObject($form, $isUpdate.data); // next add options = {set = {key: '', value: ''}} to specific merge value
 		} else {
 			CommonHelpers.resetObject($form); // next add options = {set = {key: '', value: ''}} to specific merge value
 			$form.engine_id = $isDetail.data.id; // curently use this scenario
@@ -153,7 +153,7 @@
 			<div class="list-header">
 				<Modal.Title title="Preservation Data" />
 				<Modal.Action>
-					<Btn title="New Data" color="info" on:click={() => modal$.show('create', $isDetail?.data)} />
+					<Btn title="New Data" color="info" hidden={data.user !== null ? false : true} on:click={() => modal$.show('create', $isDetail?.data)} />
 					<Btn title="Show History" color="light" on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)}
 						><span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
 					</Btn>
@@ -162,7 +162,7 @@
 			<div class="list-content">
 				{#if Object.keys($isDetail?.data?.preserveDetail).length !== 0}
 					{@const _preservation = new Preservation($isDetail?.data?.preserveDetail?.date_performed, $isDetail?.data?.preserveDetail?.duration)}
-					{console.log(_preservation.isReady)}
+					<!-- {console.log(_preservation.isReady)} -->
 					<List.Item>
 						<span class="list-row-title">Last Performed: </span>
 						<span class="list-row-content">{$isDetail?.data?.preserveDetail?.date_performed && _preservation.format}</span>
@@ -201,7 +201,7 @@
 {/if}
 
 {#if $modal$.find((v) => v.id === 'preservation_history')}
-	<ModalPreservationHistory engineId={$isDetail.data?.id} />
+	<ModalPreservationHistory engineId={$isDetail.data?.id} user={data.user} />
 {/if}
 
 {#if $isUpdate}
@@ -216,8 +216,8 @@
 		<Modal.Body>
 			<Form.Root {id} action="?/update" method="POST" enctype="multipart/form-data" {enhance}>
 				<Form.Item>
-					<Text id="id" name="id" bind:value={$isUpdate.data.preserveDetail.id} hidden />
-					<Text id="engine_id" name="engine_id" bind:value={$isUpdate.data.preserveDetail.engine_id} hidden />
+					<Text id="id" name="id" bind:value={$isUpdate.data.id} hidden />
+					<Text id="engine_id" name="engine_id" bind:value={$isUpdate.data.engine_id} hidden />
 					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isUpdate.data.esn} disabled />
 					<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
 					<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />

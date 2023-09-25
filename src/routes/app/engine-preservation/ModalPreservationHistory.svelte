@@ -1,12 +1,11 @@
 <script>
 	import { onMount } from 'svelte';
-	import Collapsible from '$lib/components/commons/Collapsible/Collapsible.svelte';
-	import * as Modal from '$lib/components/commons/Modal';
-	import * as List from '$lib/components/commons/List';
+	import { Modal, List, Collapsible, Button } from '$lib/components';
 
 	import { modal$ } from '$lib/utils/Stores';
 
 	export let engineId;
+	export let user = null;
 
 	let state = 'DEFAULT';
 
@@ -18,8 +17,6 @@
 	}
 
 	let data = getPreservationHistory(engineId);
-
-	$: console.log(data);
 
 	onMount(async () => {
 		state = 'LOADING';
@@ -58,7 +55,12 @@
 			{/if}
 			{#each result.preservationHistory as d}
 				<Collapsible>
-					<span slot="trigger">#{result.preservationHistory.length - d.history_number + 1}</span>
+					<span slot="trigger">
+						<div class="flex items-center justify-center gap-4">
+							#{result.preservationHistory.length - d.history_number + 1}
+							<Button.Event title="Update" hidden={user !== null ? false : true} on:Event={() => modal$.show('update', { ...d, date_performed: d.date_performed.split(' ')[0] })} />
+						</div>
+					</span>
 					<List.Item>
 						<span>Tag:</span>
 						<span class="font-bold text-right">Tag Image</span>
