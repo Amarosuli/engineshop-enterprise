@@ -8,7 +8,8 @@ export class SuperTable {
    cols = [];
    rowNumber = 0;
 
-   constructor(data, colArray) {
+   constructor(data, colArray, options) {
+      this.options = options
       this.table = createTable(data, {
          sort: addSortBy({ disableMultiSort: false }),
          tableFilter: addTableFilter(),
@@ -93,7 +94,9 @@ export class SuperTable {
        * so the array will insert to the first index
        */
       this.cols.unshift(this.table.column(ColOrder));
-      this.cols.unshift(this.table.display(ColSelect));
+      if (this.options.rowSelector) {
+         this.cols.unshift(this.table.display(ColSelect));
+      }
       this.rowNumber = 0;
    };
 }

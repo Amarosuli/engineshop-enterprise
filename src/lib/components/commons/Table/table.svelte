@@ -17,6 +17,7 @@
 	export let hiddenColumns = [];
 	export let isRefresh = false;
 	export let showCreateButton = false;
+	export let showRowSelector = true;
 
 	const { isDelete, show } = modal$;
 	const dispatch = createEventDispatcher();
@@ -24,7 +25,7 @@
 	let data$ = writable([]);
 	$: ($data$ = dataTable), (isRefresh = false);
 
-	const table = new SuperTable(data$, dataCol);
+	const table = new SuperTable(data$, dataCol, { rowSelector: showRowSelector });
 	let { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B, pluginStates: Ps } = table.init;
 	let { sortKeys } = Ps.sort; // currently not used
 	let { filterValue } = Ps.tableFilter;
@@ -140,7 +141,7 @@
 	{#if $isDelete}
 		<div transition:fade={{ duration: 200 }} class="absolute flex left-0 bottom-0 justify-center items-center mx-auto z-10 h-full bg-slate-100/80 backdrop-blur-sm shadow w-full py-7 px-7 space-x-3">
 			<span>Delete {selectedRows.length} selected data?</span>
-			<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm')}>Yes</button>
+			<button class="px-4 py-1 bg-red-400 text-xs" on:click={() => modal$.show('confirm', selectedRows)}>Yes</button>
 			<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
 		</div>
 	{/if}

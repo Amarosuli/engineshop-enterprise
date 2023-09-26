@@ -4,7 +4,7 @@
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { File, Table, Text, Btn, Button, Img, Modal, List, Form } from '$lib/components';
+	import { File, Table, Text, Btn, Button, Img, Modal, List, Form, Password } from '$lib/components';
 	import { tableConfig } from './config.js';
 	import Board from './board.svelte';
 
@@ -177,9 +177,20 @@
 				<Modal.Close on:Close={() => modal$.hide(id)} />
 			</Modal.Action>
 		</Modal.Header>
-		<Modal.Body />
+		<Modal.Body>
+			<Form.Root {id} action="?/confirm" method="POST" {enhance}>
+				<Form.Item>
+					<div class="w-full flex flex-col gap-2 justify-center items-center">
+						<span class="w-full text-center font-semibold">{data?.user?.username} | {data?.user?.name}</span>
+						<span class="text-center text-xs py-2 px-4 bg-yellow-300 italic rounded-full">Type your password to confirm</span>
+					</div>
+					<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
+				</Form.Item>
+				<Form.Error error={$errors?.pocketbaseErrors} />
+			</Form.Root>
+		</Modal.Body>
 		<Modal.Footer>
-			<Modal.Confirm on:Confirm={() => modal$.hide(id)} />
+			<Button.Submit title="Confirm" formId={id} />
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
@@ -190,7 +201,14 @@
 		<Board {totalCustomers} />
 	</div>
 	<div class="manage-r relative">
-		<svelte:component this={Table} {dataTable} dataCol={tableConfig} {search} on:rowClick={handleRowClick} showCreateButton={data.user !== null ? true : false}>
+		<svelte:component
+			this={Table}
+			{dataTable}
+			dataCol={tableConfig}
+			{search}
+			on:rowClick={handleRowClick}
+			showCreateButton={data.user !== null ? true : false}
+			showRowSelector={data.user !== null ? true : false}>
 			<span slot="title" class="title">Customers</span>
 			<span slot="description" class="text-xs">Customers that exist in the history of project</span>
 		</svelte:component>
