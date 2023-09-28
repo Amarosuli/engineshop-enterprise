@@ -6,20 +6,37 @@
 	import BiggerPicture from 'bigger-picture/svelte';
 	import 'bigger-picture/css';
 
-	let abc;
+	function getImageInfo(src) {
+		return new Promise((resolve, reject) => {
+			let image = new Image();
+			image.src = src;
+			image
+				.decode()
+				.then(() => {
+					resolve({ img: src, height: image.height, width: image.width });
+				})
+				.catch(() => {
+					reject(new Error('image load error'));
+				});
+		});
+	}
 
-	function preview(e) {
-		console.log(abc);
-		// initialize
+	function preview(e, src) {
 		let bp = BiggerPicture({
 			target: document.body
 		});
-		// open (will be a child of the target element above)
-		bp.open({
-			items: abc,
-			scale: 0.5
-			// onOpen: (container) => console.log(container.children[1].children[0].children[0] )
-		});
+
+		e.target.classList.add('cursor-wait');
+		getImageInfo(src)
+			.then((imageData) => {
+				bp.open({
+					items: [imageData],
+					scale: 0.5
+				});
+			})
+			.finally(() => {
+				e.target.classList.remove('cursor-wait');
+			});
 	}
 
 	import { modal$ } from '$lib/utils/Stores';
@@ -90,11 +107,10 @@
 					<List.Item>
 						<span>Tag:</span>
 						<span class="flex justify-end">
-							<a on:click|preventDefault={preview} bind:this={abc} href={imgFull} data-img={imgFull} data-thumb={imgThumb} data-alt="image description" data-height="1000" data-width="1000">
+							<a on:click|preventDefault={(e) => preview(e, imgFull)} href="/">
 								<Img src={imgThumb} />
 							</a>
 						</span>
-						<!-- <span class="font-bold text-right">Tag Image</span> -->
 					</List.Item>
 					<List.Item>
 						<span>Duration:</span>
