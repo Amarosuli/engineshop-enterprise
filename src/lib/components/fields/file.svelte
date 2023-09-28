@@ -7,8 +7,10 @@
 	export let accept = '*';
 	export let value = null;
 
-	let isNotEmpty;
-	$: isNotEmpty;
+	let input;
+	let image = undefined;
+	let showImage = false;
+	let isNotEmpty = false;
 
 	const onChange = (e) => {
 		if (!e || !e.target) {
@@ -16,10 +18,24 @@
 		}
 
 		if (e.target.value) {
-			isNotEmpty = '!border-sky-500';
+			isNotEmpty = true;
 		} else {
-			isNotEmpty = '';
+			isNotEmpty = false;
 		}
+
+		const file = input.files[0];
+		if (file) {
+			showImage = true;
+
+			const reader = new FileReader();
+			reader.addEventListener('load', function () {
+				image.setAttribute('src', reader.result);
+			});
+			reader.readAsDataURL(file);
+			return;
+		}
+
+		showImage = false;
 	};
 </script>
 
@@ -27,7 +43,14 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="file" class={isNotEmpty} {id} {name} {accept} on:change={onChange} {required} {value} />
+	<input type="file" class:!border-sky-500={isNotEmpty} {id} {name} {accept} on:change={onChange} {required} {value} bind:this={input} />
+	<div class="image_preview">
+		{#if showImage}
+			<img bind:this={image} src="" alt="Preview" />
+		{:else}
+			<span>Image Preview</span>
+		{/if}
+	</div>
 
 	<p class="mt-1 text-xs text-gray-500" id="file_input_help">type allowed {accept}</p>
 	{#if error}
@@ -44,6 +67,12 @@
 	}
 	div > span {
 		@apply self-end text-sm text-red-600;
+	}
+	div .image_preview {
+		@apply mt-4 flex h-max w-full items-center justify-center;
+	}
+	div .image_preview span {
+		@apply flex h-[100px] w-full items-center justify-center bg-slate-300 font-bold text-slate-600;
 	}
 	label {
 		@apply inline-block text-sm font-semibold text-slate-600;

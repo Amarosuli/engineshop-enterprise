@@ -11,6 +11,9 @@ dependencies:
   '@panzoom/panzoom':
     specifier: ^4.5.1
     version: 4.5.1
+  bigger-picture:
+    specifier: ^1.1.11
+    version: 1.1.11
   dayjs:
     specifier: ^1.11.9
     version: 1.11.9
@@ -693,6 +696,10 @@ packages:
   /balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: true
+
+  /bigger-picture@1.1.11:
+    resolution: {integrity: sha512-1snpLyAy4lgHZgG6bNAKSbOvAZfgwOArEdFsffoGdOO8M+l3UAYzMBel24VZ5EtDs93cxsaxSr7OoiZeon1qQw==}
+    dev: false
 
   /binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}

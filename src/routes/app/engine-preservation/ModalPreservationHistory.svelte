@@ -1,6 +1,26 @@
 <script>
 	import { onMount } from 'svelte';
-	import { Modal, List, Collapsible, Button } from '$lib/components';
+	import { Modal, List, Collapsible, Button, Img } from '$lib/components';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+
+	import BiggerPicture from 'bigger-picture/svelte';
+	import 'bigger-picture/css';
+
+	let abc;
+
+	function preview(e) {
+		console.log(abc);
+		// initialize
+		let bp = BiggerPicture({
+			target: document.body
+		});
+		// open (will be a child of the target element above)
+		bp.open({
+			items: abc,
+			scale: 0.5
+			// onOpen: (container) => console.log(container.children[1].children[0].children[0] )
+		});
+	}
 
 	import { modal$ } from '$lib/utils/Stores';
 
@@ -54,6 +74,8 @@
 				<p class="text-center font-bold text-base mx-8 mb-2 p-2">No Preservation Data</p>
 			{/if}
 			{#each result.preservationHistory as d}
+				{@const imgThumb = CommonHelpers.getFileUrl(d.collectionId, d.id, d.tag, '100x0')}
+				{@const imgFull = CommonHelpers.getFileUrl(d.collectionId, d.id, d.tag)}
 				<Collapsible>
 					<span slot="trigger">
 						<div class="flex items-center justify-center gap-4">
@@ -63,7 +85,12 @@
 					</span>
 					<List.Item>
 						<span>Tag:</span>
-						<span class="font-bold text-right">Tag Image</span>
+						<span class="flex justify-end">
+							<a on:click|preventDefault={preview} bind:this={abc} href={imgFull} data-img={imgFull} data-thumb={imgThumb} data-alt="image description" data-height="1000" data-width="1000">
+								<Img src={imgThumb} />
+							</a>
+						</span>
+						<!-- <span class="font-bold text-right">Tag Image</span> -->
 					</List.Item>
 					<List.Item>
 						<span>Duration:</span>
