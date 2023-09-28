@@ -29,6 +29,7 @@ export * as List from './commons/List'
 export * as Stat from './commons/Stat';
 export * as Modal from './commons/Modal'
 export * as Button from '$lib/components/commons/Button';
+export * as Dropdown from '$lib/components/commons/DropdownMenu'
 export { default as Img } from './commons/image.svelte';
 export { default as Btn } from './commons/button.svelte';
 export { default as Link } from './commons/link.svelte';

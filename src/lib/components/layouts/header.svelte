@@ -3,6 +3,8 @@
 	import { CommonSets } from '$lib/utils/CommonSets';
 	import { page } from '$app/stores';
 
+	import { Dropdown, Button } from '$lib/components';
+
 	export let user;
 </script>
 
@@ -13,6 +15,13 @@
 	</a>
 
 	<div>
+		<Dropdown.Root>
+			<Dropdown.Trigger let:isOpen>
+				<Button.Event title="Open" on:Event={isOpen.switch} classes="btn btn_confirm" />
+			</Dropdown.Trigger>
+			<Dropdown.Content>haha</Dropdown.Content>
+		</Dropdown.Root>
+
 		{#each CommonSets.HeaderLinks as { title, href, color }}
 			{#if !user}
 				<Link href="{href}?urlFrom={$page.url.pathname}" {title} {color} />
