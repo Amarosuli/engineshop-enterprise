@@ -33,15 +33,19 @@ export const load = async ({ locals }) => {
 
 export const actions = {
    create: async ({ request, locals }) => {
-      const form = await superValidate(request, CommonHelpers.enginePreservationSchema);
+      const formData = await request.formData()
+      const form = await superValidate(formData, CommonHelpers.enginePreservationSchema);
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
          return fail(400, { form });
       }
 
+      const tag = formData.get('tag')
+
       try {
-         await CommonHelpers.createData(locals, 'preservation_list', form.data);
+         if (tag.size === 0) formData.delete('tag')
+         await CommonHelpers.createData(locals, 'preservation_list', formData);
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -53,11 +57,6 @@ export const actions = {
       return { form };
    },
    update: async ({ request, locals }) => {
-      /**
-       * grab raw form data into formData variable,
-       * so we can get the data from input id (hidden) which is not include in the zod schema
-       * then formData pass into superValidate to validate what necessary
-       */
       const formData = await request.formData();
       const form = await superValidate(formData, CommonHelpers.enginePreservationSchema);
 
@@ -67,13 +66,11 @@ export const actions = {
       }
 
       const id = formData.get('id');
+      const tag = formData.get('tag')
 
       try {
-         /**
-          * it feels wasting time to check form data is equal to curent data.
-          *  will remove this or find the new better way
-          */
-         await CommonHelpers.updateData(locals, 'preservation_list', id, form.data);
+         if (tag.size === 0) formData.delete('tag')
+         await CommonHelpers.updateData(locals, 'preservation_list', id, formData);
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`

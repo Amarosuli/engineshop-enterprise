@@ -80,7 +80,11 @@
 					<span slot="trigger">
 						<div class="flex items-center justify-center gap-4">
 							#{result.preservationHistory.length - d.history_number + 1}
-							<Button.Event title="Update" hidden={user !== null ? false : true} on:Event={() => modal$.show('update', { ...d, date_performed: d.date_performed.split(' ')[0] })} />
+							<Button.Event
+								classes="btn btn_confirm"
+								title="Update"
+								hidden={user !== null ? false : true}
+								on:Event={() => modal$.show('update', { ...d, tagURL: CommonHelpers.getFileUrl(d.collectionId, d.id, d.tag), date_performed: d.date_performed.split(' ')[0] })} />
 						</div>
 					</span>
 					<List.Item>

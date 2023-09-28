@@ -3,5 +3,5 @@ html {
 }
 
 button[type='button'] {
-	@apply flex select-none items-center justify-center gap-2 border-none px-4 py-2 align-middle text-xxs lg:text-sm;
+	@apply flex select-none items-center justify-center gap-2 border-none px-4 py-2 align-middle text-xs lg:text-sm;
 }

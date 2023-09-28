@@ -24,8 +24,8 @@
 		taintedMessage: null,
 		onResult: async ({ result }) => {
 			if (result.type === 'success') {
-				invalidateAll();
 				modal$.reset();
+				invalidateAll();
 			}
 		}
 	});
@@ -205,7 +205,10 @@
 {/if}
 
 {#if $isUpdate}
-	<!-- <SuperDebug data={$form} /> -->
+	{@const sd = console.log($isUpdate.data)}
+	<div class="absolute z-[200]">
+		<SuperDebug data={$form} />
+	</div>
 	<Modal.Root let:id id="update" position="right">
 		<Modal.Header>
 			<Modal.Title title="Update Form" />
@@ -221,7 +224,7 @@
 					<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isUpdate.data.esn} disabled />
 					<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
 					<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
-					<File id="tag" name="tag" label="Preserve Tag" />
+					<File id="tag" name="tag" label="Preserve Tag" src={$isUpdate?.data?.tagURL} />
 					<TextArea id="material" name="material" label="Material" bind:value={$form.material} />
 				</Form.Item>
 				<Form.Error />
@@ -235,8 +238,10 @@
 {/if}
 
 {#if $isCreate}
-	<Modal.Root let:id id="create" position="right">
+	<div class="absolute z-[200]">
 		<SuperDebug data={$form} />
+	</div>
+	<Modal.Root let:id id="create" position="right">
 		<Modal.Header>
 			<Modal.Title title="Create Form" />
 			<Modal.Action>

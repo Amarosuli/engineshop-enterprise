@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	export let id = Math.random().toString();
 	export let name = 'text';
 	export let error = '';
@@ -6,6 +7,7 @@
 	export let required = false;
 	export let accept = '*';
 	export let value = null;
+	export let src = '';
 
 	let input;
 	let image = undefined;
@@ -24,6 +26,7 @@
 		}
 
 		const file = input.files[0];
+
 		if (file) {
 			showImage = true;
 
@@ -37,6 +40,12 @@
 
 		showImage = false;
 	};
+
+	onMount(() => {
+		if (src !== '') {
+			showImage = true;
+		}
+	});
 </script>
 
 <div>
@@ -46,7 +55,7 @@
 	<input type="file" class:!border-sky-500={isNotEmpty} {id} {name} {accept} on:change={onChange} {required} {value} bind:this={input} />
 	<div class="image_preview">
 		{#if showImage}
-			<img bind:this={image} src="" alt="Preview" />
+			<img bind:this={image} {src} alt="Preview" />
 		{:else}
 			<span>Image Preview</span>
 		{/if}
