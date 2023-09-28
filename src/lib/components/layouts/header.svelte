@@ -17,7 +17,7 @@
 	<div>
 		{#if user}
 			<Dropdown.Root>
-				<Dropdown.Trigger let:isOpen>
+				<Dropdown.Trigger let:isOpen color="ghost">
 					<!-- <Button.Event title="Open" on:Event={isOpen.switch} classes="btn btn_confirm" /> -->
 					<i class="ri-profile-line ri-xl text-sky-700" />
 				</Dropdown.Trigger>

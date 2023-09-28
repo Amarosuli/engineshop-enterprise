@@ -6,7 +6,7 @@
 	import { modal$ } from '$lib/utils/Stores';
 	import { writable } from 'svelte/store';
 	import { Render, Subscribe } from 'svelte-headless-table';
-	import { Search, Btn, Menu, Switch } from '$lib/components';
+	import { Search, Btn, Button, Menu, Switch, Dropdown } from '$lib/components';
 	import { SuperTable } from './tableClass';
 
 	export let dataTable = [];
@@ -172,11 +172,19 @@
 				}}>
 				<i class="ri-refresh-line ri-1x text-white" />
 			</Btn>
-			<Menu title="Column">
-				{#each dataCol as { accessor }}
-					<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
-				{/each}
-			</Menu>
+			<Dropdown.Root>
+				<Dropdown.Trigger let:isOpen>Column</Dropdown.Trigger>
+				<Dropdown.Content size="w-52">
+					{#each dataCol as { accessor }}
+						<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} on:click />
+					{/each}
+				</Dropdown.Content>
+			</Dropdown.Root>
+			<!-- <Menu title="Column">
+            {#each dataCol as { accessor }}
+               <Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
+            {/each}
+			</Menu> -->
 			<Btn title="Export" color="success" on:click={() => handleExport()} />
 		</div>
 	</div>

@@ -1,4 +1,5 @@
 <script>
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { setContext, getContext } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -22,15 +23,8 @@
 	});
 
 	const { isOpen } = getContext('switcher');
-
-	function handleClick(e) {
-		console.log(e.target);
-		if (e.target.parentNode !== exclude) isOpen.set(false);
-	}
 </script>
 
-<svelte:body on:click={handleClick} />
-
-<div class="relative w-fit h-fit" id={Math.random()} bind:this={exclude}>
+<div use:CommonHelpers.clickOutside on:click_outside={() => isOpen.set(false)} class="relative w-fit h-fit" id={Math.random()} bind:this={exclude}>
 	<slot />
 </div>

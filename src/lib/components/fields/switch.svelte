@@ -17,12 +17,12 @@
 		<input class="peer sr-only {className}" type="checkbox" {id} {name} {placeholder} {required} {autocomplete} bind:checked={value} on:change {disabled} />
 		<div
 			class:peer-checked:bg-slate-500={disabled}
-			class="h-8 w-[3.7rem] rounded-full bg-slate-200
+			class="h-[1.8rem] w-[3.4rem] rounded-full bg-slate-200
          after:absolute
-         after:left-[3px]
-         after:top-[2px]
-         after:h-[1.6rem]
-         after:w-[1.6rem]
+         after:left-[4px]
+         after:top-[2.3px]
+         after:h-[1.4rem]
+         after:w-[1.4rem]
          after:rounded-full
          after:bg-white
          after:transition-all
@@ -32,7 +32,7 @@
          peer-checked:after:bg-sky-100
          peer-checked:after:translate-x-full
          " />
-		<span class:hidden class="ml-3 inline-block text-sm font-semibold text-slate-600 self-start tracking-widest">{label}</span>
+		<span class:hidden class="ml-3 inline-block text-xs font-semibold text-slate-600 self-center tracking-widest">{label}</span>
 	</label>
 	{#if error}
 		<span class="error">{error}</span>

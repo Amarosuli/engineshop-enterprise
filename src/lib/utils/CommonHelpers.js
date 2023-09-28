@@ -39,6 +39,27 @@ export class CommonHelpers {
       }
    };
 
+   /**
+    * clickOutSide
+    */
+   static clickOutside(node) {
+      const handleClick = e => {
+         if (node && !node.contains(e.target) && !e.defaultPrevented) {
+            node.dispatchEvent(
+               new CostumEvent('click_outside', node)
+            )
+         }
+      }
+
+      document.addEventListener('click', handleClick, true)
+
+      return {
+         destroy() {
+            document.removeEventListener('click', handleClick, true)
+         }
+      }
+   }
+
    static mergeObject = (objTarget, objSource) => {
       Object.keys(objTarget).forEach((key) => {
          objTarget[key] = objSource[key] || '';
