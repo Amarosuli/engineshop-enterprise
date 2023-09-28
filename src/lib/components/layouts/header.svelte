@@ -3,7 +3,7 @@
 	import { CommonSets } from '$lib/utils/CommonSets';
 	import { page } from '$app/stores';
 
-	import { Dropdown, Button } from '$lib/components';
+	import { Dropdown, Button, List } from '$lib/components';
 
 	export let user;
 </script>
@@ -15,22 +15,35 @@
 	</a>
 
 	<div>
-		<Dropdown.Root>
-			<Dropdown.Trigger let:isOpen>
-				<Button.Event title="Open" on:Event={isOpen.switch} classes="btn btn_confirm" />
-			</Dropdown.Trigger>
-			<Dropdown.Content>haha</Dropdown.Content>
-		</Dropdown.Root>
-
-		{#each CommonSets.HeaderLinks as { title, href, color }}
-			{#if !user}
-				<Link href="{href}?urlFrom={$page.url.pathname}" {title} {color} />
-			{:else if user}
-				<Link href="/profile" title={user.name} />
-				<!-- @next I think logout should be a button which process request to logout api -->
-				<Link href="/auth/logout?urlFrom={$page.url.pathname}" title="logout" color="danger" />
-			{/if}
-		{/each}
+		{#if user}
+			<Dropdown.Root>
+				<Dropdown.Trigger let:isOpen>
+					<!-- <Button.Event title="Open" on:Event={isOpen.switch} classes="btn btn_confirm" /> -->
+					<i class="ri-profile-line ri-xl text-sky-700" />
+				</Dropdown.Trigger>
+				<Dropdown.Content size="w-52">
+					{#each CommonSets.HeaderLinks as { title, href, color }}
+						{#if !user}
+							<Link href="{href}?urlFrom={$page.url.pathname}" {title} {color} />
+						{:else if user}
+							<Link href="/profile" title={user.name} color="ghost" size="w-full">
+								<i class="ri-user-2-fill ri-xl text-sky-700" />
+							</Link>
+							<!-- @next I think logout should be a button which process request to logout api -->
+							<Link href="/auth/logout?urlFrom={$page.url.pathname}" title="Logout" color="ghost" size="w-full">
+								<i class="ri-logout-box-line ri-xl text-sky-700" />
+							</Link>
+						{/if}
+					{/each}
+				</Dropdown.Content>
+			</Dropdown.Root>
+		{:else}
+			{#each CommonSets.HeaderLinks as { title, href, color }}
+				<Link href="{href}?urlFrom={$page.url.pathname}" {title} color="ghost">
+					<i class="ri-login-box-line ri-xl text-sky-700" />
+				</Link>
+			{/each}
+		{/if}
 	</div>
 </div>
 

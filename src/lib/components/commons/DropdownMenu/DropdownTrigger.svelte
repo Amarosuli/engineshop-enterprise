@@ -4,6 +4,6 @@
 	const { isOpen } = getContext('switcher');
 </script>
 
-<div id="dropdown_trigger" class="w-fit h-fit">
+<button id="dropdown_trigger" on:click|stopPropagation={isOpen.switch} class="w-fit h-fit p-3 hover:bg-slate-100 transition-colors ease-out">
 	<slot {isOpen} />
-</div>
+</button>

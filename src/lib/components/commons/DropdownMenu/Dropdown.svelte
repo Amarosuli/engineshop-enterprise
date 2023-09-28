@@ -31,6 +31,6 @@
 
 <svelte:body on:click={handleClick} />
 
-<div class="w-fit h-fit" id={Math.random()} bind:this={exclude}>
+<div class="relative w-fit h-fit" id={Math.random()} bind:this={exclude}>
 	<slot />
 </div>

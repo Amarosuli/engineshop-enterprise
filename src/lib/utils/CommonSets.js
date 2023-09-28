@@ -5,7 +5,7 @@ export class CommonSets {
     * Naming covension slightly refer to bootstrap
     * This is for ease the use of styling on all components
     */
-   static ColorName = ['base', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+   static ColorName = ['base', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'ghost'];
 
    /**
     * This color set use for styling base on 3 categories
@@ -14,38 +14,43 @@ export class CommonSets {
    static ColorSet = {
       base: {
          textColor: 'text-slate-50',
-         bgColor: 'bg-slate-600',
+         bgColor: 'shadow bg-slate-600',
          hoverColor: 'hover:bg-slate-500'
       },
       success: {
          textColor: 'text-green-50',
-         bgColor: 'bg-green-600',
+         bgColor: 'shadow bg-green-600',
          hoverColor: 'hover:bg-green-500'
       },
       danger: {
          textColor: 'text-red-50',
-         bgColor: 'bg-red-600',
+         bgColor: 'shadow bg-red-600',
          hoverColor: 'hover:bg-red-500'
       },
       warning: {
          textColor: 'text-orange-50',
-         bgColor: 'bg-orange-600',
+         bgColor: 'shadow bg-orange-600',
          hoverColor: 'hover:bg-orange-500'
       },
       info: {
          textColor: 'text-sky-50',
-         bgColor: 'bg-sky-600',
+         bgColor: 'shadow bg-sky-600',
          hoverColor: 'hover:bg-sky-500'
       },
       light: {
          textColor: 'text-slate-800',
-         bgColor: 'bg-slate-200',
+         bgColor: 'shadow bg-slate-200',
          hoverColor: 'hover:bg-slate-300'
       },
       dark: {
          textColor: 'text-white',
-         bgColor: 'bg-gray-600',
+         bgColor: 'shadow bg-gray-600',
          hoverColor: 'hover:bg-gray-500'
+      },
+      ghost: {
+         textColor: 'text-slate-800',
+         bgColor: 'bg-none',
+         hoverColor: 'hover:bg-slate-200'
       }
    };
 
