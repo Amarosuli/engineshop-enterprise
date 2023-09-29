@@ -6,7 +6,7 @@
 	import { modal$ } from '$lib/utils/Stores';
 	import { writable } from 'svelte/store';
 	import { Render, Subscribe } from 'svelte-headless-table';
-	import { Search, Btn, Button, Menu, Switch, Dropdown } from '$lib/components';
+	import { Search, Button, Switch, Dropdown } from '$lib/components';
 	import { SuperTable } from './tableClass';
 
 	export let dataTable = [];
@@ -162,30 +162,26 @@
 	<div class="manage-r-action relative">
 		<div class="btn-group">
 			{#if showCreateButton}
-				<Btn title="Create" color="info" on:click={() => modal$.show('create', null)} />
+				<Button.Event title="Create" classes="btn btn_info" on:Event={() => modal$.show('create', null)}><i class="ri-add-circle-line ri-1x" /></Button.Event>
 			{/if}
-			<Btn
+			<Button.Event
 				title="Refresh"
-				on:click={() => {
+				classes="btn btn_base"
+				on:Event={() => {
 					invalidateAll();
 					isRefresh = true;
-				}}>
-				<i class="ri-refresh-line ri-1x text-white" />
-			</Btn>
+				}}><i class="ri-refresh-line ri-1x text-white" /></Button.Event>
 			<Dropdown.Root>
 				<Dropdown.Trigger let:isOpen>Column</Dropdown.Trigger>
 				<Dropdown.Content size="w-52">
-					{#each dataCol as { accessor }}
-						<Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} on:click />
-					{/each}
+					<div class="w-full p-2 space-y-2">
+						{#each dataCol as { accessor, header }}
+							<Switch id={accessor} className="toggle-column capitalize" label={header} value={true} on:change={toggleColumn} />
+						{/each}
+					</div>
 				</Dropdown.Content>
 			</Dropdown.Root>
-			<!-- <Menu title="Column">
-            {#each dataCol as { accessor }}
-               <Switch id={accessor} className="toggle-column" label={accessor} value={true} on:change={toggleColumn} />
-            {/each}
-			</Menu> -->
-			<Btn title="Export" color="success" on:click={() => handleExport()} />
+			<Button.Event title="Export" classes="btn btn_success" on:Event={handleExport} />
 		</div>
 	</div>
 </div>
@@ -231,7 +227,7 @@
 								<th
 									{...Ca}
 									on:click={Cp.sort.toggle}
-									class="col-sort"
+									class="col-sort col-{col.id}"
 									class:col-checkbox={col.id === 'selected'}
 									class:sort-active={Cp.sort.order !== undefined}
 									class:sort-asc={Cp.sort.order === 'asc'}

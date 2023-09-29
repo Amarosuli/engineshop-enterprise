@@ -48,9 +48,9 @@
 				<span class="text-slate-600 font-semibold text-sm">Loading . . .</span>
 			</div>
 		{:then result}
-			<p class="p-12 m-8 shadow bg-blue-200 rounded text-justify font-poppins">
-				Preservation History are the historycal engine preservation events. The detail of preservation data available to access from Dashbord > manage:engine-preservation menu. The engine-preservation
-				page also handle the creating new data and monitoring the schedule for which engine near the outdated preservation.
+			<p class="p-4 text-xs xl:p-8 m-4 shadow bg-blue-200 rounded text-justify font-poppins">
+				Preservation History are the historycal engine preservation events. The detail of preservation data available to access from <strong>Dashbord > Engine Preservation</strong> menu. <br /><br />
+				The Engine Preservation page also handle the creating new data and monitoring the schedule for which engine near the outdated preservation.
 			</p>
 			{#if result.preservationHistory.length === 0}
 				<p class="text-center font-bold text-base mx-8 mb-2 p-2">No Preservation Data</p>

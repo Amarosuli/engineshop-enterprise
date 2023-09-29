@@ -17,10 +17,10 @@
 		<input class="peer sr-only {className}" type="checkbox" {id} {name} {placeholder} {required} {autocomplete} bind:checked={value} on:change {disabled} />
 		<div
 			class:peer-checked:bg-slate-500={disabled}
-			class="h-[1.8rem] w-[3.4rem] rounded-full bg-slate-200
+			class="h-[1.8rem] w-[3.3rem] rounded-full bg-slate-200
          after:absolute
          after:left-[4px]
-         after:top-[2.3px]
+         after:top-[2.6px]
          after:h-[1.4rem]
          after:w-[1.4rem]
          after:rounded-full

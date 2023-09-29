@@ -18,6 +18,10 @@
 <button
 	id="dropdown_trigger"
 	on:click|stopPropagation={isOpen.switch}
-	class="w-fit h-fit p-3 transition-colors ease-out {CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}">
+	class="btn transition-colors ease-out {CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}">
 	<slot {isOpen} />
 </button>
+
+<!-- <button id="dropdown_trigger" on:click|stopPropagation={isOpen.switch} class="btn btn_ghost transition-colors ease-out">
+	<slot {isOpen} />
+</button> -->

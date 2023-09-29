@@ -73,7 +73,7 @@
 		<Modal.Header>
 			<Modal.Title title="Detail Form" />
 			<Modal.Action>
-				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
+				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)}><i class="ri-pencil-line ri-1x text-white" /></Btn>
 				<Modal.Close on:Close={() => modal$.hide(id)} />
 			</Modal.Action>
 		</Modal.Header>
@@ -160,7 +160,7 @@
 		</Stat.Root>
 	</div>
 	<div class="manage-r relative">
-		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} showCreateButton={data.user !== null ? true : false}>
+		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} showCreateButton={data.user !== null ? true : false} showRowSelector={data.user !== null ? true : false}>
 			<span slot="title" class="title">Engine Models</span>
 			<span slot="description" class="text-xs">Engine Models that categorized by it's generation</span>
 		</svelte:component>

@@ -9,19 +9,29 @@
 
 .btn {
 	@apply select-none border-none px-5 py-2 align-middle text-sm;
-}
 
-.btn.btn_cancel {
-	@apply bg-sky-500 text-white hover:bg-sky-400;
-}
-.btn.btn_back {
-	@apply bg-slate-500 text-white hover:bg-slate-400;
-}
+	&.btn_cancel,
+	&.btn_info {
+		@apply bg-sky-500 text-white hover:bg-sky-400;
+	}
 
-.btn.btn_confirm {
-	@apply bg-red-500 text-white hover:bg-red-400;
-}
+	&.btn_back,
+	&.btn_base {
+		@apply bg-slate-500 text-white hover:bg-slate-400;
+	}
 
-.btn.btn_submit {
-	@apply bg-indigo-500 text-white hover:bg-indigo-400;
+	&.btn_confirm {
+		@apply bg-red-500 text-white hover:bg-red-400;
+	}
+
+	&.btn_submit {
+		@apply bg-indigo-500 text-white hover:bg-indigo-400;
+	}
+
+	&.btn_success {
+		@apply bg-green-500 text-white hover:bg-green-400;
+	}
+	&.btn_ghost {
+		@apply bg-none text-slate-700 hover:bg-slate-100;
+	}
 }

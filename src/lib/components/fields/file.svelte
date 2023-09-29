@@ -8,13 +8,14 @@
 	export let accept = '*';
 	export let value = null;
 	export let src = '';
+	export let showPreview = false;
 
 	let input;
 	let image = undefined;
 	let showImage = false;
 	let isNotEmpty = false;
 
-	const onChange = (e) => {
+	const onChange = (e, func) => {
 		if (!e || !e.target) {
 			return;
 		}
@@ -26,6 +27,20 @@
 		}
 
 		const file = input.files[0];
+
+		// check file type
+		if (file && file.type === 'application/pdf') {
+			let base64;
+			let fileReader = new FileReader();
+
+			fileReader.onload = function (file) {
+				base64 = file.target.result;
+				// console.log(base64);
+			};
+
+			fileReader.readAsDataURL(file);
+			return;
+		}
 
 		if (file) {
 			showImage = true;
@@ -54,10 +69,12 @@
 	</label>
 	<input type="file" class:!border-sky-500={isNotEmpty} {id} {name} {accept} on:change={onChange} {required} {value} bind:this={input} />
 	<div class="image_preview">
-		{#if showImage}
-			<img bind:this={image} {src} alt="Preview" />
-		{:else}
-			<span>Image Preview</span>
+		{#if showPreview}
+			{#if showImage}
+				<img bind:this={image} {src} alt="Preview" />
+			{:else}
+				<span>Preview</span>
+			{/if}
 		{/if}
 	</div>
 

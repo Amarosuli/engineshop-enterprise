@@ -83,9 +83,9 @@
 				<span class="text-slate-600 font-semibold text-sm">Loading . . .</span>
 			</div>
 		{:then result}
-			<p class="p-12 m-8 shadow bg-blue-200 rounded text-justify font-poppins">
-				Preservation History are the historycal engine preservation events. The detail of preservation data available to access from Dashbord > manage:engine-preservation menu. The engine-preservation
-				page also handle the creating new data and monitoring the schedule for which engine near the outdated preservation.
+			<p class="p-4 text-xs xl:p-8 m-4 shadow bg-blue-200 rounded text-justify font-poppins">
+				Preservation History are the historycal engine preservation events. The detail of preservation data available to access from <strong> Dashbord > Engine List</strong> menu. <br /> <br /> The Engine
+				List page also handle the creating new data and monitoring the schedule for which engine near the outdated preservation.
 			</p>
 			{#if result.preservationHistory.length === 0}
 				<p class="text-center font-bold text-base mx-8 mb-2 p-2">No Preservation Data</p>
@@ -98,10 +98,11 @@
 						<div class="flex items-center justify-center gap-4">
 							#{result.preservationHistory.length - d.history_number + 1}
 							<Button.Event
-								classes="btn btn_confirm"
-								title="Update"
+								classes="btn btn_ghost rounded-lg bg-slate-50"
+								title=""
 								hidden={user !== null ? false : true}
-								on:Event={() => modal$.show('update', { ...d, tagURL: CommonHelpers.getFileUrl(d.collectionId, d.id, d.tag), date_performed: d.date_performed.split(' ')[0] })} />
+								on:Event={() => modal$.show('update', { ...d, tagURL: CommonHelpers.getFileUrl(d.collectionId, d.id, d.tag), date_performed: d.date_performed.split(' ')[0] })}
+								><i class="ri-pencil-line ri-1x" /></Button.Event>
 						</div>
 					</span>
 					<List.Item>

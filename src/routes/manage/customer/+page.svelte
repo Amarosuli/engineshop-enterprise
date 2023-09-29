@@ -71,7 +71,8 @@
 		<Modal.Header>
 			<Modal.Title title="Detail Form" />
 			<Modal.Action>
-				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)} />
+				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)}>
+					<i class="ri-pencil-line ri-1x text-white" /></Btn>
 				<Modal.Close on:Close={() => modal$.hide(id)} />
 			</Modal.Action>
 		</Modal.Header>

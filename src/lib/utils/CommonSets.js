@@ -76,6 +76,11 @@ export class CommonSets {
             title: 'Engine In Engine Out',
             href: '/app/engine-in-out',
             icon: 'ri-arrow-up-down-fill'
+         },
+         {
+            title: 'Surat Pengiriman',
+            href: '/app/delivery-note',
+            icon: 'ri-mail-send-fill'
          }
       ],
       manages: [

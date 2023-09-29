@@ -153,8 +153,9 @@
 			<div class="list-header">
 				<Modal.Title title="Preservation Data" />
 				<Modal.Action>
-					<Btn title="New Data" color="info" hidden={data.user !== null ? false : true} on:click={() => modal$.show('create', $isDetail?.data)} />
-					<Btn title="Show History" color="light" on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)}
+					<Btn title="Insert" color="info" hidden={data.user !== null ? false : true} on:click={() => modal$.show('create', $isDetail?.data)}>
+						<span class="text-green-600"><i class="ri-add-circle-line ri-1x text-white" /></span></Btn>
+					<Btn title="History" color="light" on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)}
 						><span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
 					</Btn>
 				</Modal.Action>
@@ -285,7 +286,7 @@
 		<svelte:component this={Board} {preservationHistory} {engineList} />
 	</div>
 	<div class="manage-r relative">
-		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick}>
+		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} showRowSelector={false}>
 			<span slot="title" class="title">Engine Preservation</span>
 			<span slot="description" class="text-xs" />
 		</svelte:component>
