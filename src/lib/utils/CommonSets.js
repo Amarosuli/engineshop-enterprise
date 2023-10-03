@@ -109,6 +109,12 @@ export class CommonSets {
             // icon: 'ri:article-line'
          },
          {
+            title: 'PDF Template',
+            href: '/manage/pdf-template',
+            icon: 'https://ui-avatars.com/api/?name=PDF&background=random&size=30&bold=true&uppercase=false'
+            // icon: 'ri:article-line'
+         },
+         {
             title: 'Test',
             href: '/test',
             icon: 'https://ui-avatars.com/api/?name=Test&background=random&size=30&bold=true&uppercase=false'

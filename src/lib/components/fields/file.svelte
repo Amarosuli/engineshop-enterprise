@@ -30,15 +30,16 @@
 
 		// check file type
 		if (file && file.type === 'application/pdf') {
-			let base64;
-			let fileReader = new FileReader();
+			// let base64;
+			// let fileReader = new FileReader();
 
-			fileReader.onload = function (file) {
-				base64 = file.target.result;
-				// console.log(base64);
-			};
+			// fileReader.onload = function (file) {
+			// 	base64 = file.target.result;
+			// console.log(base64);
+			// };
 
-			fileReader.readAsDataURL(file);
+			// fileReader.readAsDataURL(file);
+			console.log('pdf');
 			return;
 		}
 
@@ -67,7 +68,7 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<input type="file" class:!border-sky-500={isNotEmpty} {id} {name} {accept} on:change={onChange} {required} {value} bind:this={input} />
+	<input type="file" class:!border-sky-500={isNotEmpty} {id} {name} {accept} on:change={onChange} on:change {required} {value} bind:this={input} />
 	<div class="image_preview">
 		{#if showPreview}
 			{#if showImage}

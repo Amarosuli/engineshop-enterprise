@@ -41,39 +41,11 @@ export class CommonHelpers {
 
    /**
     * clickOutSide
+    * I dont understand, why the use 'const handleClick = e => ...' cause the browser notify the CostumEvent undefined
+    * But when use the explicit 'const handleClick = event => ...', it will work
     */
+
    static clickOutside(node) {
-      const handleClick = e => {
-         if (node && !node.contains(e.target) && !e.defaultPrevented) {
-            node.dispatchEvent(
-               new CostumEvent('click_outside', node)
-            )
-         }
-      }
-
-      document.addEventListener('click', handleClick, true)
-
-      return {
-         destroy() {
-            document.removeEventListener('click', handleClick, true)
-         }
-      }
-   }
-
-   static mergeObject = (objTarget, objSource) => {
-      Object.keys(objTarget).forEach((key) => {
-         objTarget[key] = objSource[key] || '';
-      });
-   };
-
-   static resetObject = (obj, options = { exclude: [] }) => {
-      Object.keys(obj).forEach((key) => {
-         if (options && options.exclude.length && options.exclude.includes(key)) return;
-         obj[key] = '';
-      });
-   };
-
-   static clickOutside = (node) => {
       const handleClick = (event) => {
          if (node && !node.contains(event.target) && !event.defaultPrevented) {
             node.dispatchEvent(new CustomEvent('click_outside', node));
@@ -87,6 +59,21 @@ export class CommonHelpers {
             document.removeEventListener('click', handleClick, true);
          }
       };
+   };
+
+   static mergeObject = (objTarget, objSource) => {
+      Object.keys(objTarget).forEach((key) => {
+         objTarget[key] = objSource[key] || '';
+      });
+   };
+
+
+
+   static resetObject = (obj, options = { exclude: [] }) => {
+      Object.keys(obj).forEach((key) => {
+         if (options && options.exclude.length && options.exclude.includes(key)) return;
+         obj[key] = '';
+      });
    };
 
    /** Zod Schemas */
@@ -137,6 +124,25 @@ export class CommonHelpers {
       tag: z.any().optional(),
       material: z.string().optional()
    });
+
+   static pdfTemplateSchema = z.object({
+      name: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      alias: z.string().optional(),
+      description: z.string().optional(),
+      base64: z.string().min(1, { message: 'Base64 cannot be empty' }),
+      // pdf: z.any().optional(), // still need for populating update form   
+      schema: z.string(),
+   })
+
+   static createPdfTemplateSchema = z.object({
+      id: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      // name: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      // alias: z.string().optional(),
+      // description: z.string().optional(),
+      base64: z.string().optional(),
+      // pdf: z.any().optional(), // still need for populating update form   
+      schema: z.string(),
+   })
 
    /** Pocketbase Schemas @GET */
    static getFileUrl = (collectionId, recordId, fileName, thumb = '0x0') => {
@@ -195,6 +201,10 @@ export class CommonHelpers {
    static getEngineLocation = async (pbClient) => {
       return await this.getFullList(pbClient, 'engine_location');
    };
+
+   static getPDFTemplates = async (pbClient) => {
+      return await this.getFullList(pbClient, 'pdf_templates')
+   }
 
    /** Pocketbase Schemas @POST */
    static createData = async (pbClient, tableName, data) => {

@@ -39,7 +39,8 @@
 			</Dropdown.Root>
 		{:else}
 			{#each CommonSets.HeaderLinks as { title, href, color }}
-				<Link href="{href}?urlFrom={$page.url.pathname}" {title} color="ghost">
+				<Link href="{href}?urlFrom={$page.url.pathname}" color="ghost">
+					<span class="font-semibold !text-sky-700">Login</span>
 					<i class="ri-login-box-line ri-xl text-sky-700" />
 				</Link>
 			{/each}
@@ -52,7 +53,7 @@
 		@apply relative flex h-[4rem] shrink-0 select-none items-center justify-between bg-slate-300 p-4;
 
 		a {
-			@apply flex select-none items-center justify-center space-x-2;
+			@apply flex select-none items-center justify-center space-x-2 pl-4;
 			img {
 				@apply h-8 w-8;
 			}

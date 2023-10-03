@@ -1,7 +1,7 @@
 <script>
 	import { onDestroy } from 'svelte';
 	import classes from 'svelte-transition-classes';
-
+	import { beforeNavigate } from '$app/navigation';
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonSets } from '$lib/utils/CommonSets';
 
@@ -62,6 +62,10 @@
 			hideOnClick ? modal$.hide(id) : '';
 		}
 	};
+
+	beforeNavigate(() => {
+		modal$.reset();
+	});
 
 	onDestroy(() => {
 		modal$.hide(id);
