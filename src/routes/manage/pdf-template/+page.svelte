@@ -2,7 +2,10 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { Viewer, BLANK_PDF } from '@pdfme/ui';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -13,6 +16,7 @@
 	let search = '';
 	let dataTable;
 	let loadingRefresh = true;
+	let viewer, domContainer, template;
 	$: dataTable = data.pdfTemplates;
 
 	/**
@@ -49,7 +53,15 @@
 			header: 'PDF',
 			accessor: 'pdf',
 			cell: ({ row }) => {
-				if (row.original.pdf) return createRender(Button.Event, { title: 'Download', classes: 'rounded-lg font-bold !text-xxs bg-blue-300 hover:bg-blue-200' }).on('Event', () => console.log(pdf));
+				if (row.original.pdf)
+					return createRender(Button.Event, { title: 'Preview', classes: 'rounded-lg font-bold !text-xxs bg-blue-300 hover:bg-blue-200' }).on('Event', () => {
+						modal$.show('preview');
+						domContainer = document.getElementById('container');
+						template = { schemas: row.original.schema, basePdf: row.original.base64 };
+						let inputs = [{}];
+						new Viewer({ domContainer, template, inputs });
+						domContainer.classList.toggle('hidden');
+					});
 				return 'Not Available';
 			}
 		},
@@ -190,6 +202,8 @@
 		</Modal.Footer>
 	</Modal.Root>
 {/if}
+
+<div id="container" class="absolute inset-0 hidden" />
 
 <div class="manage-container">
 	<div class="manage-r relative">

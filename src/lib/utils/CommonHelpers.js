@@ -144,6 +144,18 @@ export class CommonHelpers {
       schema: z.string(),
    })
 
+   static createDeliveryNote = z.object({
+      template_id: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      shipment_date: z.date().default(new Date),
+      shipper_name: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      shipper_id: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      shipper_unit: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      recipient_name: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      recipient_id: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      recipient_unit: z.string().min(1, { message: 'Template Name cannot be empty' }),
+      data: z.string(),
+   })
+
    /** Pocketbase Schemas @GET */
    static getFileUrl = (collectionId, recordId, fileName, thumb = '0x0') => {
       let url = `${PUBLIC_API_PB}/api/files/${collectionId}/${recordId}/${fileName}?thumb=${thumb}`;

@@ -9,14 +9,24 @@ export class SuperTable {
    rowNumber = 0;
 
    constructor(data, colArray, options) {
-      this.options = options
-      this.table = createTable(data, {
+      this.defaultPlugins = {
          sort: addSortBy({ disableMultiSort: false }),
          tableFilter: addTableFilter(),
          select: addSelectedRows(),
          hidden: addHiddenColumns(),
          export: addDataExport()
-      });
+      }
+      this.defaultOptions = {
+         order: true,
+         sort: true,
+         tableFilter: true,
+         select: true,
+         hidden: true,
+         export: true,
+         rowSelector: false
+      }
+      this.runFilterOption = this.filterOption(this.defaultOptions, this.defaultPlugins, options)
+      this.table = createTable(data, this.defaultPlugins);
       this.plugins = {
          sort: { invert: true },
          tableFilter: { exclude: false }
@@ -24,6 +34,15 @@ export class SuperTable {
       this.createColsArray(colArray, this.plugins);
       this.init = this.table.createViewModel(this.table.createColumns(this.cols));
       this.plugin = this.init.pluginStates;
+   }
+
+   filterOption = (defaultOptions, defaultPlugins, input) => {
+      Object.keys(input).forEach((key) => {
+         if (input[key] === false) {
+            delete defaultOptions[key]
+            delete defaultPlugins[key]
+         }
+      })
    }
 
    createColsArray = (colArray, plugin) => {
@@ -60,7 +79,7 @@ export class SuperTable {
             return (this.rowNumber += 1);
          },
          plugins: {
-            sort: { invert: true }
+            sort: Object.keys(this.defaultOptions).includes('sort') ? { invert: true } : undefined
          }
       };
 
@@ -93,8 +112,11 @@ export class SuperTable {
        * add the select column and order column with unshift
        * so the array will insert to the first index
        */
-      this.cols.unshift(this.table.column(ColOrder));
-      if (this.options.rowSelector) {
+      if (Object.keys(this.defaultOptions).includes('order')) {
+         this.cols.unshift(this.table.column(ColOrder));
+      }
+      if (Object.keys(this.defaultOptions).includes('rowSelector')) {
+         // if (this?.options?.rowSelector === true) {
          this.cols.unshift(this.table.display(ColSelect));
       }
       this.rowNumber = 0;

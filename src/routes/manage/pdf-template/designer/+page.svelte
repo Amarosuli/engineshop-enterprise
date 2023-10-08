@@ -41,6 +41,7 @@
 		});
 		designer.onChangeTemplate((e) => {
 			// new notification there's something new
+			console.log(e);
 			$form.schema = JSON.stringify(e.schemas);
 		});
 	});
@@ -71,7 +72,7 @@
 </svelte:head>
 
 <div class="absolute w-1/6 bg-slate-100 z-[300] flex flex-col gap-2 left-2 top-2 p-5">
-	<h1 class="text-lg text-slate-700 font-bold text-center uppercase">{data.pdfTemplates.name} Template</h1>
+	<h1 class="text-md text-slate-700 font-bold text-center uppercase pb-4">Template {data.pdfTemplates.name}</h1>
 	<span class="text-xs text-slate-600 py-2 px-4 bg-green-200"> Insert new PDF file if you want to change current pdf template file. </span>
 	<File accept=".pdf" on:change={onChange} label="" />
 	<span class="text-xs text-slate-600 py-2 px-4 bg-green-200"> Click Save if you already done layouting the schema. </span>
