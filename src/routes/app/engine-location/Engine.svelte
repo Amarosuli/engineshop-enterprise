@@ -1,4 +1,5 @@
 <script>
+	import { fade } from 'svelte/transition';
 	export let engine;
 	export let defaultPosition;
 
@@ -21,7 +22,18 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div {id} data-x={x} data-y={y} on:click on:pointerdown={() => (isGrabbing = true)} on:pointerup={() => (isGrabbing = false)} on:pointerout={() => (isGrabbing = false)} class:cursor-grabbing={isGrabbing} class:z-40={isGrabbing} class="engine {engine.id} cursor-grab">
+<div
+	transition:fade
+	{id}
+	data-x={x}
+	data-y={y}
+	on:click
+	on:pointerdown={() => (isGrabbing = true)}
+	on:pointerup={() => (isGrabbing = false)}
+	on:pointerout={() => (isGrabbing = false)}
+	class:cursor-grabbing={isGrabbing}
+	class:z-40={isGrabbing}
+	class="engine {engine.id} cursor-grab">
 	<span class="text-center text-[4px] break-words text-white">ESN {esn}</span>
 </div>
 

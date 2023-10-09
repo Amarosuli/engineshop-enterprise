@@ -5,8 +5,8 @@
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
-	import { Viewer, BLANK_PDF } from '@pdfme/ui';
 
+	import Preview from './Preview.svelte';
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { File, Table, Text, Btn, Button, Link, Img, Modal, List, Form, Password } from '$lib/components';
@@ -15,6 +15,7 @@
 	export let data;
 	let search = '';
 	let dataTable;
+	let containerAvailable = false;
 	let loadingRefresh = true;
 	let viewer, domContainer, template;
 	$: dataTable = data.pdfTemplates;
@@ -55,12 +56,8 @@
 			cell: ({ row }) => {
 				if (row.original.pdf)
 					return createRender(Button.Event, { title: 'Preview', classes: 'rounded-lg font-bold !text-xxs bg-blue-300 hover:bg-blue-200' }).on('Event', () => {
-						modal$.show('preview');
-						domContainer = document.getElementById('container');
 						template = { schemas: row.original.schema, basePdf: row.original.base64 };
-						let inputs = [{}];
-						new Viewer({ domContainer, template, inputs });
-						domContainer.classList.toggle('hidden');
+						modal$.show('preview', template);
 					});
 				return 'Not Available';
 			}
@@ -105,6 +102,7 @@
 			fileReader.readAsDataURL(file);
 		}
 	}
+	$: console.log($modal$);
 </script>
 
 <svelte:head>
@@ -203,7 +201,9 @@
 	</Modal.Root>
 {/if}
 
-<div id="container" class="absolute inset-0 hidden" />
+{#if $modal$.find((v) => v.id === 'preview')}
+	<Preview />
+{/if}
 
 <div class="manage-container">
 	<div class="manage-r relative">

@@ -6,6 +6,7 @@
 
 	import ModalEngineHistory from './ModalEngineHistory.svelte';
 	import ModalPreservationHistory from './ModalPreservationHistory.svelte';
+	import ModalDetail from './ModalDetail.svelte';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
@@ -140,7 +141,6 @@
 
 				<div class="flex justify-end items-center gap-2">
 					<span class="text-right text-xxs font-semibold">
-						<!-- this status query from engine_availability by get latest data and check if status is INCOMING or OUTGOING -->
 						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable?.status == 'INCOMING'} class:bg-yellow-300={$isDetail?.data?.isAvailable?.status == 'OUTGOING'}
 							>{$isDetail?.data?.isAvailable?.status == 'INCOMING' ? 'Available in shop' : 'Not available'}</span>
 					</span>
@@ -170,13 +170,16 @@
 				<span>Notes</span>
 				<span class="font-bold text-right">{$isDetail.data?.notes}</span>
 			</List.Item>
+			<List.Item>
+				<span>Location</span>
+				<ModalDetail engine_id={$isDetail.data?.id} />
+			</List.Item>
 		</Modal.Body>
 		<Modal.Footer>
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
 {/if}
-
 {#if $modal$.find((v) => v.id === 'engine_history')}
 	<ModalEngineHistory engineId={$isDetail.data?.id} />
 {/if}
