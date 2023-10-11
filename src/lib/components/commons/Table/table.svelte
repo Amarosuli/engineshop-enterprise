@@ -145,7 +145,7 @@
 			<button class="px-4 py-1 bg-green-200 text-xs" on:click={handleReset}>Reset</button>
 		</div>
 	{/if}
-	<div class="manage-r-title">
+	<div class="manage-r-title self-center">
 		<div class="flex flex-col">
 			<slot name="title">
 				<span class="title">Title</span>
@@ -159,7 +159,7 @@
 		</div>
 	</div>
 
-	<div class="manage-r-action relative">
+	<div class="manage-r-action items-end relative gap-3 flex-row xl:flex-col">
 		<div class="btn-group">
 			{#if showCreateButton}
 				<Button.Event title="Create" classes="btn btn_info" on:Event={() => modal$.show('create', null)}><i class="ri-add-circle-line ri-1x" /></Button.Event>
@@ -182,6 +182,9 @@
 				</Dropdown.Content>
 			</Dropdown.Root>
 			<Button.Event title="Export" classes="btn btn_success" on:Event={handleExport} />
+		</div>
+		<div class="btn-group">
+			<slot name="action" />
 		</div>
 	</div>
 </div>

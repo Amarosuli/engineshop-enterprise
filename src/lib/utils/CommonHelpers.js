@@ -215,8 +215,13 @@ export class CommonHelpers {
    };
 
    static getPDFTemplates = async (pbClient) => {
-      return await this.getFullList(pbClient, 'pdf_templates')
-   }
+      return await this.getFullList(pbClient, 'pdf_templates');
+   };
+
+   static getEngineHistory = async (pbClient) => {
+      // return await this.getFullList(pbClient, 'engine_history');
+      return await pbClient.pb.collection('engine_history').getFullList({ expand: 'engine_id' })
+   };
 
    /** Pocketbase Schemas @POST */
    static createData = async (pbClient, tableName, data) => {

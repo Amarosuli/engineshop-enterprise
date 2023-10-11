@@ -3,7 +3,7 @@
 	import { fade } from 'svelte/transition';
 
 	import '$lib/scss/main.scss';
-	import '$lib/fonts/remixicon/remixicon.scss';
+	import '$lib/fonts/remixicon/remixicon.css';
 
 	import { navigating } from '$app/stores';
 

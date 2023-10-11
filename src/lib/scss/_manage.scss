@@ -17,7 +17,7 @@
 }
 
 .manage-r-title {
-	@apply w-max;
+	@apply xl:w-max;
 }
 
 .title {
@@ -25,7 +25,7 @@
 }
 
 .manage-r-action {
-	@apply flex flex-wrap items-center justify-between pb-0;
+	@apply flex flex-wrap justify-center pb-0;
 }
 
 .manage-r-content {

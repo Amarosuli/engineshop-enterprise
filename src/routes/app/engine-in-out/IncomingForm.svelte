@@ -8,13 +8,12 @@
 	export let form;
 </script>
 
-<div in:classes={fadeIn} out:classes={fadeOut} class="mt-6 border-dashed border-t border-t-orange-400">
-	<form action="?/incoming" method="POST" class="space-y-3 flex flex-col">
+<div in:classes={fadeIn} out:classes={fadeOut} class="w-full xl:w-1/2">
+	<form action="?/incoming" method="POST" class="flex flex-col gap-2">
 		<Text id="id" name="id" hidden bind:value={selectedData.id} disabled />
 		<Text id="esn" name="esn" label="ESN" bind:value={inputCheck} disabled />
+		<Text id="status" name="status" label="Status" value="INCOMING" hidden />
 		<Date id="date_in" name="date_in" label="Incoming Date" bind:value={$form.date_in} />
-		<Date id="date_out" name="date_out" label="Outgoing Date" bind:value={$form.date_out} />
-		<Switch id="isInShop" name="isInShop" label="Is Engine In Shop" bind:value={$form.isInShop} />
 		<Btn type="submit" title="Register Engine" color="success" right />
 	</form>
 </div>

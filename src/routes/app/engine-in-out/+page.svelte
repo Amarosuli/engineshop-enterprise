@@ -6,12 +6,8 @@
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import { page } from '$app/stores';
 
-	import * as Modal from '$lib/components/commons/Modal';
-	import * as List from '$lib/components/commons/List';
-	import * as Form from '$lib/components/commons/Form';
-
 	import { _row, modal$ } from '$lib/utils/Stores';
-	import { Search, Menu, Select, Link, Btn, Table, Text, Date, Switch, TextArea } from '$lib/components';
+	import { Search, Menu, Select, Modal, List, Form, Link, Btn, Table, Text, Date, Switch, TextArea } from '$lib/components';
 
 	import OutgoingForm from './OutgoingForm.svelte';
 	import IncomingForm from './IncomingForm.svelte';
@@ -37,7 +33,7 @@
 	 * destructure of data from page.server.js
 	 * make using of specific data more simpler for Table Components props and other needs
 	 */
-	const { engineList, engineAvailability } = data;
+	const { engineHistory, engineList, engineAvailability } = data;
 
 	/**
 	 * destructure of modal costum store
@@ -199,45 +195,49 @@
 <div class="absolute inset-0 flex">
 	<div class="basis-1/4 hidden md:block">
 		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
-			<h1 class="text-xl text-slate-700 font-extrabold">Recent Data</h1>
-			<div>
-				{#each engineAvailability as history}
-					<p class="text-slate-600">ESN {history.esn} | {history.isInShop ? 'Incoming' : 'Outgoing'} | {history.isInShop ? history.date_in : history.date_out}</p>
-				{/each}
-			</div>
+			<h1 class="text-lg text-center text-slate-700 font-extrabold mt-2 mb-4">Recent Data</h1>
+			{#each engineHistory as history}
+				<div class="flex rounded text-xs justify-between items-center w-full gap-8 py-2 px-4 bg-white mb-2">
+					<span class="text-slate-600 flex-1">ESN {history.esn}</span>
+					<span class="text-slate-600 font-semibold">{history.status}</span>
+					<span class="text-slate-600">{history.date_performed.split(' ')[0]}</span>
+				</div>
+			{/each}
 		</div>
 	</div>
 	<div class="basis-full flex flex-col flex-nowrap overflow-auto">
-		<div class="h-max pt-4 pb-12 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between overflow-x-auto">
+		<div class="h-max pt-4 pb-4 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between items-start overflow-x-auto">
 			<div class="w-max min-w-lg">
-				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine Incoming & Outgoing</span>
+				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine In & Out</span>
 				<p>Register engine while incoming to shop and release engine while outgoing from shop</p>
 			</div>
 			<div class="flex flex-wrap gap-4 justify-between items-center">
 				<div class="flex flex-col lg:flex-row gap-3">
-					<Btn title="Engine Incoming" color="info" on:click={() => (formDisplay = 'incoming')} on:click={resetVars} />
-					<Btn title="Engine Outgoing" color="info" on:click={() => (formDisplay = 'outgoing')} on:click={resetVars} />
+					<Btn title="Register" color={formDisplay === 'incoming' ? 'info' : 'base'} on:click={() => (formDisplay = 'incoming')} on:click={resetVars} />
+					<Btn title="Release" color={formDisplay === 'outgoing' ? 'danger' : 'base'} on:click={() => (formDisplay = 'outgoing')} on:click={resetVars} />
 				</div>
 			</div>
 		</div>
 		<div class="relative overflow-y-auto">
-			<div class="w-full h-max bg-slate-200 mt-4 px-6 pt-4 pb-6">
-				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine <span class="text-orange-600 underline capitalize">{formDisplay}</span> Form</span>
-				<form action="" class="flex justify-center items-center gap-3 w-fit mt-4">
-					<Search id="check" name="check" label="Check ESN" error={inputCheckError} bind:value={inputCheck} required on:Enter={handleCheck} />
-					<!-- <Text id="check" name="check" label="Check ESN" bind:value={inputCheck} error={inputCheckError} required />
-					<Btn title="Check" type="submit" color="warning" on:click={handleCheck} left /> -->
-				</form>
-				{#if formDisplay === 'incoming'}
-					{#if isEngineExist}
-						<IncomingForm {selectedData} {inputCheck} {form} />
-					{/if}
-				{:else if formDisplay === 'outgoing'}
-					{#if isEngineExist}
-						<OutgoingForm {selectedData} {inputCheck} />
-					{/if}
-				{/if}
+			<div class="w-full h-max px-6 pt-4 pb-6 transition-colors ease-out" class:bg-sky-200={formDisplay === 'incoming'} class:bg-orange-200={formDisplay === 'outgoing'}>
+				<span class="text-xl font-extrabold tracking-wide text-slate-600"
+					><span class="text-xl uppercase"
+						>{formDisplay}
+						<form action="" class="flex justify-center text-sm normal-case font-normal items-center gap-3 w-fit">
+							<Search id="check" name="check" error={inputCheckError} bind:value={inputCheck} required on:Enter={handleCheck} />
+							<span class=" font-semibold">Check ESN</span>
+						</form>
+					</span></span>
 			</div>
 		</div>
+		{#if isEngineExist}
+			<div class="bg-slate-50 p-4">
+				{#if formDisplay === 'incoming'}
+					<IncomingForm {selectedData} {inputCheck} {form} />
+				{:else if formDisplay === 'outgoing'}
+					<OutgoingForm {selectedData} {inputCheck} />
+				{/if}
+			</div>
+		{/if}
 	</div>
 </div>

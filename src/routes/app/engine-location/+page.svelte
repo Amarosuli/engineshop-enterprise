@@ -225,8 +225,8 @@
 {/if}
 
 <!-- Set of actions -->
-<div class="absolute z-40 -right-0 bottom-1/2 transition-all w-8 hover:w-32 bg-sky-400 py overflow-hidden rounded-l-lg shadow-lg">
-	<div class="flex flex-col px-3 py-4 space-y-4 text-xxs">
+<div class="absolute z-40 w-32 bottom-10 xl:-right-0 xl:bottom-1/2 transition-all xl:w-8 xl:hover:w-32 bg-sky-400 py overflow-hidden rounded-l-lg shadow-lg">
+	<div class="flex flex-col px-3 py-4 gap-2 mb-0 text-xxs">
 		<button on:click={() => (toggleArea = !toggleArea)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{toggleArea ? 'Show' : 'Hide'} Area</button>
 		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
 		<button on:click={() => (isNeoActive = !isNeoActive)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
@@ -234,7 +234,7 @@
 	</div>
 </div>
 
-<div class="absolute space-y-2 z-40 right-4 bottom-4 bg-slate-700 opacity-30 hover:opacity-80 transition-opacity ease-out select-none rounded hover:shadow-lg px-4 py-3">
+<div class="hidden xl:block absolute space-y-2 z-40 right-4 bottom-4 bg-slate-700 opacity-30 hover:opacity-80 transition-opacity ease-out select-none rounded hover:shadow-lg px-4 py-3">
 	<p class="text-xs text-white font-semibold">Scroll to zoom</p>
 	<p class="text-xs text-white font-semibold">Click + Drag to move Map</p>
 	<p class="text-xs text-white font-semibold">Shift + Drag to move Engine</p>
