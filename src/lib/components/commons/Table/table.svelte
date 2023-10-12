@@ -160,7 +160,7 @@
 	</div>
 
 	<div class="manage-r-action items-end relative gap-3 flex-row xl:flex-col">
-		<div class="btn-group">
+		<div class="btn-group horizontal">
 			{#if showCreateButton}
 				<Button.Event title="Create" classes="btn btn_info" on:Event={() => modal$.show('create', null)}><i class="ri-add-circle-line ri-1x" /></Button.Event>
 			{/if}
@@ -183,7 +183,7 @@
 			</Dropdown.Root>
 			<Button.Event title="Export" classes="btn btn_success" on:Event={handleExport} />
 		</div>
-		<div class="btn-group">
+		<div class="md:!hidden btn-group horizontal w-full justify-center items-center">
 			<slot name="action" />
 		</div>
 	</div>

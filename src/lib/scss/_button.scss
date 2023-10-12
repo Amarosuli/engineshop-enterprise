@@ -4,7 +4,13 @@
 }
 
 .btn-group {
-	@apply flex flex-row gap-3;
+	@apply flex gap-3;
+	&.vertical {
+		@apply flex-col;
+	}
+	&.horizontal {
+		@apply flex-row;
+	}
 }
 
 .btn {

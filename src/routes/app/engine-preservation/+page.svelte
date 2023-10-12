@@ -289,10 +289,10 @@
 		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} showRowSelector={false}>
 			<span slot="title" class="title">Engine Preservation</span>
 			<span slot="description" class="text-xs" />
-			<div slot="action" class="gap-3 xl:hidden flex">
+			<svelte:fragment slot="action">
 				<Button.Event title="Overdue" classes="btn btn_info" />
 				<Button.Event title="Nextdue" classes="btn btn_info" />
-			</div>
+			</svelte:fragment>
 		</svelte:component>
 	</div>
 </div>
