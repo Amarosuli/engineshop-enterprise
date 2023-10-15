@@ -28,7 +28,6 @@
 	import ButtonEvent from "$lib/components/commons/Button/ButtonEvent.svelte";
 </script>
 
-<Repeat text="Repeat this" numberOfTimes={3} />
 ```
  -->
 

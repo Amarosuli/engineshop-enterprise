@@ -21,7 +21,7 @@
 	{/if}
 </button>
 
-<style>
+<style lang="postcss">
 	.collapsible_trigger {
 		@apply flex h-14 w-full select-none items-center justify-between border-none bg-inherit bg-slate-200 px-5 py-2 align-middle text-sm;
 	}

@@ -34,7 +34,7 @@
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
 	div {
 		@apply flex w-full flex-col space-y-1;
 	}

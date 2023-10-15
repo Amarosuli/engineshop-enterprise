@@ -45,7 +45,7 @@
 	<img src="https://c.tenor.com/On7kvXhzml4AAAAi/loading-gif.gif" alt="loading.." class={`${className}`} />
 {/if}
 
-<style>
+<style lang="postcss">
 	.imgIcon {
 		@apply h-10 w-10 border-2 border-slate-700;
 	}

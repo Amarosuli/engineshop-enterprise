@@ -2,7 +2,7 @@
 	<slot />
 </div>
 
-<style>
+<style lang="postcss">
 	.collapsible_content {
 		@apply h-max w-full p-4 text-sm;
 	}

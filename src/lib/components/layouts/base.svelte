@@ -2,7 +2,7 @@
 	<slot />
 </div>
 
-<style>
+<style lang="postcss">
 	div {
 		height: 100lvh;
 		width: 100lvw;

@@ -2,7 +2,7 @@
 	<slot />
 </div>
 
-<style>
+<style lang="postcss">
 	div {
 		@apply relative h-full w-full;
 	}

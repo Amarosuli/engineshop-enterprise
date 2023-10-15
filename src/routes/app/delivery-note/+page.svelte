@@ -36,51 +36,42 @@
 </svelte:head>
 
 <div class="absolute inset-0 flex">
-	<div class="w-full bg-white h-full flex flex-col">
+	<div class="w-full h-full flex flex-col">
 		<div class="h-20 p-4 flex justify-between items-center">
 			<p class="text-xl text-slate-700 font-extrabold">Create Delivery Note</p>
 			<!-- <div>actions, all button, etc</div> -->
 			<Button.Event title="{isHistoryShow ? 'Hide' : 'Show'} History" on:Event={toggleHistory} />
 		</div>
-		<Form.Root let:id id="create" method="POST" action="?/create" {enhance}>
-			<div class="w-full h-full flex">
-				<!-- left, all basic input -->
-				<div class="w-1/2 py-2 px-2 bg-slate-100">
-					<Form.Item>
-						<Text id="number" name="number" label="Delivery Note Number" value={deliveryNoteNumber} disabled />
-						<div class="w-full flex flex-row row-spa space-x-4">
-							<div class="w-full space-y-2">
-								<Date id="shipment_date" name="shipment_date" label="Shipment Date   " />
-								<Text id="shipperName" name="shipperName" label="Shipper Name" />
-								<Text id="shipperId" name="shipperId" label="Shipper ID" />
-								<Text id="shipperUnit" name="shipperUnit" label="Shipper Unit" />
-								<File accept="*" label="shipperSign" />
-							</div>
-							<div class="w-full space-y-2">
-								<Select id="template_id" name="template_id" label="Template" disabled />
-								<Text id="recipientName" name="recipientName" label="Recipient Name" />
-								<Text id="recipientId" name="recipientId" label="Recipient ID" />
-								<Text id="recipientUnit" name="recipientUnit" label="Recipient Unit" />
-								<File accept="*" label="recipientSign" />
-							</div>
-						</div>
-					</Form.Item>
-				</div>
-				<div class="w-full py-2 px-4 bg-zinc-300">
-					<!-- right, all data input -->
-					<!-- <div class="w-full flex space-x-5 items-end justify-center">
-						<span class="py-2 px-4 rounded-full bg-white">1</span>
-						<Date id="date" name="date" label="Date" />
-						<Text id="quantity" name="quantity" label="Quantity" />
-						<Text id="description" name="description" label="Description" />
-						<Text id="remark" name="remark" label="Remark" />
-					</div> -->
-					<!-- date, qty, description, remark -->
-					<TableInput />
-				</div>
-			</div>
-			<Form.Submit title="Create" formId={id} />
-		</Form.Root>
+      <div class="h-full flex">
+         <div class="w-1/2 h-full flex bg-slate-400 items-start">
+            <!-- left, all basic input -->
+         <Form.Root let:id id="create" method="POST" action="?/create" {enhance}>
+                  <Form.Item>
+                     <Text id="number" name="number" label="Delivery Note Number" value={deliveryNoteNumber} disabled />
+                     <div class="w-full flex flex-row row-spa space-x-4">
+                        <div class="w-full space-y-2">
+                           <Date id="shipment_date" name="shipment_date" label="Shipment Date   " />
+                           <Text id="shipperName" name="shipperName" label="Shipper Name" />
+                           <Text id="shipperId" name="shipperId" label="Shipper ID" />
+                           <Text id="shipperUnit" name="shipperUnit" label="Shipper Unit" />
+                           <File accept="*" label="shipperSign" />
+                        </div>
+                        <div class="w-full space-y-2">
+                           <Select id="template_id" name="template_id" label="Template" disabled />
+                           <Text id="recipientName" name="recipientName" label="Recipient Name" />
+                           <Text id="recipientId" name="recipientId" label="Recipient ID" />
+                           <Text id="recipientUnit" name="recipientUnit" label="Recipient Unit" />
+                           <File accept="*" label="recipientSign" />
+                        </div>
+                     </div>
+                  </Form.Item>
+                  <Form.Submit title="Create" formId={id} />
+               </Form.Root>
+               </div>
+         <div class="w-full py-2 px-4 bg-zinc-300">
+            <TableInput />
+         </div>
+      </div>
 	</div>
 	{#if isHistoryShow}
 		<div transition:slide={{ axis: 'x' }} class="w-1/3 bg-amber-300 h-full">

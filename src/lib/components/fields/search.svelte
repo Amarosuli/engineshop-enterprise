@@ -39,7 +39,7 @@
 	<label for={id}>
 		<span>{label}</span>
 	</label>
-	<div class="group marker:relative justify-center">
+	<div class="group justify-center marker:relative">
 		<i class="ri-search-2-line ri-xl group:focus:text-sky-600 absolute ml-2 mt-1 text-sky-600" />
 		<input type="text peer" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value on:keydown={onEnter} />
 	</div>
@@ -48,7 +48,7 @@
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
 	div {
 		@apply flex w-full flex-col space-y-1;
 	}

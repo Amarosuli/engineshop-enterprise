@@ -28,14 +28,14 @@
 </script>
 
 {#if loaded}
-	<img {src} {alt}  class={`${className}`} />
+	<img {src} {alt} class={`${className}`} />
 {:else if failed}
 	<img src="https://icon-library.com/images/not-found-icon/not-found-icon-20.jpg" alt="Not Found" class={`${className}`} />
 {:else if loading}
 	<img src="https://c.tenor.com/On7kvXhzml4AAAAi/loading-gif.gif" alt="loading.." {crossorigin} class={`${className}`} />
 {/if}
 
-<style>
+<style lang="postcss">
 	.imgIcon {
 		@apply h-10 w-10 border-2 border-slate-700;
 	}

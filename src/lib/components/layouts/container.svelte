@@ -3,7 +3,7 @@
 	<slot />
 </div>
 
-<style>
+<style lang="postcss">
 	.main-bg {
 		@apply absolute flex h-full w-full flex-shrink-0 flex-grow-0 flex-col bg-[url('/bg-dashboard.jpg')] bg-cover bg-no-repeat 2xl:h-[95vh] 2xl:w-[95vw];
 	}

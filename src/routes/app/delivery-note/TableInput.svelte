@@ -1,12 +1,14 @@
 <script>
-   import { createRender } from 'svelte-headless-table';
-
-   import EditableCell from '$lib/components/commons/Table/EditableCell.svelte'
-	import { SuperTable } from '$lib/components/commons/Table/tableClass.js';
 	import { writable } from 'svelte/store';
-	import { Render, Subscribe } from 'svelte-headless-table';
+
+	import { SuperTable } from '$lib/components/commons/Table/tableClass.js';
+   import EditableCell from '$lib/components/commons/Table/EditableCell.svelte'
+
+	import { Render, Subscribe, createRender } from 'svelte-headless-table';
    import {Button} from '$lib/components'
   
+   const limitRow = 8
+
    let templateData = {
 			quantity: '',
 			description: '',
@@ -21,6 +23,7 @@
 
    function addRow() {
       let newId = $data$.length
+      if (newId === 8) return
       let lastValue = $data$
       bucketData = [...lastValue, {id: newId, ...templateData}]
    }
@@ -59,7 +62,7 @@
 	];
 	const table = new SuperTable(data$, dataCol, { rowSelector: false, sort: false });
 	let { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B, pluginStates: Ps } = table.init;
-   let { exportedData } = Ps.export;
+   // let { exportedData } = Ps.export;
 </script>
 
 <table {...$T}>
@@ -96,4 +99,4 @@
 		{/each}
 	</tbody>
 </table>
-<Button.Event title='Add Row' on:Event={addRow}/>
+<Button.Event title='Add Row' hidden={$data$.length === limitRow ? true : false} on:Event={addRow}/>

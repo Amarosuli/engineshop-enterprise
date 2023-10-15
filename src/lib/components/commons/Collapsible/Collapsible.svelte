@@ -24,7 +24,7 @@
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
 	.collapsible_root {
 		@apply mb-2 h-fit w-full;
 	}
