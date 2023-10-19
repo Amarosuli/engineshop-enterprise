@@ -31,7 +31,7 @@
 	</div>
 </div>
 
-<style>
+<style lang="postcss">
 	.login_root {
 		@apply absolute inset-0 mx-auto flex w-full flex-col items-center justify-center xl:w-1/2;
 	}

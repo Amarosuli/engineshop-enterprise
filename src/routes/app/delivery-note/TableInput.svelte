@@ -2,67 +2,69 @@
 	import { writable } from 'svelte/store';
 
 	import { SuperTable } from '$lib/components/commons/Table/tableClass.js';
-   import EditableCell from '$lib/components/commons/Table/EditableCell.svelte'
+	import EditableCell from '$lib/components/commons/Table/EditableCell.svelte';
 
 	import { Render, Subscribe, createRender } from 'svelte-headless-table';
-   import {Button} from '$lib/components'
-  
-   const limitRow = 8
+	import { Button } from '$lib/components';
 
-   let templateData = {
-			quantity: '',
-			description: '',
-			remark: ''
-		}
+	export let schema = [];
+	const limitRow = 8;
 
-   let bucketData = [{id: 0, ...templateData}]
-   
-   let data$ = new writable([])
+	let templateData = {
+		quantity: '',
+		description: '',
+		remark: ''
+	};
 
-   $: $data$ = bucketData
+	let bucketData = [{ id: 0, ...templateData }];
 
-   function addRow() {
-      let newId = $data$.length
-      if (newId === 8) return
-      let lastValue = $data$
-      bucketData = [...lastValue, {id: newId, ...templateData}]
-   }
+	let data$ = new writable([]);
 
-   let dataCol = [
+	$: $data$ = bucketData;
+
+	function addRow() {
+		let newId = $data$.length;
+		if (newId === 8) return;
+		let lastValue = $data$;
+		bucketData = [...lastValue, { id: newId, ...templateData }];
+	}
+
+	let dataCol = [
 		{
 			header: 'Quantity',
 			accessor: 'quantity',
-         cell:  ({row,column, value}) => {
-            let name = column.id
-            const {data} = row.state
-           let id = row.original.id
-               return createRender(EditableCell, {id, name, value, data})
-            }
+			cell: ({ row, column, value }) => {
+				let name = column.id;
+				const { data } = row.state;
+				let id = row.original.id;
+				return createRender(EditableCell, { id, name, value, data });
+			}
 		},
 		{
 			header: 'Description',
 			accessor: 'description',
-         cell:  ({row,column, value}) => {
-            let name = column.id
-              const {data} = row.state
-           let id = row.original.id
-               return createRender(EditableCell, {id, name, value, data})
-            }
+			cell: ({ row, column, value }) => {
+				let name = column.id;
+				const { data } = row.state;
+				let id = row.original.id;
+				return createRender(EditableCell, { id, name, value, data });
+			}
 		},
 		{
 			header: 'Remark',
 			accessor: 'remark',
-         cell:  ({row,column, value}) => {
-            let name = column.id
-              const {data} = row.state
-           let id = row.original.id
-               return createRender(EditableCell, {id, name, value, data})
-            }
+			cell: ({ row, column, value }) => {
+				let name = column.id;
+				const { data } = row.state;
+				let id = row.original.id;
+				return createRender(EditableCell, { id, name, value, data });
+			}
 		}
 	];
 	const table = new SuperTable(data$, dataCol, { rowSelector: false, sort: false });
 	let { headerRows: Hr, rows: Br, tableAttrs: T, tableBodyAttrs: B, pluginStates: Ps } = table.init;
-   // let { exportedData } = Ps.export;
+	let { exportedData } = Ps.export;
+	$: schema = $data$;
 </script>
 
 <table {...$T}>
@@ -99,4 +101,4 @@
 		{/each}
 	</tbody>
 </table>
-<Button.Event title='Add Row' hidden={$data$.length === limitRow ? true : false} on:Event={addRow}/>
+<Button.Event title="Add Row" hidden={$data$.length === limitRow ? true : false} on:Event={addRow} />

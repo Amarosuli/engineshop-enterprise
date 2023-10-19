@@ -144,7 +144,7 @@ export class CommonHelpers {
       schema: z.string(),
    })
 
-   static createDeliveryNote = z.object({
+   static createSPSchema = z.object({
       template_id: z.string().min(1, { message: 'Template Name cannot be empty' }),
       shipment_date: z.date().default(new Date),
       shipper_name: z.string().min(1, { message: 'Template Name cannot be empty' }),

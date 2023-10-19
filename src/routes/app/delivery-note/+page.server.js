@@ -8,15 +8,14 @@ import { CommonHelpers } from '$lib/utils/CommonHelpers';
 export const load = async ({ locals, url }) => {
 
    return {
-      // pdfTemplates: await CommonHelpers.findByFilter(locals, 'pdf_templates', `id="${id}"`),
-      form: await superValidate(CommonHelpers.createPdfTemplateSchema)
+      form: await superValidate(CommonHelpers.createSPSchema)
    };
 };
 
 /** @type {import('./$types').Actions} */
 export const actions = {
    createTemplate: async ({ request, locals }) => {
-      const form = await superValidate(request, CommonHelpers.createPdfTemplateSchema)
+      const form = await superValidate(request, CommonHelpers.createSPSchema)
 
       if (!form.valid) {
          console.log('NOT VALID: ', form);
