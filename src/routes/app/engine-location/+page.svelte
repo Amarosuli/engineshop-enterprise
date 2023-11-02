@@ -61,32 +61,42 @@
 		if (val === 'off') isNeoActive = true;
 	}
 
+	let lastUpdateTime = 0;
+
 	async function updateData(data) {
+		// manage Data
 		const formData = new FormData();
 		formData.append('id', data.id);
 		formData.append('x', data.position.x);
 		formData.append('y', data.position.y);
 		formData.append('location', data.location);
 
-		const res = await fetch('/app/engine-location?/update', {
+		const res = await fetch('/api/engine-location', {
 			method: 'POST',
 			body: formData
+			// mode: 'cors'
 		});
+
 		const json = await res.json();
 
 		neoSwitcher('', 'off');
 	}
 
+	let tileBeingUsed = false;
+	$: tileBeingUsed === true ? console.log('disable user interaction') : console.log('enable user interaction');
+	function onDragStart(e) {
+		userSelect = true;
+		let currentEl = e.currentNode;
+		setUsed(currentEl.id, true);
+	}
+
+	let isRunning = false;
 	function onDrag(e) {
 		let currentEl = e.currentNode;
 		currentEl.classList.add('!bg-red-400');
-	}
 
-	function onDragEnd(e) {
 		let lastPosition = { x: e.offsetX, y: e.offsetY };
-		let currentEl = e.currentNode;
-
-		currentEl.classList.remove('!bg-red-400');
+		setUsed(currentEl.id, false);
 
 		// Check Collision - GSAP is perfect but just use it for a while
 		let inArea = [];
@@ -105,13 +115,42 @@
 			location: inArea.toString()
 		};
 
-		updateData(engineLocationData);
+		// #2
+		if (!isRunning) {
+			isRunning = true;
+			updateData(engineLocationData);
+			setTimeout(() => {
+				isRunning = false;
+			}, 10);
+		}
 
 		inArea = [];
 	}
 
+	async function setUsed(id, isBeingUsed) {
+		const formData = new FormData();
+		formData.append('id', id);
+		formData.append('isBeingUsed', isBeingUsed);
+
+		const res = await fetch('/api/engine-location/setUse', {
+			method: 'POST',
+			body: formData
+		});
+
+		const json = await res.json();
+		// console.log(await json);
+	}
+
+	function onDragEnd(e) {
+		let currentEl = e.currentNode;
+		currentEl.classList.remove('!bg-red-400');
+		userSelect = false;
+	}
+
+	let userSelect = false;
 	function updatePosition(elementId, newPosition) {
 		/**
+		 * DONE - apply in subscription functions
 		 * Try to check element status
 		 * if it 'user-select' (which mean it was user actions) just return
 		 * if it 'non user-select' (which mean it was on client and receive the realtime event) continue to update position
@@ -161,7 +200,16 @@
 		engineElement.forEach((eng) => {
 			let engPosition = { x: eng.dataset.x, y: eng.dataset.y };
 			// onDrag: onDrag to perform update at the drag end, onDrag: onDragEnd to perform update at the dragging
-			engineInstance.push({ id: eng.id, instance: new Draggable(eng, { position: engPosition, bounds: 'parent', onDragEnd: onDragEnd, onDrag: onDragEnd }) });
+			engineInstance.push({
+				id: eng.id,
+				instance: new Draggable(eng, {
+					position: engPosition,
+					bounds: 'parent',
+					onDragStart: onDragStart,
+					onDragEnd: onDragEnd,
+					onDrag: onDrag
+				})
+			});
 		});
 
 		pz = Panzoom(baseElement, {
@@ -194,7 +242,9 @@
 					updateOnCreate(e);
 					break;
 				case 'update':
-					let { id, position } = record;
+					if (userSelect) return;
+					let { id, position, isBeingUsed } = record;
+					tileBeingUsed = isBeingUsed;
 					updatePosition(id, position);
 					break;
 				case 'delete':
@@ -211,8 +261,8 @@
 
 <svelte:document on:keydown|capture={(e) => neoSwitcher(e, 'on')} on:keyup={(e) => neoSwitcher(e, 'off')} on:pointermove={pz.handleMove} on:pointerup={pz.handleUp} />
 {#if loadingMap}
-	<div transition:fade={{ duration: 200 }} class="inset-0 justify-center backdrop-blur-sm bg-white/70 items-center flex gap-4 absolute z-[100] w-full h-full text-2xl font-bold">
-		<svg role="status" class="inline -mt-px animate-spin dark:text-gray-600 fill-blue-600 w-10 text-slate-100" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<div transition:fade={{ duration: 200 }} class="absolute inset-0 z-[100] flex h-full w-full items-center justify-center gap-4 bg-white/70 text-2xl font-bold backdrop-blur-sm">
+		<svg role="status" class="-mt-px inline w-10 animate-spin fill-blue-600 text-slate-100 dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path
 				d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
 				fill="currentColor" />
@@ -225,20 +275,20 @@
 {/if}
 
 <!-- Set of actions -->
-<div class="absolute z-40 w-32 bottom-10 xl:-right-0 xl:bottom-1/2 transition-all xl:w-8 xl:hover:w-32 bg-sky-400 py overflow-hidden rounded-l-lg shadow-lg">
-	<div class="flex flex-col px-3 py-4 gap-2 mb-0 text-xxs">
-		<button on:click={() => (toggleArea = !toggleArea)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{toggleArea ? 'Show' : 'Hide'} Area</button>
-		<button on:click={() => (togglePillar = !togglePillar)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-orange-400 bg-orange-300">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
-		<button on:click={() => (isNeoActive = !isNeoActive)} class=" px-4 py-2 w-24 rounded-md shadow-md hover:bg-red-400 bg-red-300">Move {isNeoActive ? 'Off' : 'On'} </button>
-		<button on:click={pz.reset()} class="px-4 py-2 w-24 rounded-md shadow-md hover:bg-sky-400 bg-sky-300">Reset View</button>
+<div class="py absolute bottom-10 z-40 w-32 overflow-hidden rounded-l-lg bg-sky-400 shadow-lg transition-all xl:-right-0 xl:bottom-1/2 xl:w-8 xl:hover:w-32">
+	<div class="mb-0 flex flex-col gap-2 px-3 py-4 text-xxs">
+		<button on:click={() => (toggleArea = !toggleArea)} class=" w-24 rounded-md bg-orange-300 px-4 py-2 shadow-md hover:bg-orange-400">{toggleArea ? 'Show' : 'Hide'} Area</button>
+		<button on:click={() => (togglePillar = !togglePillar)} class=" w-24 rounded-md bg-orange-300 px-4 py-2 shadow-md hover:bg-orange-400">{togglePillar ? 'Show' : 'Hide'} Pillar</button>
+		<button on:click={() => (isNeoActive = !isNeoActive)} class=" w-24 rounded-md bg-red-300 px-4 py-2 shadow-md hover:bg-red-400">Move {isNeoActive ? 'Off' : 'On'} </button>
+		<button on:click={pz.reset()} class="w-24 rounded-md bg-sky-300 px-4 py-2 shadow-md hover:bg-sky-400">Reset View</button>
 	</div>
 </div>
 
-<div class="hidden xl:block absolute space-y-2 z-40 right-4 bottom-4 bg-slate-700 opacity-30 hover:opacity-80 transition-opacity ease-out select-none rounded hover:shadow-lg px-4 py-3">
-	<p class="text-xs text-white font-semibold">Scroll to zoom</p>
-	<p class="text-xs text-white font-semibold">Click + Drag to move Map</p>
-	<p class="text-xs text-white font-semibold">Shift + Drag to move Engine</p>
-	<p class="text-xs text-white font-semibold">Alt + Click to zoom to target</p>
+<div class="absolute bottom-4 right-4 z-40 hidden select-none space-y-2 rounded bg-slate-700 px-4 py-3 opacity-30 transition-opacity ease-out hover:opacity-80 hover:shadow-lg xl:block">
+	<p class="text-xs font-semibold text-white">Scroll to zoom</p>
+	<p class="text-xs font-semibold text-white">Click + Drag to move Map</p>
+	<p class="text-xs font-semibold text-white">Shift + Drag to move Engine</p>
+	<p class="text-xs font-semibold text-white">Alt + Click to zoom to target</p>
 </div>
 
 <!-- Map -->

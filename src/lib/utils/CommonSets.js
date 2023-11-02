@@ -54,6 +54,14 @@ export class CommonSets {
       }
    };
 
+   static version = {
+      status: {
+         DEVELOPMENT: 'DEVELOPMENT',
+         PRODUCTION: 'PRODUCTION'
+      },
+      number: ''
+   }
+
    /**
     * This is contain all menu that appear at homepage
     * Divide as 2 category Apps and Manage.
@@ -65,60 +73,64 @@ export class CommonSets {
          {
             title: 'Preservation Control',
             href: '/app/engine-preservation',
-            icon: 'ri-timer-line'
+            icon: 'ri-timer-line',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'Engine Location',
             href: '/app/engine-location',
-            icon: 'ri-map-2-line'
+            icon: 'ri-map-2-line',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'Engine In Engine Out',
             href: '/app/engine-in-out',
-            icon: 'ri-arrow-up-down-fill'
+            icon: 'ri-arrow-up-down-fill',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'Surat Pengiriman',
             href: '/app/delivery-note',
-            icon: 'ri-mail-send-fill'
+            icon: 'ri-mail-send-fill',
+            versionStatus: this.version.status.DEVELOPMENT
          }
       ],
       manages: [
          {
             title: 'Engine List',
             href: '/manage/engine-list',
-            icon: 'https://ui-avatars.com/api/?name=Engine+list&background=random&size=30&bold=true&uppercase=false'
-            // icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Engine+list&background=random&size=30&bold=true&uppercase=false',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'Engine Model',
             href: '/manage/engine-model',
-            icon: 'https://ui-avatars.com/api/?name=Engine+model&background=random&size=30&bold=true&uppercase=false'
-            // icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Engine+model&background=random&size=30&bold=true&uppercase=false',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'Engine Family',
             href: '/manage/engine-family',
-            icon: 'https://ui-avatars.com/api/?name=Engine+family&background=random&size=30&bold=true&uppercase=false'
-            // icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Engine+family&background=random&size=30&bold=true&uppercase=false',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'Customer',
             href: '/manage/customer',
-            icon: 'https://ui-avatars.com/api/?name=Customer&background=random&size=30&bold=true&uppercase=false'
-            // icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Customer&background=random&size=30&bold=true&uppercase=false',
+            versionStatus: this.version.status.PRODUCTION
          },
          {
             title: 'PDF Template',
             href: '/manage/pdf-template',
-            icon: 'https://ui-avatars.com/api/?name=PDF&background=random&size=30&bold=true&uppercase=false'
-            // icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=PDF&background=random&size=30&bold=true&uppercase=false',
+            versionStatus: this.version.status.DEVELOPMENT
          },
          {
             title: 'Test',
             href: '/test',
-            icon: 'https://ui-avatars.com/api/?name=Test&background=random&size=30&bold=true&uppercase=false'
-            // icon: 'ri:article-line'
+            icon: 'https://ui-avatars.com/api/?name=Test&background=random&size=30&bold=true&uppercase=false',
+            versionStatus: this.version.status.DEVELOPMENT
          }
       ]
    };

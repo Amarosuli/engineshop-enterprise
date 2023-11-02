@@ -4,6 +4,7 @@ const config = {
 
    theme: {
       fontSize: {
+         xxxs: ['8px', '10px'],
          xxs: ['10px', '14px'],
          xs: ['12px', '16px'],
          sm: ['14px', '20px'],
