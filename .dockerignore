@@ -1,6 +1,7 @@
 **/node_modules
 ./Dockerfile
 .gitignore
+**/backend
 .prettierignore
 README.md
 component_structure.txt
