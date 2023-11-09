@@ -1,6 +1,9 @@
 <script>
 	let uhu = 'uhu';
 	import { File } from '$lib/components';
+
+	export let data;
+	$: data;
 </script>
 
 <!-- 

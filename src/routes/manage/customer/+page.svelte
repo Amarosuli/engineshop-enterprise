@@ -6,33 +6,34 @@
 	import { CommonHelpers } from '$lib/utils/CommonHelpers';
 	import { File, Table, Text, Btn, Button, Img, Modal, List, Form, Password } from '$lib/components';
 	import { tableConfig } from './config.js';
+
 	import Board from './board.svelte';
 
 	export let data;
 	let search = '';
 	let dataTable;
 	let loadingRefresh = true;
-	// let { customers } = data; DESCTRUCTURING MAKES INVALIDATEALL NOT WORKING
+
 	$: dataTable = data.customers;
 
-	/**
-	 * destructure of modal costum store
-	 * make using method more simpler
-	 */
-	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
+	const { isConfirm, isUpdate, isCreate, isDetail } = modal$;
 
-	/**
-	 * Superform: applyAction set to false so we can handle onResult.
-	 * onResult void success, reload page using window.location. goto method not work
-	 */
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		taintedMessage: null,
-		onResult: async ({ result }) => {
-			if (result.type === 'success') {
+		resetForm: true,
+		onUpdate: ({ form }) => {
+			if (form.valid) {
 				invalidateAll();
 				modal$.reset();
 				loadingRefresh = true;
+				console.log('show pop up success');
+			}
+		},
+		onResult: ({ result, cancel }) => {
+			if (result.type === 'success' && result.data.form.errors.pocketbaseErrors) {
+				console.log('show pop up failure');
+				cancel(); // prevent onUpdate to run
 			}
 		}
 	});
@@ -79,7 +80,7 @@
 		<Modal.Body>
 			<List.Item>
 				<span>Logo</span>
-				<span class="w-full flex justify-end">
+				<span class="flex w-full justify-end">
 					<Img
 						className="object-scale-down h-10 "
 						src={$isDetail?.data?.logo ? CommonHelpers.getFileUrl($isDetail?.data?.collectionId, $isDetail?.data?.id, $isDetail?.data?.logo) : '/'}
@@ -89,19 +90,19 @@
 			</List.Item>
 			<List.Item>
 				<span>Customer Name</span>
-				<span class="font-bold text-right">{$isDetail.data?.name}</span>
+				<span class="text-right font-bold">{$isDetail.data?.name}</span>
 			</List.Item>
 			<List.Item>
 				<span>Description</span>
-				<span class="font-bold text-right">{$isDetail.data?.description}</span>
+				<span class="text-right font-bold">{$isDetail.data?.description}</span>
 			</List.Item>
 			<List.Item>
 				<span>IATA Code</span>
-				<span class="font-bold text-right">{$isDetail.data?.code_IATA}</span>
+				<span class="text-right font-bold">{$isDetail.data?.code_IATA}</span>
 			</List.Item>
 			<List.Item>
 				<span>ICAO Code</span>
-				<span class="font-bold text-right">{$isDetail.data?.code_ICAO}</span>
+				<span class="text-right font-bold">{$isDetail.data?.code_ICAO}</span>
 			</List.Item>
 		</Modal.Body>
 		<Modal.Footer>
@@ -171,6 +172,7 @@
 {/if}
 
 {#if $isConfirm}
+	{@const username = $form.username = data?.user?.username}
 	<Modal.Root let:id id="confirm" position="mid">
 		<Modal.Header>
 			<Modal.Title title="Are you sure?" />
@@ -179,13 +181,15 @@
 			</Modal.Action>
 		</Modal.Header>
 		<Modal.Body>
-			<Form.Root {id} action="?/confirm" method="POST" {enhance}>
+			<Form.Root {id} action="?/delete" method="POST" {enhance}>
 				<Form.Item>
-					<div class="w-full flex flex-col gap-2 justify-center items-center">
+					<div class="flex w-full flex-col items-center justify-center gap-2">
 						<span class="w-full text-center font-semibold">{data?.user?.username} | {data?.user?.name}</span>
-						<span class="text-center text-xs py-2 px-4 bg-yellow-300 italic rounded-full">Type your password to confirm</span>
+						<span class="rounded-full bg-yellow-300 px-4 py-2 text-center text-xs italic">Type your password to confirm</span>
 					</div>
+					<Text id="username" name="username" label="Employee ID" required={true} placeholder="your employee id" bind:value={$form.username} hidden />
 					<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
+					<Text id="selectedRows" name="selectedRows" label="Selected Rows" required={true} value={$isConfirm.data} hidden />
 				</Form.Item>
 				<Form.Error error={$errors?.pocketbaseErrors} />
 			</Form.Root>

@@ -1,9 +1,19 @@
 import { CommonHelpers } from '$lib/utils/CommonHelpers';
+import { DBService } from '$lib/services';
+
 
 export const handle = async ({ event, resolve }) => {
    event.locals.pb = CommonHelpers.pb;
    event.locals.pb.autoCancellation(false); // globally disable auto cancellation
    event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
+
+   /**
+    * @TODO
+    * I want to register service here by check the event.route
+    * So in each +page.server, i dont have to run serviceRegister
+    * Both in Load function or Action function
+    */
+   event.database = DBService.createClient(event.locals.pb)
 
    try {
       if (event.locals.pb.authStore.isValid) {

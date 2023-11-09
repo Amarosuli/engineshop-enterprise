@@ -1,7 +1,6 @@
 
 /**
  * tableConfig is definition of table column and it accessor
- * 
  */
 export const tableConfig = [
    {

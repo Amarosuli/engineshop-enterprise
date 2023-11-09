@@ -1,45 +1,36 @@
 import { superValidate } from 'sveltekit-superforms/server';
 import { fail, redirect } from '@sveltejs/kit';
 
-import { CommonHelpers } from '$lib/utils/CommonHelpers';
+import { LoginService } from '$lib/services';
+import { LoginSchema } from '$lib/schemas';
 
-export const load = async ({ url, locals }) => {
+export const load = async ({ url, locals, database }) => {
+   database.ServiceRegister(LoginService)
+
    if (locals.pb.authStore.model) {
       let urlFrom = url.searchParams.get('urlFrom') || '/';
       throw redirect(303, urlFrom);
    }
 
-   const form = await superValidate(CommonHelpers.LoginSchema);
-
-   return { form };
+   return { form: await superValidate(LoginSchema) };
 };
 
 export const actions = {
-   default: async ({ request, locals }) => {
-      const form = await superValidate(request, CommonHelpers.LoginSchema);
+   default: async ({ request, database }) => {
+      database.ServiceRegister(LoginService)
 
-      if (!form.valid) {
-         console.log(form);
-         return fail(400, { form });
-      }
+      const form = await superValidate(request, LoginSchema);
+      const { username, password } = form.data;
 
-      /**
-       * Login with helper provide by pocketbase 'authWithPassword'
-       * It need username and password
-       * So username will be the field for employee Id
-       */
+      if (!form.valid) return fail(400, { form })
 
-      try {
-         const { username, password } = form.data;
-         /** @next
-          * check user existence first
-          */
-         await locals.pb.collection('users').authWithPassword(username, password, { expand: 'unit' });
-      } catch (error) {
+      let loginResult = await database.LoginService.login(username, password)
+
+      if (loginResult.message === 'failed') {
          form.errors = {
-            pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
+            pocketbaseErrors: `${loginResult.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
          };
-         return fail(error.status, { form });
+         return fail(loginResult.status, { form });
       }
 
       return { form };

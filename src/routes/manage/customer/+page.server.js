@@ -1,39 +1,33 @@
-import { superValidate } from 'sveltekit-superforms/server';
 import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms/server';
 
-import { _row } from '$lib/utils/Stores';
-import { CommonHelpers } from '$lib/utils/CommonHelpers';
+import { CustomerSchema, LoginSchema } from '$lib/schemas';
+import { CustomerService, UserService } from '$lib/services';
 
+export const load = async ({ database }) => {
+   database.ServiceRegister(CustomerService);
 
-export const load = async ({ locals }) => {
    return {
-      customers: await CommonHelpers.getCustomers(locals),
-      form: await superValidate(CommonHelpers.customerSchema)
+      customers: await database.CustomerService.getAll(),
+      form: await superValidate(CustomerSchema)
    };
 };
 
 export const actions = {
-   create: async ({ request, locals }) => {
-      const formData = await request.formData();
-      const form = await superValidate(formData, CommonHelpers.customerSchema);
+   create: async ({ request, database }) => {
+      database.ServiceRegister(CustomerService);
 
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form });
-      }
+      const formData = await request.formData();
+      const form = await superValidate(formData, CustomerSchema);
+
+      if (!form.valid) return fail(400, { form });
 
       const logo = formData.get('logo');
 
       try {
-         /**
-          * pocketbase use enctype="multipart/form-data" into form
-          * and file from input auto detect only if the data pass into props of API is formData
-          * so superform only work for the validation not for the final data to send to the API
-          * and use the formData() that already grabbed into const formData variable.
-          */
-
          if (logo.size === 0) formData.delete('logo');
-         await CommonHelpers.createData(locals, 'customers', formData);
+         let createResult = await database.CustomerService.create(formData)
+         console.log(`${createResult.id} ${createResult.message} -> CREATED `)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -41,27 +35,24 @@ export const actions = {
          return fail(error.status, { form });
       }
 
+
       return { form };
    },
-   update: async ({ request, locals }) => {
-      const formData = await request.formData();
-      const form = await superValidate(formData, CommonHelpers.customerSchema);
+   update: async ({ request, database }) => {
+      database.ServiceRegister(CustomerService);
 
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form });
-      }
+      const formData = await request.formData();
+      const form = await superValidate(formData, CustomerSchema);
+
+      if (!form.valid) return fail(400, { form })
 
       const id = formData.get('id');
       const logo = formData.get('logo');
 
       try {
-         /**
-          * if no id, return fail
-          * if no image, delete the key (prevent pocketbase remove the curent image in database)
-          */
          if (logo.size === 0) formData.delete('logo');
-         await CommonHelpers.updateData(locals, 'customers', id, formData);
+         let updateResult = await database.CustomerService.update(id, formData)
+         console.log(`${updateResult.id} ${updateResult.message} -> UPDATED `)
       } catch (error) {
          form.errors = {
             pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -71,34 +62,36 @@ export const actions = {
 
       return { form };
    },
-   confirm: async ({ request, locals }) => {
-      console.log('confirm success')
-      console.log('delete process')
-      console.log('delete success')
-   },
-   delete: async ({ request, locals }) => {
-      const form = Object.fromEntries(await request.formData());
-      const keys = Object.keys(form);
-      console.log(keys.length);
+   delete: async ({ request, database }) => {
+      const formData = await request.formData();
+      const form = await superValidate(formData, LoginSchema);
 
-      keys.forEach(async (k, index) => {
-         // NOTE: Postpone, redirect, goto, standard headers are not working to reload page.
+      database.ServiceRegister(CustomerService, UserService);
 
-         let id = form[k];
-         console.log(id);
-         // try {
-         //    let result = await locals.pb.collection('engine_families').delete(id)
-         //    console.log('result-', result, id);
-         // } catch (error) {
-         //    console.log('ERROR : ', error);
-         // }
+      if (!form.valid) return fail(400, { form })
 
-         if (index === keys.length - 1) {
-            // return {
-            //    headers: { Location: '/manage/engine-family' },
-            //    status: 302
-            // }
+      const { username, password } = form.data;
+
+      // Confirmation to delete
+      let confirmResult = await database.UserService.confirm(username, password)
+
+      if (confirmResult.message === 'failed') {
+         form.errors = {
+            pocketbaseErrors: confirmResult.message
          }
-      });
-   }
+         return { form };
+      }
+
+      // Grab data, Keep here to minimize runtime if step above failure
+      const arrayOfId = formData.get('selectedRows').split(",")
+
+      if (arrayOfId.length === 0) return { form };
+
+      arrayOfId.forEach(async (id) => {
+         let deleteResult = await database.CustomerService.delete(id)
+         console.log(`${id} ${deleteResult.message} -> DELETED `)
+      })
+
+      return { form };
+   },
 };
