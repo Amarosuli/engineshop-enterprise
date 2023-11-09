@@ -10,5 +10,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 component_structure.txt
 /src/routes/test
-./Dockerfile
+Dockerfile
 .dockerignore
