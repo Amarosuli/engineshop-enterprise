@@ -7,7 +7,7 @@
 
 	import { slide } from 'svelte/transition';
 	import { invalidateAll } from '$app/navigation';
-	import { File, Form, Button, Text, Date, Select } from '$lib/components';
+	import { File, Form, Button, Text, Date, Select } from '@ui';
 
 	export let data;
 	const { form, errors, enhance } = superForm(data.form, {

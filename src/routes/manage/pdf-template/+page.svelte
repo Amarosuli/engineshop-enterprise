@@ -1,24 +1,23 @@
 <script>
+	import { File, Table, Text, Btn, Button, Link, Img, Modal, List, Form, Password } from '$lib/components';
+	import { invalidateAll } from '$app/navigation';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+	import { createRender } from 'svelte-headless-table';
 	import { superForm } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
-
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { invalidateAll } from '$app/navigation';
-
-	import Preview from './Preview.svelte';
 	import { modal$ } from '$lib/utils/Stores';
-	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { File, Table, Text, Btn, Button, Link, Img, Modal, List, Form, Password } from '$lib/components';
-	import { createRender } from 'svelte-headless-table';
+
+	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import Preview from './Preview.svelte';
 
 	export let data;
+
 	let search = '';
 	let dataTable;
-	let containerAvailable = false;
 	let loadingRefresh = true;
+	let containerAvailable = false;
 	let viewer, domContainer, template;
-	$: dataTable = data.pdfTemplates;
 
 	/**
 	 * destructure of modal costum store
@@ -102,11 +101,13 @@
 			fileReader.readAsDataURL(file);
 		}
 	}
-	$: console.log($modal$);
+
+	$: dataTable = data.pdfTemplates;
+	// $: console.log($modal$);
 </script>
 
 <svelte:head>
-	<title>Manage : Customers</title>
+	<title>Manage : PDF Template</title>
 </svelte:head>
 
 {#if $isDetail}
@@ -122,15 +123,15 @@
 		<Modal.Body>
 			<List.Item>
 				<span>Template Name</span>
-				<span class="font-bold text-right">{$isDetail.data?.name}</span>
+				<span class="text-right font-bold">{$isDetail.data?.name}</span>
 			</List.Item>
 			<List.Item>
 				<span>Template Alias</span>
-				<span class="font-bold text-right">{$isDetail.data?.alias}</span>
+				<span class="text-right font-bold">{$isDetail.data?.alias}</span>
 			</List.Item>
 			<List.Item>
 				<span>Description</span>
-				<span class="font-bold text-right">{$isDetail.data?.description}</span>
+				<span class="text-right font-bold">{$isDetail.data?.description}</span>
 			</List.Item>
 			<List.Item>
 				<span>Base64</span>
@@ -191,7 +192,7 @@
 			</Modal.Action>
 		</Modal.Header>
 		<Modal.Body>
-			<div class="bg-slate-700 m-2">
+			<div class="m-2 bg-slate-700">
 				<p class="text-xxs text-green-300">{$isConfirm?.data}</p>
 			</div>
 		</Modal.Body>

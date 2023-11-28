@@ -1,38 +1,34 @@
 // LAYOUT
-export { default as Base } from './layouts/base.svelte';
-export { default as Header } from './layouts/header.svelte';
-export { default as Layout } from './layouts/layout.svelte';
-export { default as Window } from './layouts/window.svelte';
-export { default as Content } from './layouts/content.svelte';
-export { default as Container } from './layouts/container.svelte';
-export { default as Notification } from './layouts/notification.svelte';
+export { default as Base } from './Layout/Base.svelte';
+export { default as Header } from './Layout/Header.svelte';
+export { default as Layout } from './Layout/Layout.svelte';
+export { default as Window } from './Layout/Window.svelte';
+export { default as Content } from './Layout/Content.svelte';
+export { default as Container } from './Layout/Container.svelte';
+export { default as Notification } from './Layout/Notification.svelte';
 
 // FIELD
-// export { default as Form } from './fields/form.svelte'; @deprecated
-export * as Form from './commons/Form'
-
-export { default as Text } from './fields/text.svelte';
-export { default as File } from './fields/file.svelte';
-export { default as Date } from './fields/date.svelte';
-export { default as Email } from './fields/email.svelte';
-export { default as Number } from './fields/number.svelte';
-export { default as Search } from './fields/search.svelte';
-export { default as Switch } from './fields/switch.svelte';
-export { default as Select } from './fields/select.svelte';
-export { default as Password } from './fields/password.svelte';
-export { default as TextArea } from './fields/textarea.svelte';
+export { default as Password } from './Field/Password.svelte';
+export { default as TextArea } from './Field/Textarea.svelte';
+export { default as Select } from './Field/Select.svelte';
+export { default as Search } from './Field/Search.svelte';
+export { default as Switch } from './Field/Switch.svelte';
+export { default as Number } from './Field/Number.svelte';
+export { default as Email } from './Field/Email.svelte';
+export { default as Date } from './Field/Date.svelte';
+export { default as File } from './Field/File.svelte';
+export { default as Text } from './Field/Text.svelte';
 
 // COMMON
-// export { default as List } from './commons/list.svelte'; @deprecated
-// export { default as Modal } from './commons/modal.svelte'; @deprecated
-export * as List from './commons/List'
-export * as Stat from './commons/Stat';
-export * as Modal from './commons/Modal'
-export * as Button from '$lib/components/commons/Button';
-export * as Dropdown from '$lib/components/commons/DropdownMenu'
-export { default as Img } from './commons/image.svelte';
-export { default as Btn } from './commons/button.svelte';
-export { default as Link } from './commons/link.svelte';
-export { default as Menu } from './commons/menu.svelte';
-export { default as Table } from './commons/Table';
-export { default as Collapsible } from './commons/Collapsible/Collapsible.svelte'
+export * as Form from './Form';
+export * as List from './List';
+export * as Stat from './Stat';
+export * as Modal from './Modal';
+export * as Button from './Button';
+export * as Dropdown from './DropdownMenu';
+export { default as Img } from './image.svelte';
+export { default as Btn } from './button.svelte';
+export { default as Link } from './link.svelte';
+export { default as Menu } from './menu.svelte';
+export { default as Table } from './Table';
+export { default as Collapsible } from './Collapsible/Collapsible.svelte';

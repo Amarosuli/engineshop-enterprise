@@ -1,5 +1,5 @@
 <script>
-	import { Container, Content, Header, Base, Notification } from '$lib/components';
+	import { Container, Content, Header, Base, Notification } from '@ui';
 
 	export let user;
 </script>

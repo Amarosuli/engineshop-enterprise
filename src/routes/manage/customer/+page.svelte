@@ -1,23 +1,16 @@
 <script>
-	import { superForm } from 'sveltekit-superforms/client';
+	import { File, Table, Text, Btn, Button, Img, Modal, List, Stat, Form, Password } from '$lib/components';
+	import { CommonHelpers, modal$ } from '$lib/utils';
 	import { invalidateAll } from '$app/navigation';
-
-	import { modal$ } from '$lib/utils/Stores';
-	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { File, Table, Text, Btn, Button, Img, Modal, List, Form, Password } from '$lib/components';
-	import { tableConfig } from './config.js';
-
-	import Board from './board.svelte';
+	import { superForm } from 'sveltekit-superforms/client';
 
 	export let data;
+
 	let search = '';
 	let dataTable;
-	let loadingRefresh = true;
-
-	$: dataTable = data.customers;
+	let totalCustomer = data.customers.length;
 
 	const { isConfirm, isUpdate, isCreate, isDetail } = modal$;
-
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		taintedMessage: null,
@@ -26,7 +19,6 @@
 			if (form.valid) {
 				invalidateAll();
 				modal$.reset();
-				loadingRefresh = true;
 				console.log('show pop up success');
 			}
 		},
@@ -54,13 +46,9 @@
 		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.resetObject($form);
 	}
 
-	// check if data in _row store exist and id of modal update is exist (modal update open)
-	$: $isUpdate ? setUpdate(1) : '';
-
-	// reset _row store only when modal create open (so we will get the data for page.server)
-	$: $isCreate ? setUpdate(0) : '';
-
-	let totalCustomers = data.customers.length;
+	$: dataTable = data.customers;
+	$: $isUpdate ? setUpdate(1) : ''; // check if data in _row store exist and id of modal update is exist (modal update open)
+	$: $isCreate ? setUpdate(0) : ''; // reset _row store only when modal create open (so we will get the data for page.server)
 </script>
 
 <svelte:head>
@@ -83,7 +71,7 @@
 				<span class="flex w-full justify-end">
 					<Img
 						className="object-scale-down h-10 "
-						src={$isDetail?.data?.logo ? CommonHelpers.getFileUrl($isDetail?.data?.collectionId, $isDetail?.data?.id, $isDetail?.data?.logo) : '/'}
+						src={$isDetail?.data?.logo ? CommonHelpers.getFileUrl($isDetail?.data?.collectionId, $isDetail?.data?.id, $isDetail?.data?.logo) : ''}
 						alt={$isDetail?.data?.logo}
 						crossorigin="anonymous" />
 				</span>
@@ -203,13 +191,17 @@
 
 <div class="manage-container">
 	<div class="manage-l">
-		<Board {totalCustomers} />
+		<Stat.Root>
+			<Stat.Title title="Total Customers" />
+			<Stat.Value value="{totalCustomer} EA" />
+			<Stat.Desc desc="Engine Models are categorize by it's varian." />
+		</Stat.Root>
 	</div>
 	<div class="manage-r relative">
 		<svelte:component
 			this={Table}
 			{dataTable}
-			dataCol={tableConfig}
+			dataCol={CommonHelpers.tableColumn.customer}
 			{search}
 			on:rowClick={handleRowClick}
 			showCreateButton={data.user !== null ? true : false}

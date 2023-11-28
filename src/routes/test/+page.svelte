@@ -1,31 +1,21 @@
 <script>
-	let uhu = 'uhu';
-	import { File } from '$lib/components';
+	class ResponseData {
+		constructor(data, status, message) {
+			this.response = () => {
+				return {
+					status: status,
+					data: data,
+					message: message
+				};
+			};
+			this.send = this.response();
+		}
+	}
 
-	export let data;
-	$: data;
+	let result = new ResponseData({ id: 'asdasd', name: 'ahmad' }, { error: true, message: 'failed' }, 'Actions failed, please retry');
+	console.log(result.send);
 </script>
 
-<!-- 
-   		if (file && file.type === 'application/pdf') {
-			// convert to base64
-			// FileReader function for read the file.
-			let fileReader = new FileReader();
-			let base64;
-			// Onload of file read the file content
-			fileReader.onload = function (fileLoadedEvent) {
-				base64 = fileLoadedEvent.target.result;
-				// Print data in console
-				console.log(base64);
-			};
-			// Convert data to base64
-			fileReader.readAsDataURL(file);
-			return;
-		}
-
- -->
 <svelte:head>
-	<title>PDF ME!!!</title>
+	<title>TEST</title>
 </svelte:head>
-
-<File accept=".pdf" />

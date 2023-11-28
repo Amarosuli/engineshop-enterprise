@@ -1,83 +1,90 @@
+import { EnginePreservationSchema, LoginSchema } from '$lib/schemas';
 import { superValidate } from 'sveltekit-superforms/server';
 import { fail } from '@sveltejs/kit';
 
-import { CommonHelpers } from '$lib/utils/CommonHelpers';
-
-/**
- * Show Engine available only (client side control by table plugin) (for now is filter by server)
- * Engine with isPreservable === False set different background
- * Engine with no data preservation is valued by "No Data"
- */
-export const load = async ({ locals }) => {
-   let preservationHistory = async () => { return await locals.pb.collection('preservation_history').getFullList() }
-   let engineList = async () => {
-      /**
-       * add 'model' and 'customer key to array
-       * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
-       */
-      let raw = await CommonHelpers.getEngineList(locals);
-      let history = await preservationHistory()
-      // let filterAvailability = raw.filter(({ isAvailable }) => isAvailable);
-      let addModelandCustomer = raw.map((value) => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name }));
-      let addPreserveDetail = addModelandCustomer.map((value) => ({ ...value, preserveDetail: history.find(({ engine_id, history_number }) => history_number === 1 && engine_id === value.id) || {} }));
-      return addPreserveDetail;
-   };
-   return {
-      form: await superValidate(CommonHelpers.enginePreservationSchema),
-      engineList: await engineList(),
-      engineModels: await CommonHelpers.getEngineModels(locals),
-      customers: await CommonHelpers.getCustomers(locals),
-      preservationHistory: await preservationHistory()
-   };
+export const load = async ({ database }) => {
+	return {
+		form: await superValidate(EnginePreservationSchema),
+		engineList: await database.PreservationService.getEngineList(),
+		preservationHistory: await database.PreservationService.getHistory()
+	};
 };
 
 export const actions = {
-   create: async ({ request, locals }) => {
-      const formData = await request.formData()
-      const form = await superValidate(formData, CommonHelpers.enginePreservationSchema);
+	create: async ({ request, database }) => {
+		const formData = await request.formData();
+		const form = await superValidate(formData, EnginePreservationSchema);
 
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form });
-      }
+		if (!form.valid) return fail(400, { form });
 
-      const tag = formData.get('tag')
+		const tag = formData.get('tag');
 
-      try {
-         if (tag.size === 0) formData.delete('tag')
-         await CommonHelpers.createData(locals, 'preservation_list', formData);
-      } catch (error) {
-         form.errors = {
-            pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
-         };
-         return fail(error.status, { form });
-      }
-      // console.log('VALID: ', form);
+		try {
+			if (tag.size === 0) formData.delete('tag');
+			let createResult = await database.PreservationService.create(formData);
+			database.Log(createResult);
+		} catch (error) {
+			form.errors = {
+				pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`,
+				db: `Error :: ${error.response.message},`
+			};
+			return fail(error.status, { form });
+		}
 
-      return { form };
-   },
-   update: async ({ request, locals }) => {
-      const formData = await request.formData();
-      const form = await superValidate(formData, CommonHelpers.enginePreservationSchema);
+		return { form };
+	},
+	update: async ({ request, locals, database }) => {
+		const formData = await request.formData();
+		const form = await superValidate(formData, EnginePreservationSchema);
 
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form });
-      }
+		if (!form.valid) return fail(400, { form });
 
-      const id = formData.get('id');
-      const tag = formData.get('tag')
+		const id = formData.get('id');
+		const tag = formData.get('tag');
 
-      try {
-         if (tag.size === 0) formData.delete('tag')
-         await CommonHelpers.updateData(locals, 'preservation_list', id, formData);
-      } catch (error) {
-         form.errors = {
-            pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
-         };
-         return fail(error.status, { form });
-      }
+		try {
+			if (tag.size === 0) formData.delete('tag');
+			let updateResult = await database.PreservationService.update(id, formData);
+			console.log(updateResult);
+			database.Log(updateResult);
+		} catch (error) {
+			form.errors = {
+				pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`,
+				db: `Error :: ${error.response.message},`
+			};
+			return fail(error.status, { form });
+		}
 
-      return { form };
-   }
+		return { form };
+	},
+	delete: async ({ request, database }) => {
+		const formData = await request.formData();
+		const form = await superValidate(formData, LoginSchema);
+
+		if (!form.valid) return fail(400, { form });
+
+		const { username, password } = form.data;
+
+		// Confirmation to delete
+		let confirmResult = await database.UserService.confirm(username, password);
+
+		console.log(confirmResult.message === 'failed');
+		if (confirmResult.message === 'failed') {
+			form.errors = {
+				pocketbaseErrors: confirmResult.detail,
+				db: confirmResult.detail
+			};
+			return fail(400, { form });
+		}
+
+		// Grab data, Keep here to minimize runtime if step above failure
+		const historyId = formData.get('historyId');
+
+		if (historyId.length === 0) return { form };
+
+		let deleteResult = await database.PreservationService.delete(historyId);
+		database.Log(deleteResult);
+
+		return { form };
+	}
 };

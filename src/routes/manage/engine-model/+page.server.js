@@ -1,70 +1,50 @@
-import { superValidate } from 'sveltekit-superforms/server';
 import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms/server';
+import { EngineModelSchema, LoginSchema } from '$lib/schemas';
 
-import { _row } from '$lib/utils/Stores';
-import { CommonHelpers } from '$lib/utils/CommonHelpers';
-
-export const load = async ({ locals }) => {
+export const load = async ({ database }) => {
 	let engineModels = async () => {
-		/**
-		 * add 'family' key to array
-		 * value from the expand relation ( expand.family_id.name )
-		 */
-		let raw = await CommonHelpers.getEngineModels(locals);
+		let raw = await database.EngineModelService.getAll({ expand: 'family_id' });
 		let engineModels = raw.map((value) => ({ ...value, family: value?.expand?.family_id?.name }));
 		return engineModels;
 	};
 
 	return {
-		form: await superValidate(CommonHelpers.engineModelSchema),
+		form: await superValidate(EngineModelSchema),
 		engineModels: await engineModels(),
-		engineFamilies: await CommonHelpers.getEngineFamilies(locals) // required to be an select options for the create form and update form
+		engineFamilies: await database.EngineFamilyService.getAll()
 	};
 };
 
 export const actions = {
-	create: async ({ request, locals }) => {
-		const form = await superValidate(request, CommonHelpers.engineModelSchema);
+	create: async ({ request, database }) => {
+		const form = await superValidate(request, EngineModelSchema);
 
-		if (!form.valid) {
-			console.log('NOT VALID: ', form);
-			return fail(400, { form });
-		}
+		if (!form.valid) return fail(400, { form });
 
 		try {
-			await CommonHelpers.createData(locals, 'engine_models', form.data);
+			let createResult = await database.EngineModelService.create(form.data);
+			database.Log(createResult);
 		} catch (error) {
 			form.errors = {
 				pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
 			};
 			return fail(error.status, { form });
 		}
-		// console.log('VALID: ', form);
 
 		return { form };
 	},
-	update: async ({ request, locals }) => {
-		/**
-		 * grab raw form data into formData variable,
-		 * so we can gat the data from input id (hidden) which is not include in the zod schema
-		 * then formData pass into superValidate to validate what necessary
-		 */
+	update: async ({ request, database }) => {
 		const formData = await request.formData();
-		const form = await superValidate(formData, CommonHelpers.engineModelSchema);
+		const form = await superValidate(formData, EngineModelSchema);
 
-		if (!form.valid) {
-			console.log('NOT VALID: ', form);
-			return fail(400, { form });
-		}
+		if (!form.valid) return fail(400, { form });
 
 		const id = formData.get('id');
 
 		try {
-			/**
-			 * it feels wasting time to check form data is equal to curent data.
-			 *  will remove this or find the new better way
-			 */
-			await CommonHelpers.updateData(locals, 'engine_models', id, form.data);
+			let updateResult = await database.EngineModelService.update(id, form.data);
+			database.Log(updateResult);
 		} catch (error) {
 			form.errors = {
 				pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
@@ -74,29 +54,34 @@ export const actions = {
 
 		return { form };
 	},
-	delete: async ({ request, locals }) => {
-		const form = Object.fromEntries(await request.formData());
-		const keys = Object.keys(form);
-		console.log(keys.length);
+	delete: async ({ request, database }) => {
+		const formData = await request.formData();
+		const form = await superValidate(formData, LoginSchema);
 
-		keys.forEach(async (k, index) => {
-			// NOTE: Postpone, redirect, goto, standard headers are not working to reload page.
+		if (!form.valid) return fail(400, { form });
 
-			let id = form[k];
-			console.log(id);
-			// try {
-			//    let result = await locals.pb.collection('engine_families').delete(id)
-			//    console.log('result-', result, id);
-			// } catch (error) {
-			//    console.log('ERROR : ', error);
-			// }
+		const { username, password } = form.data;
 
-			if (index === keys.length - 1) {
-				// return {
-				//    headers: { Location: '/manage/engine-family' },
-				//    status: 302
-				// }
-			}
+		// Confirmation to delete
+		let confirmResult = await database.UserService.confirm(username, password);
+
+		if (confirmResult.message === 'failed') {
+			form.errors = {
+				pocketbaseErrors: confirmResult.message
+			};
+			return { form };
+		}
+
+		// Grab data, Keep here to minimize runtime if step above failure
+		const arrayOfId = formData.get('selectedRows').split(',');
+
+		if (arrayOfId.length === 0) return { form };
+
+		arrayOfId.forEach(async (id) => {
+			let deleteResult = await database.EngineModelService.delete(id);
+			database.Log(deleteResult);
 		});
+
+		return { form };
 	}
 };

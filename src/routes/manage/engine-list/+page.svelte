@@ -1,19 +1,21 @@
 <script>
+	import { Select, Table, Text, Switch, Stat, Button, TextArea, Btn, Modal, Password, List, Form } from '@ui';
 	import { superForm, defaultValues } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import { CommonHelpers, modal$ } from '$lib/utils';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	import ModalEngineHistory from './ModalEngineHistory.svelte';
 	import ModalPreservationHistory from './ModalPreservationHistory.svelte';
+	import ModalEngineHistory from './ModalEngineHistory.svelte';
 	import ModalDetail from './ModalDetail.svelte';
-
-	import { modal$ } from '$lib/utils/Stores';
-	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Select, Table, Text, Switch, Stat, Button, TextArea, Btn, Modal, List, Form } from '$lib/components';
 
 	export let data;
 
+	let search = $page.url.searchParams.get('esn') || '';
+	let dataTable;
+	let totalEngine = data.engineList.length;
+
+	const { engineModels, customers } = data;
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		taintedMessage: null,
@@ -21,74 +23,15 @@
 			if (result.type === 'success') {
 				invalidateAll();
 				modal$.reset();
-				loadingRefresh = true;
 			}
 		}
 	});
 
 	const formDefault = defaultValues(CommonHelpers.engineListSchema);
-
-	const { engineModels, customers } = data;
-
-	let dataTable;
-	let loadingRefresh = false;
-	let totalEngine = data.engineList.length;
-
-	$: (dataTable = data.engineList), (loadingRefresh = false);
-
 	const modelOptions = engineModels.map(({ id, name }) => ({ value: id, title: name }));
 	const customerOptions = customers.map(({ id, name }) => ({ value: id, title: name }));
+	const { isUpdate, isCreate, isConfirm, isDetail } = modal$;
 
-	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
-
-	const dataCol = [
-		{
-			header: 'ESN',
-			accessor: 'esn'
-		},
-		{
-			header: 'Config',
-			accessor: 'config'
-		},
-		{
-			header: 'Model',
-			accessor: 'model'
-		},
-		{
-			header: 'Customer',
-			accessor: 'customer'
-		},
-		{
-			header: 'Availability',
-			accessor: 'isAvailable',
-			cell: ({ row }) => {
-				if (row.original.isAvailable && row.original.isAvailable.status == 'INCOMING') return 'Available';
-				return 'Not Available';
-			}
-		},
-		{
-			header: 'Serviceability',
-			accessor: 'isServiceable',
-			cell: ({ row }) => {
-				if (row.original.isServiceable) return 'Serviceable';
-				return 'Unserviceable';
-			}
-		},
-		{
-			header: 'Preserve',
-			accessor: 'isPreservable',
-			cell: ({ row }) => {
-				if (row.original.isPreservable) return 'Controlled';
-				return 'Uncontrolled';
-			}
-		},
-		{
-			header: 'Notes',
-			accessor: 'notes'
-		}
-	];
-
-	let search = $page.url.searchParams.get('esn') || '';
 	function handleRowClick(e) {
 		let rowData = e.detail.rowData.original;
 		modal$.show('detail', rowData);
@@ -98,10 +41,9 @@
 		isTrue ? CommonHelpers.mergeObject($form, $isUpdate.data) : CommonHelpers.mergeObject($form, formDefault);
 	}
 
+	$: dataTable = data.engineList;
 	$: $isUpdate ? setUpdate(1) : '';
 	$: $isCreate ? setUpdate(0) : '';
-
-	// $: console.log($modal$.find((v) => v.id === 'engine_history')?.data);
 </script>
 
 <svelte:head>
@@ -120,37 +62,37 @@
 		<Modal.Body>
 			<List.Item>
 				<span>Engine Serial Number</span>
-				<span class="font-bold text-right">{$isDetail.data?.esn}</span>
+				<span class="text-right font-bold">{$isDetail.data?.esn}</span>
 			</List.Item>
 			<List.Item>
 				<span>Configuration</span>
-				<span class="font-bold text-right">{$isDetail.data?.config}</span>
+				<span class="text-right font-bold">{$isDetail.data?.config}</span>
 			</List.Item>
 			<List.Item>
 				<span>Model</span>
-				<span class="font-bold text-right">{$isDetail.data?.model}</span>
+				<span class="text-right font-bold">{$isDetail.data?.model}</span>
 			</List.Item>
 			<List.Item>
 				<span>Customer</span>
-				<span class="font-bold text-right">{$isDetail.data?.customer}</span>
+				<span class="text-right font-bold">{$isDetail.data?.customer}</span>
 			</List.Item>
 			<List.Item>
 				<Btn title="Availability" color="light" on:click={async () => modal$.show('engine_history', $isDetail.data?.id)}>
 					<span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
 				</Btn>
 
-				<div class="flex justify-end items-center gap-2">
+				<div class="flex items-center justify-end gap-2">
 					<span class="text-right text-xxs font-semibold">
-						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isAvailable?.status == 'INCOMING'} class:bg-yellow-300={$isDetail?.data?.isAvailable?.status == 'OUTGOING'}
+						<span class="rounded-full px-3 py-1" class:bg-green-300={$isDetail?.data?.isAvailable?.status == 'INCOMING'} class:bg-yellow-300={$isDetail?.data?.isAvailable?.status == 'OUTGOING'}
 							>{$isDetail?.data?.isAvailable?.status == 'INCOMING' ? 'Available in shop' : 'Not available'}</span>
 					</span>
 				</div>
 			</List.Item>
 			<List.Item>
 				<span>Serviceability</span>
-				<div class="flex justify-end items-center gap-2">
+				<div class="flex items-center justify-end gap-2">
 					<span class="text-right text-xxs font-semibold">
-						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isServiceable} class:bg-yellow-300={!$isDetail?.data?.isServiceable}
+						<span class="rounded-full px-3 py-1" class:bg-green-300={$isDetail?.data?.isServiceable} class:bg-yellow-300={!$isDetail?.data?.isServiceable}
 							>{$isDetail?.data?.isServiceable ? 'Serviceble' : 'Unserviceable'}</span>
 					</span>
 				</div>
@@ -159,16 +101,16 @@
 				<Btn title="Preservability" color="light" on:click={async () => modal$.show('preservation_history', $isDetail.data?.id)}>
 					<span class="text-green-600"><i class="ri-history-line ri-1x" /></span>
 				</Btn>
-				<div class="flex justify-end items-center gap-2">
+				<div class="flex items-center justify-end gap-2">
 					<span class="text-right text-xxs font-semibold">
-						<span class="py-1 px-3 rounded-full" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
+						<span class="rounded-full px-3 py-1" class:bg-green-300={$isDetail?.data?.isPreservable} class:bg-yellow-300={!$isDetail?.data?.isPreservable}
 							>{$isDetail?.data?.isPreservable ? 'Preservation maintained' : 'Preservation not maintained'}</span>
 					</span>
 				</div>
 			</List.Item>
 			<List.Item>
 				<span>Notes</span>
-				<span class="font-bold text-right">{$isDetail.data?.notes}</span>
+				<span class="text-right font-bold">{$isDetail.data?.notes}</span>
 			</List.Item>
 			<List.Item>
 				<span>Location</span>
@@ -180,6 +122,7 @@
 		</Modal.Footer>
 	</Modal.Root>
 {/if}
+
 {#if $modal$.find((v) => v.id === 'engine_history')}
 	<ModalEngineHistory engineId={$isDetail.data?.id} />
 {/if}
@@ -247,6 +190,36 @@
 	</Modal.Root>
 {/if}
 
+{#if $isConfirm}
+	{@const username = $form.username = data?.user?.username}
+	<Modal.Root let:id id="confirm" position="mid">
+		<Modal.Header>
+			<Modal.Title title="Are you sure?" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/delete" method="POST" {enhance}>
+				<Form.Item>
+					<div class="flex w-full flex-col items-center justify-center gap-2">
+						<span class="w-full text-center font-semibold">{data?.user?.username} | {data?.user?.name}</span>
+						<span class="rounded-full bg-yellow-300 px-4 py-2 text-center text-xs italic">Type your password to confirm</span>
+					</div>
+					<Text id="username" name="username" label="Employee ID" required={true} placeholder="your employee id" bind:value={$form.username} hidden />
+					<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
+					<Text id="selectedRows" name="selectedRows" label="Selected Rows" required={true} value={$isConfirm.data} hidden />
+				</Form.Item>
+				<Form.Error error={$errors?.db} />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button.Submit title="Confirm" formId={id} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
+{/if}
+
 <div class="manage-container">
 	<div class="manage-l">
 		<Stat.Root>
@@ -254,12 +227,19 @@
 			<Stat.Value value="{totalEngine} EA" />
 			<Stat.Desc desc="Engine are ..   ." />
 			<svelte:fragment slot="icon">
-				<i class="hidden lg:block ri-home-6-fill ri-3x text-indigo-600" />
+				<i class="ri-home-6-fill ri-3x hidden text-indigo-600 lg:block" />
 			</svelte:fragment>
 		</Stat.Root>
 	</div>
 	<div class="manage-r relative">
-		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} showCreateButton={data.user !== null ? true : false} showRowSelector={data.user !== null ? true : false}>
+		<svelte:component
+			this={Table}
+			{dataTable}
+			dataCol={CommonHelpers.tableColumn.engineList}
+			{search}
+			on:rowClick={handleRowClick}
+			showCreateButton={data.user !== null ? true : false}
+			showRowSelector={data.user !== null ? true : false}>
 			<span slot="title" class="title">Engine List</span>
 			<span slot="description" class="text-xs">List of all engine</span>
 		</svelte:component>

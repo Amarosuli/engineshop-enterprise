@@ -1,48 +1,49 @@
 /// <reference path="../pb_data/types.d.ts" />
-migrate((db) => {
-  const dao = new Dao(db)
-  const collection = dao.findCollectionByNameOrId("ie3ktv82n440swq")
+migrate(
+	(db) => {
+		const dao = new Dao(db);
+		const collection = dao.findCollectionByNameOrId('ie3ktv82n440swq');
 
-  // update
-  collection.schema.addField(new SchemaField({
-    "system": false,
-    "id": "k2nsr0yu",
-    "name": "status",
-    "type": "select",
-    "required": false,
-    "presentable": false,
-    "unique": false,
-    "options": {
-      "maxSelect": 1,
-      "values": [
-        "INCOMING",
-        "OUTGOING"
-      ]
-    }
-  }))
+		// update
+		collection.schema.addField(
+			new SchemaField({
+				system: false,
+				id: 'k2nsr0yu',
+				name: 'status',
+				type: 'select',
+				required: false,
+				presentable: false,
+				unique: false,
+				options: {
+					maxSelect: 1,
+					values: ['INCOMING', 'OUTGOING']
+				}
+			})
+		);
 
-  return dao.saveCollection(collection)
-}, (db) => {
-  const dao = new Dao(db)
-  const collection = dao.findCollectionByNameOrId("ie3ktv82n440swq")
+		return dao.saveCollection(collection);
+	},
+	(db) => {
+		const dao = new Dao(db);
+		const collection = dao.findCollectionByNameOrId('ie3ktv82n440swq');
 
-  // update
-  collection.schema.addField(new SchemaField({
-    "system": false,
-    "id": "k2nsr0yu",
-    "name": "status",
-    "type": "select",
-    "required": false,
-    "presentable": false,
-    "unique": false,
-    "options": {
-      "maxSelect": 1,
-      "values": [
-        "incoming",
-        "outgoing"
-      ]
-    }
-  }))
+		// update
+		collection.schema.addField(
+			new SchemaField({
+				system: false,
+				id: 'k2nsr0yu',
+				name: 'status',
+				type: 'select',
+				required: false,
+				presentable: false,
+				unique: false,
+				options: {
+					maxSelect: 1,
+					values: ['incoming', 'outgoing']
+				}
+			})
+		);
 
-  return dao.saveCollection(collection)
-})
+		return dao.saveCollection(collection);
+	}
+);

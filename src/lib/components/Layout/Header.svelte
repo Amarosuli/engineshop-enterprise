@@ -1,9 +1,8 @@
 <script>
-	import { Link } from '$lib/components';
 	import { CommonSets } from '$lib/utils/CommonSets';
 	import { page } from '$app/stores';
 
-	import { Dropdown, Button, List } from '$lib/components';
+	import { Dropdown, Button, List, Link } from '@ui';
 
 	export let user;
 </script>

@@ -1,106 +1,50 @@
 <script>
-	import { superForm } from 'sveltekit-superforms/client';
-	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import { Select, Table, File, Text, Button, TextArea, Btn, Date, Modal, List, Password, Form } from '$lib/components';
 	import { invalidateAll } from '$app/navigation';
+	import { CommonHelpers } from '$lib/utils/CommonHelpers';
+	import { Preservation } from '$lib/utils/Classes';
+	import { superForm } from 'sveltekit-superforms/client';
+	import { modal$ } from '$lib/utils/Stores';
 	import { page } from '$app/stores';
 
 	import ModalPreservationHistory from './ModalPreservationHistory.svelte';
+	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
 	import Board from './Board.svelte';
-
-	import { modal$ } from '$lib/utils/Stores';
-	import { CommonHelpers } from '$lib/utils/CommonHelpers';
-	import { Select, Table, File, Text, Button, TextArea, Btn, Date, Modal, List, Form } from '$lib/components';
-
-	import { Preservation } from '$lib/utils/Classes';
 
 	export let data;
 
-	/**
-	 * Superform: applyAction set to false so we can handle onResult.
-	 * onResult void success, reload page using window.location. goto method not work
-	 */
+	let search = $page.url.searchParams.get('esn') || '';
+	let dataTable;
+
+	const { engineList, preservationHistory } = data;
+	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
 	const { form, errors, enhance } = superForm(data.form, {
 		applyAction: false,
 		taintedMessage: null,
-		onResult: async ({ result }) => {
-			if (result.type === 'success') {
-				modal$.reset();
+		onUpdate: ({ form }) => {
+			if (form.valid) {
 				invalidateAll();
+				modal$.reset();
+				console.log('show pop up success');
 			}
+		},
+		onResult: async ({ result, cancel }) => {
+			if (result.type === 'failure') {
+				if (result.data.form.errors) {
+					console.log('show pop up failed');
+					cancel();
+				}
+			}
+		},
+		onError: (e) => {
+			console.log(e);
 		}
 	});
-
-	/**
-	 * destructure of data from page.server.js
-	 * make using of specific data more simpler for Table Components props and other needs
-	 */
-	const { engineList, preservationHistory, engineModels, customers } = data;
-
 	const durationOptions = [
 		{ value: '90', title: '90 Days' },
 		{ value: '180', title: '180 Days' },
 		{ value: '360', title: '360 Days' }
 	];
-
-	let dataTable;
-	let loadingRefresh = false;
-	$: (dataTable = data.engineList), (loadingRefresh = false);
-	/**
-	 * destructure of modal costum store
-	 * make using method more simpler
-	 */
-	const { isConfirm, isDelete, isUpdate, isCreate, isDetail } = modal$;
-
-	/**
-	 * define the table column
-	 * data from page.server.js need to shape as fit as the defined columns
-	 */
-	const dataCol = [
-		{
-			header: 'ESN',
-			accessor: 'esn'
-		},
-		{
-			header: 'Model',
-			accessor: 'model'
-		},
-		{
-			header: 'Customer',
-			accessor: 'customer'
-		},
-		{
-			header: 'Serviceability',
-			accessor: 'isServiceable',
-			cell: ({ row }) => {
-				if (row.original.isServiceable) return 'Serviceable';
-				return 'Unserviceable';
-			}
-		},
-		{
-			header: 'Preserve',
-			accessor: 'isPreservable',
-			cell: ({ row }) => {
-				if (row.original.isPreservable) return 'Controlled';
-				return 'Uncontrolled';
-			}
-		},
-		{
-			header: 'Preserve Detail',
-			accessor: 'preserveDetail',
-			cell: ({ row }) => {
-				// this check will place on the CommonHelper soon
-				if (Object.keys(row.original.preserveDetail).length === 0 && row.original.preserveDetail.constructor === Object) {
-					return 'No Data';
-				} else {
-					return 'Data Available';
-				}
-			}
-		}
-	];
-
-	let search = $page.url.searchParams.get('esn') || '';
-
-	// $: search = $page.url.searchParams.get('esn');
 
 	function handleRowClick(e) {
 		let rowData = e.detail.rowData.original;
@@ -119,7 +63,9 @@
 			$form.engine_id = $isDetail.data.id; // curently use this scenario
 		}
 	}
+	$: console.log($modal$[0]);
 
+	$: dataTable = data.engineList;
 	$: $isUpdate ? setUpdate(1) : '';
 	$: $isCreate ? setUpdate(0) : '';
 </script>
@@ -139,15 +85,15 @@
 		<Modal.Body>
 			<List.Item>
 				<span>Engine Serial Number</span>
-				<span class="font-bold text-right">{$isDetail.data?.esn}</span>
+				<span class="text-right font-bold">{$isDetail.data?.esn}</span>
 			</List.Item>
 			<List.Item>
 				<span>Model</span>
-				<span class="font-bold text-right">{$isDetail.data?.model}</span>
+				<span class="text-right font-bold">{$isDetail.data?.model}</span>
 			</List.Item>
 			<List.Item>
 				<span>Customer</span>
-				<span class="font-bold text-right">{$isDetail.data?.customer}</span>
+				<span class="text-right font-bold">{$isDetail.data?.customer}</span>
 			</List.Item>
 
 			<div class="list-header">
@@ -178,7 +124,7 @@
 					</List.Item>
 					<List.Item>
 						<span class="list-row-title">Status: </span>
-						<div class="flex justify-end items-center">
+						<div class="flex items-center justify-end">
 							<span class="list-row-content text-xxs" class:bg-yellow-400={_preservation.isReady} class:bg-green-400={_preservation.isValid} class:bg-red-400={_preservation.isExpired}>
 								{_preservation.isValid ? 'Good' : ''} {_preservation.isReady ? 'and Ready to Preserve' : ''}{_preservation.isExpired ? 'Expired since' : ''}</span>
 							<span class="list-row-content">{_preservation.preservationTime}</span>
@@ -206,7 +152,7 @@
 {/if}
 
 {#if $isUpdate}
-	{@const sd = console.log($isUpdate.data)}
+	<!-- {@const sd = console.log($isUpdate.data)} -->
 	<div class="absolute z-[200]">
 		<SuperDebug data={$form} />
 	</div>
@@ -239,9 +185,9 @@
 {/if}
 
 {#if $isCreate}
-	<div class="absolute z-[200]">
+	<!-- <div class="absolute z-[200]">
 		<SuperDebug data={$form} />
-	</div>
+	</div> -->
 	<Modal.Root let:id id="create" position="right">
 		<Modal.Header>
 			<Modal.Title title="Create Form" />
@@ -267,18 +213,52 @@
 			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
 		</Modal.Footer>
 	</Modal.Root>
+{/if}
 
-	<!-- <Modal id="create" position="right">
-		<SuperDebug data={$form} />
-		<Form id="create" action="?/create" title="Create" method="POST" enctype="multipart/form-data" {enhance}>
-			<Text id="engine_id" name="engine_id" bind:value={$form.engine_id} hidden />
-			<Text id="esn" name="esn" label="Engine Serial Number" bind:value={$isCreate.data.esn} disabled />
-			<Select id="duration" name="duration" label="Preserve Duration" bind:value={$form.duration} options={durationOptions} />
-			<Date id="date_performed" name="date_performed" label="Date Performed" bind:value={$form.date_performed} />
-			<File id="tag" name="tag" label="Preserve Tag" />
-			<TextArea id="material" name="material" label="Material" bind:value={$form.material} />
-		</Form>
-	</Modal> -->
+{#if $isConfirm}
+	{@const username = $form.username = data?.user?.username}
+	<Modal.Root let:id id="confirm" position="mid">
+		<Modal.Header>
+			<Modal.Title title="Are you sure?" />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<Form.Root {id} action="?/delete" method="POST" {enhance}>
+				<Form.Item>
+					<div class="flex w-full flex-col items-center justify-center gap-2">
+						<span class="w-full text-center font-semibold">{data?.user?.username} | {data?.user?.name}</span>
+						<span class="rounded-full bg-yellow-300 px-4 py-2 text-center text-xs italic">Type your password to confirm</span>
+					</div>
+					<Text id="username" name="username" label="Employee ID" required={true} placeholder="your employee id" bind:value={$form.username} hidden />
+					<Password id="password" label="Password" placeholder="your password" bind:value={$form.password} error={$errors.password} />
+					<Text id="historyId" name="historyId" required={true} value={$isConfirm.data} hidden />
+				</Form.Item>
+				<Form.Error error={$errors.pocketbaseErrors} />
+			</Form.Root>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button.Submit title="Confirm" formId={id} />
+			<Modal.Cancel on:Cancel={() => modal$.hide(id)} />
+		</Modal.Footer>
+	</Modal.Root>
+{/if}
+
+{#if $modal$[0]?.id == 'OverDue' || $modal$[0]?.id == 'NextDue'}
+	<Modal.Root let:id id={$modal$[0]?.id} position="mid">
+		<Modal.Header>
+			<Modal.Title title={`Detail ${id}`} />
+			<Modal.Action>
+				<Modal.Close on:Close={() => modal$.hide(id)} />
+			</Modal.Action>
+		</Modal.Header>
+		<Modal.Body>
+			<div class=" h-full w-full items-center justify-center">
+				<svelte:component this={Board} {preservationHistory} {engineList} showOverDue={id === 'OverDue'} showNextDue={id === 'NextDue'} />
+			</div>
+		</Modal.Body>
+	</Modal.Root>
 {/if}
 
 <div class="manage-container">
@@ -286,12 +266,12 @@
 		<svelte:component this={Board} {preservationHistory} {engineList} />
 	</div>
 	<div class="manage-r relative">
-		<svelte:component this={Table} {dataTable} {dataCol} {search} on:rowClick={handleRowClick} showRowSelector={false}>
+		<svelte:component this={Table} {dataTable} dataCol={CommonHelpers.tableColumn.preservationList} {search} on:rowClick={handleRowClick} showRowSelector={false}>
 			<span slot="title" class="title">Engine Preservation</span>
 			<span slot="description" class="text-xs" />
 			<svelte:fragment slot="action">
-				<Button.Event title="Overdue" classes="btn btn_info" />
-				<Button.Event title="Nextdue" classes="btn btn_info" />
+				<Button.Event title="Overdue" classes="btn btn_info" on:Event={() => modal$.show('OverDue')} />
+				<Button.Event title="Nextdue" classes="btn btn_info" on:Event={() => modal$.show('NextDue')} />
 			</svelte:fragment>
 		</svelte:component>
 	</div>

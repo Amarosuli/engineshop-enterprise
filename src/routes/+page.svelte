@@ -1,5 +1,5 @@
 <script>
-	import { Img } from '$lib/components';
+	import { Img } from '@ui';
 	import { CommonSets } from '$lib/utils/CommonSets';
 
 	let { apps: AppsMenu, manages: ManagesMenu } = CommonSets.MainMenu;
@@ -58,7 +58,7 @@
 		@apply text-center text-xxs font-semibold text-slate-500;
 	}
 	.menuTag {
-		@apply text-xxxs absolute -bottom-3.5 left-0 z-10 w-full rounded-b-md bg-purple-700 px-2 py-1 text-center text-white antialiased shadow-md;
+		@apply absolute -bottom-3.5 left-0 z-10 w-full rounded-b-md bg-purple-700 px-2 py-1 text-center text-xxxs text-white antialiased shadow-md;
 	}
 	.imgIcon {
 		@apply h-10 w-10 border-2 border-slate-700;

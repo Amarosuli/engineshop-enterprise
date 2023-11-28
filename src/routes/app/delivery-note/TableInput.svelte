@@ -1,11 +1,11 @@
 <script>
 	import { writable } from 'svelte/store';
 
-	import { SuperTable } from '$lib/components/commons/Table/tableClass.js';
-	import EditableCell from '$lib/components/commons/Table/EditableCell.svelte';
+	import { SuperTable } from '@ui/Table/tableClass.js';
+	import EditableCell from '@ui/Table/EditableCell.svelte';
+	import { Button } from '@ui';
 
 	import { Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { Button } from '$lib/components';
 
 	export let schema = [];
 	const limitRow = 8;

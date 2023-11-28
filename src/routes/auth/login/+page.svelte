@@ -1,5 +1,5 @@
 <script>
-	import { Text, Password, Button, Form } from '$lib/components';
+	import { Text, Password, Button, Form } from '@ui';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';

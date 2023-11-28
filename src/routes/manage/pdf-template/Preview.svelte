@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { File, Table, Text, Btn, Button, Link, Img, Modal, List, Form, Password } from '$lib/components';
+	import { Modal } from '$lib/components';
 	import { modal$ } from '$lib/utils/Stores';
 	import { Viewer, BLANK_PDF } from '@pdfme/ui';
 
@@ -12,7 +12,7 @@
 	});
 </script>
 
-<Modal.Root let:id id="preview" position="left">
+<Modal.Root let:id id="preview" position="mid">
 	<Modal.Header>
 		<Modal.Title title="Preview Template - Surat Pengiriman" />
 		<Modal.Action>

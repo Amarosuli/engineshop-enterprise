@@ -1,50 +1,57 @@
 /// <reference path="../pb_data/types.d.ts" />
-migrate((db) => {
-  const dao = new Dao(db)
-  const collection = dao.findCollectionByNameOrId("hnaj3l1dleqv926")
+migrate(
+	(db) => {
+		const dao = new Dao(db);
+		const collection = dao.findCollectionByNameOrId('hnaj3l1dleqv926');
 
-  collection.options = {
-    "query": "SELECT id, engine_id FROM\n(SELECT id, engine_id, (ROW_NUMBER() OVER(PARTITION BY id ORDER BY engine_id DESC)) as id FROM engine_availability)\nWHERE id=1 "
-  }
+		collection.options = {
+			query: 'SELECT id, engine_id FROM\n(SELECT id, engine_id, (ROW_NUMBER() OVER(PARTITION BY id ORDER BY engine_id DESC)) as id FROM engine_availability)\nWHERE id=1 '
+		};
 
-  // remove
-  collection.schema.removeField("bdeqdn0a")
+		// remove
+		collection.schema.removeField('bdeqdn0a');
 
-  // add
-  collection.schema.addField(new SchemaField({
-    "system": false,
-    "id": "bto6s6gc",
-    "name": "engine_id",
-    "type": "json",
-    "required": false,
-    "presentable": false,
-    "unique": false,
-    "options": {}
-  }))
+		// add
+		collection.schema.addField(
+			new SchemaField({
+				system: false,
+				id: 'bto6s6gc',
+				name: 'engine_id',
+				type: 'json',
+				required: false,
+				presentable: false,
+				unique: false,
+				options: {}
+			})
+		);
 
-  return dao.saveCollection(collection)
-}, (db) => {
-  const dao = new Dao(db)
-  const collection = dao.findCollectionByNameOrId("hnaj3l1dleqv926")
+		return dao.saveCollection(collection);
+	},
+	(db) => {
+		const dao = new Dao(db);
+		const collection = dao.findCollectionByNameOrId('hnaj3l1dleqv926');
 
-  collection.options = {
-    "query": "SELECT id, status FROM\n(SELECT id, status, (ROW_NUMBER() OVER(PARTITION BY id ORDER BY status DESC)) as id FROM engine_availability)\nWHERE id=1 "
-  }
+		collection.options = {
+			query: 'SELECT id, status FROM\n(SELECT id, status, (ROW_NUMBER() OVER(PARTITION BY id ORDER BY status DESC)) as id FROM engine_availability)\nWHERE id=1 '
+		};
 
-  // add
-  collection.schema.addField(new SchemaField({
-    "system": false,
-    "id": "bdeqdn0a",
-    "name": "status",
-    "type": "json",
-    "required": false,
-    "presentable": false,
-    "unique": false,
-    "options": {}
-  }))
+		// add
+		collection.schema.addField(
+			new SchemaField({
+				system: false,
+				id: 'bdeqdn0a',
+				name: 'status',
+				type: 'json',
+				required: false,
+				presentable: false,
+				unique: false,
+				options: {}
+			})
+		);
 
-  // remove
-  collection.schema.removeField("bto6s6gc")
+		// remove
+		collection.schema.removeField('bto6s6gc');
 
-  return dao.saveCollection(collection)
-})
+		return dao.saveCollection(collection);
+	}
+);

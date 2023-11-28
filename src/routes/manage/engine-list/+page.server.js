@@ -1,137 +1,107 @@
-import { superValidate } from 'sveltekit-superforms/server';
 import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms/server';
+import { EngineListSchema, LoginSchema } from '$lib/schemas';
 
-import { CommonHelpers } from '$lib/utils/CommonHelpers';
-
-export const load = async ({ locals }) => {
-   let engineHistory = async () => { return await locals.pb.collection('engine_history').getFullList() }
-   let engineList = async () => {
-      /**
-       * add 'model' and 'customer key to array
-       * value from the expand relation ( expand.model_id.name, expand.customer_id.name )
-       */
-      let history = await engineHistory()
-      let raw = await CommonHelpers.getEngineList(locals);
-      let engineModels = raw.map((value) => ({ ...value, model: value?.expand?.model_id?.name, customer: value?.expand?.customer_id?.name, isAvailable: history.find(v => v.history_number == 1 && v.engine_id == value.id) }));
-      return engineModels;
-   };
-   return {
-      form: await superValidate(CommonHelpers.engineListSchema),
-      engineList: await engineList(),
-      engineModels: await CommonHelpers.getEngineModels(locals),
-      customers: await CommonHelpers.getCustomers(locals)
-   };
+export const load = async ({ database }) => {
+	return {
+		form: await superValidate(EngineListSchema),
+		engineList: await database.EngineService.getEngineList(),
+		engineModels: await database.EngineModelService.getAll(),
+		customers: await database.CustomerService.getAll()
+	};
 };
 
 export const actions = {
-   create: async ({ request, locals }) => {
-      /**
-       * create actions of engine-list have 3 task
-       * pre - check if esn is already exist
-       * 1. create data to engine_list
-       * pre - no check, if the first data not exist it means new
-       * 2. create data to engine_availability (always assumed new engine is engine incoming)
-       * pre - no check, if the first data not exist it means new
-       * 3. create data to engine_location (with default position value)
-       * if data in engine_list deleted, data in engine_availability and engine_location also removed
-       */
+	create: async ({ request, database }) => {
+		const form = await superValidate(request, EngineListSchema);
 
-      const form = await superValidate(request, CommonHelpers.engineListSchema);
+		if (!form.valid) return fail(400, { form });
 
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form });
-      }
+		let isExist = await database.EngineService.getByEsn(form.data.esn);
 
-      // pre[1] - Checking
-      try {
-         let isExist = await CommonHelpers.findByFilter(locals, 'engine_list', 'esn="' + form.data.esn + '"');
-         if (isExist) {
-            form.errors = {
-               esn: 'This Engine Data Already Exist'
-            };
-            return fail(400, { form });
-         }
-      } catch (_) {
-         // console.log('::NOTEXIST::\n', _);
-      }
+		if (isExist) {
+			form.errors = {
+				esn: 'This Engine Data Already Exist'
+			};
+			return fail(400, { form });
+		}
 
-      try {
-         let { id } = await CommonHelpers.createData(locals, 'engine_list', form.data); // [1] - Create
-         // pre[2]
-         let engineAvailabilityData = { engine_id: id, date_performed: new Date(), status: 'INCOMING' };
-         await CommonHelpers.createData(locals, 'engine_availability', engineAvailabilityData); // [2]
-         // pre[3]
-         let engineLocationData = {
-            engine_id: id,
-            position: null,
-            location: ''
-         };
-         await CommonHelpers.createData(locals, 'engine_location', engineLocationData); // [3]
-      } catch (error) {
-         form.errors = {
-            pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
-         };
-         return fail(error.status, { form });
-      }
-      // console.log('VALID: ', form);
+		try {
+			let createEngineResult = await database.EngineService.create(form.data);
+			database.Log(createEngineResult);
 
-      return { form };
-   },
-   update: async ({ request, locals }) => {
-      /**
-       * grab raw form data into formData variable,
-       * so we can get the data from input id (hidden) which is not include in the zod schema
-       * then formData pass into superValidate to validate what necessary
-       */
-      const formData = await request.formData();
-      const form = await superValidate(formData, CommonHelpers.engineListSchema);
+			let createEngineAvailabilityResult = await database.EngineAvailabilityService.create({
+				engine_id: createEngineResult.id,
+				date_performed: new Date(),
+				status: 'INCOMING'
+			});
+			database.Log(createEngineAvailabilityResult);
 
-      if (!form.valid) {
-         console.log('NOT VALID: ', form);
-         return fail(400, { form });
-      }
+			let createEngineLocationResult = await database.EngineLocationService.create({
+				engine_id: createEngineResult.id,
+				position: null,
+				location: ''
+			});
+			database.Log(createEngineLocationResult);
+		} catch (error) {
+			form.errors = {
+				pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
+			};
+			return fail(error.status, { form });
+		}
 
-      const id = formData.get('id');
+		return { form };
+	},
+	update: async ({ request, database }) => {
+		const formData = await request.formData();
+		const form = await superValidate(formData, EngineListSchema);
 
-      try {
-         /**
-          * it feels wasting time to check form data is equal to curent data.
-          *  will remove this or find the new better way
-          */
-         await CommonHelpers.updateData(locals, 'engine_list', id, form.data);
-      } catch (error) {
-         form.errors = {
-            pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
-         };
-         return fail(error.status, { form });
-      }
+		if (!form.valid) return fail(400, { form });
 
-      return { form };
-   },
-   delete: async ({ request, locals }) => {
-      const form = Object.fromEntries(await request.formData());
-      const keys = Object.keys(form);
-      console.log(keys.length);
+		const id = formData.get('id');
 
-      keys.forEach(async (k, index) => {
-         // NOTE: Postpone, redirect, goto, standard headers are not working to reload page.
+		try {
+			let updateResult = await database.EngineService.update(id, form.data);
+			database.Log(updateResult);
+		} catch (error) {
+			form.errors = {
+				pocketbaseErrors: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`,
+				db: `${error.response.message}!, crosscheck the ID or Password, or maybe your ID is actually not registered yet :)`
+			};
+			return fail(error.status, { form });
+		}
 
-         let id = form[k];
-         console.log(id);
-         // try {
-         //    let result = await locals.pb.collection('engine_families').delete(id)
-         //    console.log('result-', result, id);
-         // } catch (error) {
-         //    console.log('ERROR : ', error);
-         // }
+		return { form };
+	},
+	delete: async ({ request, database }) => {
+		const formData = await request.formData();
+		const form = await superValidate(formData, LoginSchema);
 
-         if (index === keys.length - 1) {
-            // return {
-            //    headers: { Location: '/manage/engine-family' },
-            //    status: 302
-            // }
-         }
-      });
-   }
+		if (!form.valid) return fail(400, { form });
+
+		const { username, password } = form.data;
+
+		// Confirmation to delete
+		let confirmResult = await database.UserService.confirm(username, password);
+		database.Log(confirmResult);
+		if (confirmResult.message === 'failed') {
+			form.errors = {
+				pocketbaseErrors: confirmResult.message,
+				db: confirmResult.message
+			};
+			return { form };
+		}
+
+		// Grab data, Keep here to minimize runtime if step above failure
+		const arrayOfId = formData.get('selectedRows').split(',');
+
+		if (arrayOfId.length === 0) return { form };
+
+		arrayOfId.forEach(async (id) => {
+			let deleteResult = await database.EngineService.delete(id);
+			database.Log(deleteResult);
+		});
+
+		return { form };
+	}
 };
