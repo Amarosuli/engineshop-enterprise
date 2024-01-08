@@ -8,5 +8,5 @@ export const GET = async ({ url, locals }) => {
 		await locals.pb.authStore.clear();
 	} catch (_) {}
 
-	throw redirect(303, urlFrom);
+	redirect(303, urlFrom);
 };

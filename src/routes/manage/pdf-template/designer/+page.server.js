@@ -6,7 +6,7 @@ import { CommonHelpers } from '$lib/utils/CommonHelpers';
 
 export const load = async ({ locals, url }) => {
 	let id = url.searchParams.get('id');
-	if (id === null || id === undefined || id === '') throw redirect(303, '/manage/pdf-template');
+	if (id === null || id === undefined || id === '') redirect(303, '/manage/pdf-template');
 	return {
 		pdfTemplates: await CommonHelpers.findByFilter(locals, 'pdf_templates', `id="${id}"`),
 		form: await superValidate(CommonHelpers.createPdfTemplateSchema)

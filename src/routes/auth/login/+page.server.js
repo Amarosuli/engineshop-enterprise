@@ -5,7 +5,7 @@ import { LoginSchema } from '$lib/schemas';
 export const load = async ({ url, locals, database }) => {
 	if (locals.pb.authStore.model) {
 		let urlFrom = url.searchParams.get('urlFrom') || '/';
-		throw redirect(303, urlFrom);
+		redirect(303, urlFrom);
 	}
 
 	return { form: await superValidate(LoginSchema) };

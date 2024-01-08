@@ -59,7 +59,7 @@
 	.menuTag {
 		@apply absolute right-0 top-0 z-10 flex h-5 w-5 items-center justify-center rounded-bl-md bg-purple-700 text-center text-xxxs text-white antialiased shadow-md;
 	}
-	.imgIcon {
-		@apply h-10 w-10 border-2 border-slate-700;
-	}
+	// .imgIcon {
+	// 	@apply h-10 w-10 border-2 border-slate-700;
+	// }
 </style>
