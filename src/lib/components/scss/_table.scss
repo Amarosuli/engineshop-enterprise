@@ -1,4 +1,4 @@
-@import '../fonts/remixicon/remixicon.scss';
+// @import '../fonts/remixicon/remixicon.scss';
 
 table {
 	@apply h-max w-full bg-slate-100;
@@ -18,6 +18,9 @@ table {
 		}
 		&:last-child {
 			@apply pr-[20px];
+         .arrow {
+            @apply pr-[20px];
+         }
 		}
 	}
 	th {
@@ -45,24 +48,24 @@ table {
 
 		&:after {
 			// content: '\2191';
-			content: '\ea76';
+			// content: '\ea76';
 			position: absolute;
 			right: 15px;
 			top: 50%;
 			margin-top: -($iconSize * 0.5);
 			line-height: $iconSize;
 			height: $iconSize;
-			font-family: 'remixicon';
+			// font-family: 'remixicon';
 			font-weight: normal;
 			opacity: 0;
 		}
 		&.sort-desc:after {
 			// content: '\2191';
-			content: '\ea76';
+			// content: '\ea76';
 		}
 		&.sort-asc:after {
 			// content: '\2193';
-			content: '\ea4c';
+			// content: '\ea4c';
 		}
 		&.sort-active {
 			&:after {

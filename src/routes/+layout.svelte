@@ -1,7 +1,7 @@
 <script>
 	import '../app.postcss';
 	import '@ui/scss/main.scss';
-	import '@ui/fonts/remixicon/remixicon.scss';
+	// import '@ui/fonts/remixicon/remixicon.scss';
 
 	import { navigating } from '$app/stores';
 	import { Layout } from '@ui';

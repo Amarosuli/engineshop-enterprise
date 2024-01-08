@@ -1,4 +1,5 @@
 <script>
+	import { X } from 'lucide-svelte';
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
@@ -9,4 +10,6 @@
 	}
 </script>
 
-<button on:click={handleClick} class="hover:bg-slate-300 w-10 h-10 flex justify-center items-center rounded-xl text-slate-600 hover:text-white"><i class="ri-close-fill ri-xl text-inherit" /></button>
+<button on:click={handleClick} class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-300 hover:text-white">
+	<X size="15" />
+</button>

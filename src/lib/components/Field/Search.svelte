@@ -1,5 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
+	import { Search } from 'lucide-svelte';
 
 	export let id = Math.random().toString();
 	export let name = 'text';
@@ -40,7 +41,8 @@
 		<span>{label}</span>
 	</label>
 	<div class="group justify-center marker:relative">
-		<i class="ri-search-2-line ri-xl group:focus:text-sky-600 absolute ml-2 mt-1 text-sky-600" />
+		<!-- <i class="ri-search-2-line ri-xl group:focus:text-sky-600 absolute ml-2 mt-1 text-sky-600" /> -->
+		<Search size="15" class="group:focus:text-sky-600 absolute ml-2 font-bold text-sky-600" />
 		<input type="text peer" class={isNotEmpty} on:change={onChange} {id} {name} {placeholder} {required} {autocomplete} bind:value on:keydown={onEnter} />
 	</div>
 	{#if error}

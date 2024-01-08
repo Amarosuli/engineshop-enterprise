@@ -133,8 +133,8 @@
 			</Modal.Action>
 		</Modal.Header>
 		<Modal.Body>
-			<div class="flex flex-col justify-center items-center gap-2 w-full h-full px-2">
-				<p class="font-bold text-lg">ESN {inputCheck} doesn't exist in database</p>
+			<div class="flex h-full w-full flex-col items-center justify-center gap-2 px-2">
+				<p class="text-lg font-bold">ESN {inputCheck} doesn't exist in database</p>
 				<p>Go to <strong>engine-list</strong> to create new engine data</p>
 				<Link href="/manage/engine-list" title="Go To Engine List" color="warning" />
 			</div>
@@ -193,37 +193,39 @@
 {/if}
 
 <div class="absolute inset-0 flex">
-	<div class="basis-1/4 hidden md:block">
-		<div class="bg-slate-200 m-4 px-4 pt-2 pb-6 h-fit shadow-lg">
-			<h1 class="text-lg text-center text-slate-700 font-extrabold mt-2 mb-4">Recent Data</h1>
+	<div class="hidden basis-1/4 md:block">
+		<div class="h-full bg-white px-4 pb-6 pt-2 shadow-lg">
+			<h1 class="mb-4 mt-2 text-left text-lg font-extrabold text-slate-700">Recent Data</h1>
 			{#each engineHistory as history}
-				<div class="flex rounded text-xs justify-between items-center w-full gap-8 py-2 px-4 bg-white mb-2">
-					<span class="text-slate-600 flex-1">ESN {history.esn}</span>
-					<span class="text-slate-600 font-semibold">{history.status}</span>
-					<span class="text-slate-600">{history.date_performed.split(' ')[0]}</span>
+				<div class="mb-2 flex w-full select-none items-center justify-between gap-8 border-b px-4 py-2 text-xs text-slate-600 transition-all first:border-t hover:bg-slate-200">
+					<span class="flex-1">ESN <strong>{history.esn}</strong></span>
+					<div class="h-full text-xxs">
+						<span class:bg-sky-200={history.status === 'INCOMING'} class:bg-orange-200={history.status === 'OUTGOING'} class="rounded-full p-1 px-2 font-bold">{history.status}</span>
+						<span class="rounded-full bg-yellow-100 p-1 px-2">{history.date_performed.split(' ')[0]}</span>
+					</div>
 				</div>
 			{/each}
 		</div>
 	</div>
-	<div class="basis-full flex flex-col flex-nowrap overflow-auto">
-		<div class="h-max pt-4 pb-4 px-6 gap-4 bg-slate-200 flex-nowrap flex justify-between items-start overflow-x-auto">
-			<div class="w-max min-w-lg">
+	<div class="flex basis-full flex-col flex-nowrap overflow-auto">
+		<div class="flex h-max flex-nowrap items-start justify-between gap-4 overflow-x-auto bg-slate-200 px-6 pb-4 pt-4">
+			<div class="min-w-lg w-max">
 				<span class="text-xl font-extrabold tracking-wide text-slate-600">Engine In & Out</span>
 				<p>Register engine while incoming to shop and release engine while outgoing from shop</p>
 			</div>
-			<div class="flex flex-wrap gap-4 justify-between items-center">
-				<div class="flex flex-col lg:flex-row gap-3">
+			<div class="flex flex-wrap items-center justify-between gap-4">
+				<div class="flex flex-col gap-3 lg:flex-row">
 					<Btn title="Register" color={formDisplay === 'incoming' ? 'info' : 'base'} on:click={() => (formDisplay = 'incoming')} on:click={resetVars} />
 					<Btn title="Release" color={formDisplay === 'outgoing' ? 'danger' : 'base'} on:click={() => (formDisplay = 'outgoing')} on:click={resetVars} />
 				</div>
 			</div>
 		</div>
 		<div class="relative overflow-y-auto">
-			<div class="w-full h-max px-6 pt-4 pb-6 transition-colors ease-out" class:bg-sky-200={formDisplay === 'incoming'} class:bg-orange-200={formDisplay === 'outgoing'}>
+			<div class="h-max w-full px-6 pb-6 pt-4 transition-colors ease-out" class:bg-sky-200={formDisplay === 'incoming'} class:bg-orange-200={formDisplay === 'outgoing'}>
 				<span class="text-xl font-extrabold tracking-wide text-slate-600"
 					><span class="text-xl uppercase"
 						>{formDisplay}
-						<form action="" class="flex justify-center text-sm normal-case font-normal items-center gap-3 w-fit">
+						<form action="" class="flex w-fit items-center justify-center gap-3 text-sm font-normal normal-case">
 							<Search id="check" name="check" error={inputCheckError} bind:value={inputCheck} required on:Enter={handleCheck} />
 							<span class=" font-semibold">Check ESN</span>
 						</form>

@@ -3,22 +3,35 @@
 	import { page } from '$app/stores';
 
 	import { Dropdown, Button, List, Link } from '@ui';
+	import { Key, LogIn, LogOut, ChevronDownCircle, UserCircle } from 'lucide-svelte';
+	import { slide } from 'svelte/transition';
 
 	export let user;
+
+	console.log($page.url.pathname);
 </script>
 
 <div class="header">
-	<a href="/">
-		<img src="/favicon.png" alt="logo" />
-		<span>Engineshop Enterprise</span>
-	</a>
+	<div class="flex w-full items-center justify-between">
+		<a href="/">
+			<img src="/favicon.png" alt="logo" />
+			<span>Engineshop Enterprise</span>
+		</a>
 
-	<div>
+		{#if user && $page.url.pathname !== '/'}
+			<div transition:slide={{ axis: 'x' }} class="hidden h-9 items-center justify-center gap-2 rounded-l-lg bg-white p-4 text-xs lg:flex">
+				<span class="">Manages</span>
+				<span class="">Apps</span>
+			</div>
+		{/if}
+	</div>
+
+	<div class="right-menu">
 		{#if user}
 			<Dropdown.Root>
-				<Dropdown.Trigger let:isOpen color="ghost">
+				<Dropdown.Trigger let:isOpen color="light" class="!rounded">
 					<!-- <Button.Event title="Open" on:Event={isOpen.switch} classes="btn btn_confirm" /> -->
-					<i class="ri-profile-line ri-xl text-sky-700" />
+					<ChevronDownCircle size="20" class="font-bold" />
 				</Dropdown.Trigger>
 				<Dropdown.Content size="w-52">
 					{#each CommonSets.HeaderLinks as { title, href, color }}
@@ -26,11 +39,11 @@
 							<Link href="{href}?urlFrom={$page.url.pathname}" {title} {color} />
 						{:else if user}
 							<Link href="/profile" title={user.name} color="ghost" size="w-full">
-								<i class="ri-user-2-fill ri-xl text-sky-700" />
+								<UserCircle size="15" />
 							</Link>
 							<!-- @next I think logout should be a button which process request to logout api -->
 							<Link href="/auth/logout?urlFrom={$page.url.pathname}" title="Logout" color="ghost" size="w-full">
-								<i class="ri-logout-box-line ri-xl text-sky-700" />
+								<LogOut size="15" />
 							</Link>
 						{/if}
 					{/each}
@@ -39,8 +52,8 @@
 		{:else}
 			{#each CommonSets.HeaderLinks as { title, href, color }}
 				<Link href="{href}?urlFrom={$page.url.pathname}" color="ghost">
-					<span class="font-semibold !text-sky-700">Login</span>
-					<i class="ri-login-box-line ri-xl text-sky-700" />
+					<!-- <span class="!text-xs font-semibold">Login</span> -->
+					<LogIn size="15" class="font-bold" />
 				</Link>
 			{/each}
 		{/if}
@@ -61,7 +74,7 @@
 			}
 		}
 
-		div {
+		.right-menu {
 			@apply flex w-max gap-4;
 		}
 	}

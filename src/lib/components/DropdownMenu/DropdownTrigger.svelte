@@ -18,6 +18,7 @@
 <button
 	id="dropdown_trigger"
 	on:click|stopPropagation={isOpen.switch}
+	{...$$props}
 	class="btn transition-colors ease-out {CommonSets.ColorSet[color].textColor} {CommonSets.ColorSet[color].bgColor} {CommonSets.ColorSet[color].hoverColor}">
 	<slot {isOpen} />
 </button>

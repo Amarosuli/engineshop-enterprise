@@ -2,6 +2,7 @@
 	import { fade } from 'svelte/transition';
 	import { createEventDispatcher } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { ArrowDown, ArrowUp, ListRestart, PlusCircle, RotateCcw } from 'lucide-svelte';
 
 	import { modal$ } from '$lib/utils/Stores';
 	import { writable } from 'svelte/store';
@@ -154,7 +155,10 @@
 	<div class="manage-r-action relative flex-row items-end gap-3 xl:flex-col">
 		<div class="btn-group horizontal">
 			{#if showCreateButton}
-				<Button.Event title="Create" classes="btn btn_info" on:Event={() => modal$.show('create', null)}><i class="ri-add-circle-line ri-1x" /></Button.Event>
+				<Button.Event title="Create" classes="btn btn_info" on:Event={() => modal$.show('create', null)}>
+					<!-- <i class="ri-add-circle-line ri-1x" /> -->
+					<PlusCircle size="15" />
+				</Button.Event>
 			{/if}
 			<Button.Event
 				title="Refresh"
@@ -162,7 +166,9 @@
 				on:Event={() => {
 					invalidateAll();
 					isRefresh = true;
-				}}><i class="ri-refresh-line ri-1x text-white" /></Button.Event>
+				}}>
+				<RotateCcw size="15" />
+			</Button.Event>
 			<Dropdown.Root>
 				<Dropdown.Trigger let:isOpen>Column</Dropdown.Trigger>
 				<Dropdown.Content size="w-52">
@@ -219,7 +225,7 @@
 					<tr {...Ra}>
 						{#each row.cells as col (col.id)}
 							<Subscribe Ca={col.attrs()} Cp={col.props()} let:Ca let:Cp>
-								<th
+								<!-- <th
 									{...Ca}
 									on:click={Cp.sort.toggle}
 									class="col-sort col-{col.id}"
@@ -228,6 +234,21 @@
 									class:sort-asc={Cp.sort.order === 'asc'}
 									class:sort-desc={Cp.sort.order === 'desc'}>
 									<Render of={col.render()} />
+								</th> -->
+								<th {...Ca} on:click={Cp.sort.toggle} class="col-sort col-{col.id}" class:col-checkbox={col.id === 'selected'} class:sort-active={Cp.sort.order !== undefined}>
+									<div class="relative">
+										<Render of={col.render()} />
+										{#if Cp.sort.order === 'asc'}
+											<div class="arrow absolute -right-[15px] top-1/2 -mt-[7.5px] items-center justify-center">
+												<ArrowUp size="15" />
+											</div>
+										{/if}
+										{#if Cp.sort.order === 'desc'}
+											<div class="arrow absolute -right-[15px] top-1/2 -mt-[7.5px] items-center justify-center">
+												<ArrowDown size="15" />
+											</div>
+										{/if}
+									</div>
 								</th>
 							</Subscribe>
 						{/each}

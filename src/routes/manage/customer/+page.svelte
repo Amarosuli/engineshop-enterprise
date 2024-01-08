@@ -3,6 +3,7 @@
 	import { CommonHelpers, modal$ } from '$lib/utils';
 	import { invalidateAll } from '$app/navigation';
 	import { superForm } from 'sveltekit-superforms/client';
+	import { FileEdit } from 'lucide-svelte';
 
 	export let data;
 
@@ -61,7 +62,9 @@
 			<Modal.Title title="Detail Form" />
 			<Modal.Action>
 				<Btn title="Update" color="warning" hidden={data?.user !== null ? false : true} on:click={() => modal$.show('update', $isDetail?.data)}>
-					<i class="ri-pencil-line ri-1x text-white" /></Btn>
+					<!-- <i class="ri-pencil-line ri-1x text-white" /> -->
+					<FileEdit size="15" />
+				</Btn>
 				<Modal.Close on:Close={() => modal$.hide(id)} />
 			</Modal.Action>
 		</Modal.Header>
