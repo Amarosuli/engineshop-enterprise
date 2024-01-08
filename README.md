@@ -9,7 +9,7 @@ Because My Laptop is getting lagy tho' 😅 😂 🥹
 
 Here some technologies that i used in this project.
 
-1. Framework - [`SvelteKit`](https://kit.svelte.dev/) v4.2.2
+1. Framework - [`SvelteKit`](https://kit.svelte.dev/) v2
 2. Database - [`Pocketbase`](https://pocketbase.io/)
 3. Styling - [`TailwindCSS`](https://tailwindcss.com/)
 4. Transition - [`Svelte Transition Classes`](https://github.com/rmarscher/svelte-transition-classes)
@@ -17,7 +17,7 @@ Here some technologies that i used in this project.
 6. Table - [`Svelte Headless Table`](https://svelte-headless-table.bryanmylee.com/)
 7. Map Interactivity - [`NeoDrag vanilla`](https://www.neodrag.dev/docs/vanilla) & [`Panzoom`](https://github.com/timmywil/panzoom)
 8. Date - [`DayJS`](https://day.js.org/)
-9. Icon - [`Remixicon`](https://remixicon.com/), [`Iconify`](https://iconify.design/), & [`UI Avatar`](https://ui-avatars.com)
+9. Icon - lucide-svelte, [`Iconify`](https://iconify.design/), & [`UI Avatar`](https://ui-avatars.com)
 10. PDF Report - [`PDFME`](https://pdfme.com/)
 
 Node Version v18.15.0  
